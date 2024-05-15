@@ -1,0 +1,7 @@
+/.idea/
+/.vscode/
+/.cache/
+/.clang-tidy
+/cmake-build-debug_clang/
+/cmake-build-gcc_debug/
+/build/

@@ -1,0 +1,35 @@
+cmake_minimum_required(VERSION 3.25)
+
+set(VCPKG_TARGET_TRIPLET x64-mingw-dynamic)
+set(VCPKG_HOST_TRIPLET x64-mingw-dynamic)
+
+project (AOC)
+
+set(CMAKE_CXX_STANDARD 23)
+
+file(GLOB LC_INCLUDE ${CMAKE_SOURCE_DIR}/include/*.h)
+
+include(FetchContent)
+
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY      https://github.com/google/googletest.git
+    GIT_TAG             f8d7d77c06936315286eb55f8de22cd23c188571
+)
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+find_package(fmt CONFIG REQUIRED)
+find_package(glaze REQUIRED)
+find_package(flux REQUIRED)
+find_package(ctre REQUIRED)
+find_package(xxHash REQUIRED)
+
+add_subdirectory(src)
+add_subdirectory(test)
+
+add_executable(AOC src/main.cpp)
+target_link_libraries(AOC PRIVATE LC_Problems_2015 LC_Problems_2016)
+
+target_include_directories(AOC PUBLIC include)
