@@ -12,10 +12,9 @@ endforeach()
 
 
 
-
 enable_testing()
 
-add_executable(LC_Tests ${LC_PROBLEMS_TESTS_CPPS} ${LC_INCLUDE})
+add_executable(LC_Tests ${LC_PROBLEMS_TESTS_CPPS})
 
 target_include_directories(LC_Tests PUBLIC ${CMAKE_SOURCE_DIR}/include)
 

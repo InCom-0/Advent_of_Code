@@ -4,18 +4,12 @@ project (AOC)
 set(CMAKE_CXX_STANDARD 23)
 
 
-file(GLOB LC_PROBLEMS_CPPS_2015 ${CMAKE_CURRENT_SOURCE_DIR}/problems/AOC_2015/*.cpp)
-file(GLOB LC_PROBLEMS_H_2015 ${CMAKE_CURRENT_SOURCE_DIR}/problems/AOC_2015/*.cpp)
 
+file(GLOB LC_PROBLEMS_CPPS_2015 ${CMAKE_CURRENT_SOURCE_DIR}/problems/AOC_2015/*.cpp)
 file(GLOB LC_PROBLEMS_CPPS_2016 ${CMAKE_CURRENT_SOURCE_DIR}/problems/AOC_2016/*.cpp)
-file(GLOB LC_PROBLEMS_H_2016 ${CMAKE_CURRENT_SOURCE_DIR}/problems/AOC_2016/*.h)
 
 file(GLOB HASH_LIBRARY_FILES ${CMAKE_SOURCE_DIR}/src/external/hash-library/*.cpp ${CMAKE_SOURCE_DIR}/src/external/hash-library/*.h)
 
-
-foreach(prob_file IN LISTS LC_PROBLEMS_CPPS)
-    message(STATUS ${prob_file})
-endforeach()
 
 
 add_library(LC_Commons LC_commons.cpp)

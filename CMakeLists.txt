@@ -7,10 +7,8 @@ project (AOC)
 
 set(CMAKE_CXX_STANDARD 23)
 
-file(GLOB LC_INCLUDE ${CMAKE_SOURCE_DIR}/include/*.h)
 
 include(FetchContent)
-
 FetchContent_Declare(
     googletest
     GIT_REPOSITORY      https://github.com/google/googletest.git
@@ -19,6 +17,7 @@ FetchContent_Declare(
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
+
 
 find_package(fmt CONFIG REQUIRED)
 find_package(glaze REQUIRED)
