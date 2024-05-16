@@ -5,7 +5,7 @@
 
 int main()
 {
-    std::cout << AOC2016::day13_2("NO FILE", 1358, 50) << '\n';
+    std::cout << AOC2016::day14_1("ahsbgdzn", 64, 1) << '\n';
 
     return 1;
 }
