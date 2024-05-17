@@ -5,7 +5,7 @@
 
 int main()
 {
-    std::cout << AOC2016::day14_1("ahsbgdzn", 64, 1) << '\n';
+    std::cout << AOC2016::day15_1("2016_15_2.txt") << '\n';
 
     return 1;
 }
