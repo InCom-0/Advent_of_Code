@@ -15,3 +15,8 @@
 #include "AOC_2016_day_13.h"
 #include "AOC_2016_day_14.h"
 #include "AOC_2016_day_15.h"
+#include "AOC_2016_day_16.h"
+#include "AOC_2016_day_17.h"
+#include "AOC_2016_day_18.h"
+#include "AOC_2016_day_19.h"
+#include "AOC_2016_day_20.h"

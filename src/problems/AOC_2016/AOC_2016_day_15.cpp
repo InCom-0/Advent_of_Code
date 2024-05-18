@@ -9,12 +9,12 @@
 
 
 namespace AOC2016 {
-    struct oneDisc_t {
-        int discID;
-        std::vector<bool> position;
-    };
-
     int day15_1(std::string &&dataFile) {
+        struct oneDisc_t {
+            int discID;
+            std::vector<bool> position;
+        };
+
         auto getNumOfPos = ctre::search<R"(\d+(?= positions))">;
         auto getStartingPos = ctre::search<R"(\d+(?=\.))">;
 
@@ -22,6 +22,7 @@ namespace AOC2016 {
             dataFile, getNumOfPos, getStartingPos);
 
         std::vector<oneDisc_t> discs;
+
 
         // Early exit if false is provided by the algo itself.
         auto testAllDiscs = [](auto &&dscs, const int &&posToCheck) -> bool {
