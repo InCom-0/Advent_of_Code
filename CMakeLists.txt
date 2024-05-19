@@ -14,9 +14,16 @@ FetchContent_Declare(
     GIT_REPOSITORY      https://github.com/google/googletest.git
     GIT_TAG             f8d7d77c06936315286eb55f8de22cd23c188571
 )
-
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
+
+
+FetchContent_Declare(
+        bitlib
+        GIT_REPOSITORY https://github.com/bkille/bitlib.git
+        GIT_TAG origin/master
+)
+FetchContent_MakeAvailable(bitlib)
 
 
 find_package(fmt CONFIG REQUIRED)

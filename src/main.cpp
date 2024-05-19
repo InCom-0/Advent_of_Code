@@ -5,7 +5,7 @@
 
 int main()
 {
-    std::cout << AOC2016::day16_1("10010000000110000",272) << '\n';
+    std::cout << AOC2016::day17_2("yjjvjgan",4,4).size() << '\n';
 
     return 1;
 }

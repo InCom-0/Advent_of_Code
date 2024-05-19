@@ -22,6 +22,6 @@ target_include_directories(LC_Problems_2015 PUBLIC ${CMAKE_SOURCE_DIR}/include $
 target_include_directories(LC_Problems_2016 PUBLIC ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/problems/AOC_2016)
 target_include_directories(hash-library PUBLIC ${CMAKE_SOURCE_DIR}/src/external/hash-library)
 
-target_link_libraries(LC_Commons PUBLIC  fmt::fmt glaze::glaze flux::flux ctre::ctre hash-library xxHash::xxhash)
+target_link_libraries(LC_Commons PUBLIC  fmt::fmt glaze::glaze flux::flux ctre::ctre hash-library xxHash::xxhash bitlib::bitlib)
 target_link_libraries(LC_Problems_2015 PUBLIC LC_Commons)
 target_link_libraries(LC_Problems_2016 PUBLIC LC_Commons)
