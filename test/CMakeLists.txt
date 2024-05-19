@@ -4,9 +4,9 @@ project (AOC)
 set(CMAKE_CXX_STANDARD 23)
 
 
-file(GLOB LC_PROBLEMS_TESTS_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/problems/*.cpp)
+file(GLOB AOC_TESTS_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/problems/*.cpp)
 
-foreach(test_file IN LISTS LC_PROBLEMS_TESTS_CPPS)
+foreach(test_file IN LISTS AOC_TESTS_CPPS)
     message(STATUS ${test_file})
 endforeach()
 
@@ -14,8 +14,8 @@ endforeach()
 
 enable_testing()
 
-add_executable(LC_Tests ${LC_PROBLEMS_TESTS_CPPS})
+add_executable(AOC_Tests ${AOC_TESTS_CPPS})
 
-target_include_directories(LC_Tests PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(AOC_Tests PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
-target_link_libraries(LC_Tests LC_Commons LC_Problems gtest_main gmock_main)
+target_link_libraries(AOC_Tests AOC_Commons AOC_2015 AOC_2016 gtest_main gmock_main)
