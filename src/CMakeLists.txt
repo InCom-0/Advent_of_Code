@@ -10,7 +10,7 @@ file(GLOB AOC_2016_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/problems/AOC_2016/*.cpp)
 file(GLOB HASH_LIBRARY_FILES ${CMAKE_SOURCE_DIR}/src/external/hash-library/*.cpp ${CMAKE_SOURCE_DIR}/src/external/hash-library/*.h)
 
 
-add_library(AOC_Commons LC_commons.cpp)
+add_library(AOC_Commons AOC_commons.cpp ${CMAKE_SOURCE_DIR}/include/AOC_commons.h)
 add_library(AOC_2015 ${AOC_2015_CPPS} ${CMAKE_SOURCE_DIR}/include/AOC_2015.h)
 add_library(AOC_2016 ${AOC_2016_CPPS} ${CMAKE_SOURCE_DIR}/include/AOC_2016.h)
 add_library(hash-library ${HASH_LIBRARY_FILES})
