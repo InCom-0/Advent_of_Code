@@ -34,15 +34,16 @@ namespace AOC2016 {
             map.push_back(bit::bit_vector<unsigned char>());
             map[i+1].push_back(bit::bit0);
 
-            flux::from_range(map[i])
-                                    .slide(3)
-                                    .for_each([&] (auto &&a) {
-                                        if (*a.begin() == *(a.begin()+2)) {
-                                            map[i+1].push_back(bit::bit0);
-                                            trapCounter++;
-                                        }
-                                        else map[i+1].push_back(bit::bit1);
-                                    });
+            /*Comparing the equalty of first a last element of each 'tripple' is all we need.
+            For some reason flux slide+for_each is way less performant than handrolled algo below
+            ... could be worth investigating why that happens and what if anything could be done to alleviate this.*/
+            for (int j = 0; j < map[i].size()-2; ++j) {
+                if ((map[i].begin()+j).operator*() == (map[i].begin()+j+2).operator*()) {
+                    map[i+1].push_back(bit::bit0);
+                    trapCounter++;
+                }
+                else map[i+1].push_back(bit::bit1);
+            }
             map[i+1].push_back(bit::bit0);
         }
         return trapCounter;
