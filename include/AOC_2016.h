@@ -20,3 +20,8 @@
 #include "AOC_2016_day_18.h"
 #include "AOC_2016_day_19.h"
 #include "AOC_2016_day_20.h"
+#include "AOC_2016_day_21.h"
+#include "AOC_2016_day_22.h"
+#include "AOC_2016_day_23.h"
+#include "AOC_2016_day_24.h"
+#include "AOC_2016_day_25.h"

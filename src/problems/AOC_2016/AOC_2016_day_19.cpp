@@ -37,15 +37,12 @@ namespace AOC2016 {
         std::queue<int> losers = std::ranges::views::iota(numOfElves/2+1, numOfElves+1) | std::ranges::to<std::queue>();
 
         while (takers.size() > 0) {
-
-            int temp = takers.front();
             losers.pop();
-            losers.push(temp);
+            losers.emplace(takers.front());
 
             if (takers.size() != losers.size()) {
-                temp = losers.front();
+                takers.emplace(losers.front());
                 losers.pop();
-                takers.push(temp);
             }
             takers.pop();
         }
