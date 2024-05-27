@@ -9,12 +9,13 @@
 
 
 namespace AOC2016 {
-    struct IPrange_t {
-        unsigned long long start;
-        unsigned long long end;
-    };
+
 
     unsigned long day20_1(std::string dataFile) {
+        struct IPrange_t {
+            unsigned long long start;
+            unsigned long long end;
+        };
 
         std::vector<IPrange_t> blockList;
 
@@ -40,6 +41,11 @@ namespace AOC2016 {
 
 
     unsigned long day20_2(std::string dataFile) {
+        struct IPrange_t {
+            unsigned long long start;
+            unsigned long long end;
+        };
+
         std::vector<IPrange_t> blockList;
 
         auto getRngStart = ctre::search<R"(\d+(?=\-))">;

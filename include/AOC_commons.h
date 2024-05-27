@@ -3,6 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <ctre.hpp>
+#include "xxhash.h"
 
 
 template<class... Ts>
@@ -55,6 +56,11 @@ namespace LC_commons {
         std::pair<std::vector<int>, backpointer> *a;
     };
 
+    struct XXH3Hasher {
+        size_t operator() (auto &&input) const {
+            return XXH3_64bits(&input, sizeof(input));
+        }
+    };
 
     class parseInputUsingCTRE {
     private:

@@ -8,7 +8,6 @@
 #include <list>
 
 #include "flux.hpp"
-#include <numeric>
 
 
 namespace AOC2016 {

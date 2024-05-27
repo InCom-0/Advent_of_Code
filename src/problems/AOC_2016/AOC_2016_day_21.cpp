@@ -12,7 +12,6 @@
 
 namespace AOC2016 {
 
-
     std::string day21_1(std::string dataFile, std::string &&input) {
         struct ActionBase {
             char letter_1;
