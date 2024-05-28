@@ -84,7 +84,7 @@ namespace AOC2016 {
                 }
                 else {
                     re = getNumber_ctre(bg, oneStr.end());
-                    re2 = getWord_ctre(re.get_end_position(), oneStr.begin());
+                    re2 = getWord_ctre(re.get_end_position(), oneStr.end());
 
                     if (re2) instrVect.push_back(jnzOffsetTarget{re.to_number(), INT_MIN,
                                                             nullptr, mapping.at(re2.to_string()[0])});
