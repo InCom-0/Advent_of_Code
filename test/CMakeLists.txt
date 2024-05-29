@@ -18,4 +18,4 @@ add_executable(AOC_Tests ${AOC_TESTS_CPPS})
 
 target_include_directories(AOC_Tests PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
-target_link_libraries(AOC_Tests AOC_Commons AOC_2015 AOC_2016 gtest_main gmock_main)
+target_link_libraries(AOC_Tests AOC_Commons AOC_2015 AOC_2016 AOC_2017 gtest_main gmock_main)

@@ -4,6 +4,6 @@
 #include <string>
 
 namespace AOC2015 {
-    int day20_1(int numberInput);
-    int day20_2(int numberInput);
+    int day20_1(std::string dataFile);
+    int day20_2(std::string dataFile);
 }

@@ -111,11 +111,10 @@ long long day24_1(std::string dataFile, int numberOfGroups) {
     };
 
     group1Selector(group1Selector, 0);
-    auto quantumReturn = flux::ref(ans)
+    return flux::ref(ans)
                         .map ([] (auto &&a) {return flux::ref(a).fold(std::multiplies(), 1);})
                         .min([] (auto &&a, auto &&b) {return a < b;})
                         .value_or(-1);
-    return quantumReturn;
 }
 
 }

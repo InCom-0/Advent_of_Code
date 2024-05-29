@@ -66,7 +66,6 @@ namespace AOC2015 {
         table[lookUp[right[i]]][lookUp[left[i]]] += values[i];
     }
 
-
     std::vector<std::unordered_map<std::vector<int>, int, VectorHasher> > arp;
     arp.push_back(std::unordered_map<std::vector<int>, int, VectorHasher>());
 

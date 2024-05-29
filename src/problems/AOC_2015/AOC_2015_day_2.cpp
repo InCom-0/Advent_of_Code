@@ -9,88 +9,88 @@
 
 namespace AOC2015 {
     int day2_1(std::string dataFile) {
-    std::ifstream iStream;
-    iStream.clear();
-    iStream.open(dataFile);
+        std::ifstream iStream;
+        iStream.clear();
+        iStream.open(dataFile);
 
-    std::string oneStr;
+        std::string oneStr;
 
-    if (not iStream.is_open()) return -1;
+        if (not iStream.is_open()) return -1;
 
-    int accu = 0;
-    int small;
-    std::vector<int> lwh;
+        int accu = 0;
+        int small;
+        std::vector<int> lwh;
 
-    while (std::getline(iStream, oneStr)) {
-        flux::chunk_by(flux::ref(oneStr), [](auto &a, auto &b) {
-                    return !(a == 'x' || b == 'x');
-                })
-                .filter([](auto &&a) { return (a.read_at(a.first()) != 'x'); })
-                .for_each([&](auto &&b) {
-                    lwh.push_back(std::stoi(flux::to<std::string>(b)));
-                    return;
-                });
+        while (std::getline(iStream, oneStr)) {
+            flux::chunk_by(flux::ref(oneStr), [](auto &a, auto &b) {
+                        return !(a == 'x' || b == 'x');
+                    })
+                    .filter([](auto &&a) { return (a.read_at(a.first()) != 'x'); })
+                    .for_each([&](auto &&b) {
+                        lwh.push_back(std::stoi(flux::to<std::string>(b)));
+                        return;
+                    });
 
-        lwh.emplace_back(lwh.front());
-        small = INT_MAX;
-        accu += 2 * flux::ref(lwh)
-                .adjacent_map<2>([](auto &&a, auto &&b) {
-                    return a * b;
-                })
-                .take_while([&](auto &&a) {
-                    small = std::min(small, a);
-                    return true;
-                })
-                .sum();
+            lwh.emplace_back(lwh.front());
+            small = INT_MAX;
+            accu += 2 * flux::ref(lwh)
+                    .adjacent_map<2>([](auto &&a, auto &&b) {
+                        return a * b;
+                    })
+                    .take_while([&](auto &&a) {
+                        small = std::min(small, a);
+                        return true;
+                    })
+                    .sum();
 
-        accu += small;
-        lwh.clear();
+            accu += small;
+            lwh.clear();
+        }
+
+        iStream.clear();
+        iStream.close();
+
+        return accu;
     }
 
-    iStream.clear();
-    iStream.close();
+    int day2_2(std::string dataFile) {
+        std::ifstream iStream;
+        iStream.clear();
+        iStream.open(dataFile);
 
-    return accu;
-}
+        std::string oneStr;
 
-int day2_2(std::string dataFile) {
-    std::ifstream iStream;
-    iStream.clear();
-    iStream.open(dataFile);
+        if (not iStream.is_open()) return -1;
 
-    std::string oneStr;
+        int accu = 0;
+        int small;
+        std::vector<int> lwh;
 
-    if (not iStream.is_open()) return -1;
+        while (std::getline(iStream, oneStr)) {
+            flux::chunk_by(flux::ref(oneStr), [](auto &a, auto &b) {
+                        return !(a == 'x' || b == 'x');
+                    })
+                    .filter([](auto &&a) { return (a.read_at(a.first()) != 'x'); })
+                    .for_each([&](auto &&b) {
+                        lwh.push_back(std::stoi(flux::to<std::string>(b)));
+                        return;
+                    });
 
-    int accu = 0;
-    int small;
-    std::vector<int> lwh;
+            accu += flux::ref(lwh)
+                    .fold_first([](auto &&acc, auto &&b) { return acc * b; })
+                    .value();
 
-    while (std::getline(iStream, oneStr)) {
-        flux::chunk_by(flux::ref(oneStr), [](auto &a, auto &b) {
-                    return !(a == 'x' || b == 'x');
-                })
-                .filter([](auto &&a) { return (a.read_at(a.first()) != 'x'); })
-                .for_each([&](auto &&b) {
-                    lwh.push_back(std::stoi(flux::to<std::string>(b)));
-                    return;
-                });
+            flux::sort(lwh, std::less());
+            accu += 2 * flux::ref(lwh)
+                    .take(2)
+                    .sum();
 
-        accu += flux::ref(lwh)
-                .fold_first([](auto &&acc, auto &&b) { return acc * b; })
-                .value();
+            lwh.clear();
+        }
 
-        flux::sort(lwh, std::less());
-        accu += 2 * flux::ref(lwh)
-                .take(2)
-                .sum();
+        iStream.clear();
+        iStream.close();
 
-        lwh.clear();
+        return accu;
     }
-
-    iStream.clear();
-    iStream.close();
-
-    return accu;
-}
 }

@@ -10,7 +10,7 @@
 namespace AOC2015 {
 
 
-int day23_1(std::string dataFile) {
+int day23_1(std::string dataFile, unsigned int regA, unsigned int regB) {
     std::ifstream iStream;
     iStream.clear();
     iStream.open(dataFile);
@@ -41,9 +41,6 @@ int day23_1(std::string dataFile) {
     std::string tmpStr;
 
     std::vector<std::variant<tpl,hlf,inc,jmp,jio,jie>> instrList;
-
-    unsigned int regA = 1;
-    unsigned int regB = 0;
 
     while (std::getline(iStream, oneStr)) {
         auto bg = oneStr.begin();
@@ -89,7 +86,6 @@ int day23_1(std::string dataFile) {
     }
 
     int curInstrID = 0;
-
     while (curInstrID < instrList.size()) {
         std::visit(overloaded {
                                 [&] (tpl& a) {*a.target *= 3; curInstrID++;},
