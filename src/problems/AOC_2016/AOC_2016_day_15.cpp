@@ -37,7 +37,7 @@ namespace AOC2016 {
             for (auto &a: dscs) turnDiscByVal(a, val);
         };
 
-        // INITIAL setup of data
+        // INITIAL SETUP OF DATA
         for (int i = 0; i < VofV_NumOfPos_StartPos.front().size(); ++i) {
             discs.push_back(oneDisc_t{i, std::vector<bool>(std::stoi(VofV_NumOfPos_StartPos[0][i]), false)});
             discs[i].position[std::stoi(VofV_NumOfPos_StartPos[1][i])] = true;
@@ -57,7 +57,7 @@ namespace AOC2016 {
         int turningCounter = turnBy;
         turnBy = discs.front().position.size();
 
-        // MAIN logic loop.
+        // MAIN LOGIC LOOP
         while (not testAllDiscs(discs, 0)) {
             turnAllDiscsByVal(discs, turnBy);
             turningCounter += turnBy;

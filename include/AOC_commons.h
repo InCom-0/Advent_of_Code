@@ -56,6 +56,7 @@ namespace LC_commons {
         std::pair<std::vector<int>, backpointer> *a;
     };
 
+    // This isn't great as it doesn't take into account types with dynamically allocated content (typically containers).
     struct XXH3Hasher {
         size_t operator() (auto &&input) const {
             return XXH3_64bits(&input, sizeof(input));
