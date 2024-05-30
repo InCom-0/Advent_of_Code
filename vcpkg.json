@@ -19,6 +19,8 @@
     "name" : "ctre"
   }, {
     "name" : "xxhash"
+  }, {
+    "name" : "unordered-dense"
   } ]
 
 }

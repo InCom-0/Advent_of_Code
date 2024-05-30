@@ -29,6 +29,7 @@ namespace AOC2017 {
                     .filter([] (auto &&a) -> bool {return (a.first == a.second);})
                     .fold([] (auto &&init, auto &&a) -> int {return init + (a.first-48);}, 0);
         return ans;
+
     }
     int day1_2(std::string dataFile) {
 
