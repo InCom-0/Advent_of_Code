@@ -18,7 +18,7 @@ namespace AOC2016 {
         auto getNumOfPos = ctre::search<R"(\d+(?= positions))">;
         auto getStartingPos = ctre::search<R"(\d+(?=\.))">;
 
-        auto VofV_NumOfPos_StartPos = LC_commons::parseInputUsingCTRE::processFile(
+        auto VofV_NumOfPos_StartPos = AOC_commons::parseInputUsingCTRE::processFile(
             dataFile, getNumOfPos, getStartingPos);
 
         std::vector<oneDisc_t> discs;

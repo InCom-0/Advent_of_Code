@@ -10,7 +10,7 @@
 namespace AOC2015 {
     int day20_1(std::string dataFile) {
         int numberInput = std::stoi(
-        LC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">).front().front());
+        AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">).front().front());
 
         int n = 1;
         auto lam = [](auto &input) {
@@ -31,7 +31,7 @@ namespace AOC2015 {
     }
     int day20_2(std::string dataFile) {
         int numberInput = std::stoi(
-        LC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">).front().front());
+        AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">).front().front());
 
         int n = 1;
         auto lam = [](auto &input) {

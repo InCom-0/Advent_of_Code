@@ -11,50 +11,7 @@ struct overloaded : Ts... {
     using Ts::operator()...;
 };
 
-namespace LC_commons {
-    struct ListNode {
-        int val;
-        ListNode *next;
-
-        ListNode() : val(0), next(nullptr) {
-        }
-
-        ListNode(int x) : val(x), next(nullptr) {
-        }
-
-        ListNode(int x, ListNode *next) : val(x), next(next) {
-        }
-    };
-
-    struct TreeNode {
-        int val;
-        TreeNode *left;
-        TreeNode *right;
-
-        TreeNode() : val(0), left(nullptr), right(nullptr) {
-        }
-
-        TreeNode(int x) : val(x), left(nullptr), right(nullptr) {
-        }
-
-        TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {
-        }
-    };
-
-    class Node {
-    public:
-        int val;
-        Node *next;
-        Node *random;
-
-        Node(int _val);
-
-        Node(int _val, Node *n1);
-    };
-
-    struct backpointer {
-        std::pair<std::vector<int>, backpointer> *a;
-    };
+namespace AOC_commons {
 
     // This isn't great as it doesn't take into account types with dynamically allocated content (typically containers).
     struct XXH3Hasher {
@@ -99,6 +56,20 @@ namespace LC_commons {
             }
 
             void resetCursor() { cursor = 0; }
+        };
+
+        struct fileProcessedHolder_2 {
+            std::vector<std::vector<std::string> > data = std::vector<std::vector<std::string> >();
+            bool addLine = true;
+            int somethingNotFoundAt = -1;
+
+            fileProcessedHolder_2 &operator<<(auto &&toInsert) {
+                if (addLine) {data.push_back(std::vector<std::string>()); addLine = false;}
+
+                if (toInsert) data.back().push_back(toInsert.to_string());
+                else somethingNotFoundAt = data.size();
+                return *this;
+            }
         };
 
         static auto findNextWithinLine(auto &ctreSrchObj, std::string::iterator &begin,
@@ -191,6 +162,32 @@ namespace LC_commons {
 
                 (sink << ... << findNextWithinLine(perItemInLine, bg, end));
                 sink.resetCursor();
+            }
+            return sink.data;
+        }
+        template<typename... ctreSrch>
+        static std::vector<std::vector<std::string> > processFileRPT(std::string &dataFile, ctreSrch &&... perItemInLine) {
+            std::ifstream iStream;
+            iStream.clear();
+            iStream.open(dataFile);
+            if (not iStream.is_open()) return std::vector<std::vector<std::string> >(
+                1, std::vector<std::string>(1, "STREAM NOT OPEN"));
+
+            fileProcessedHolder_2 sink;
+            std::string oneStr;
+            constexpr size_t searchForNumOfItems = sizeof...(perItemInLine);
+
+            while (std::getline(iStream, oneStr)) {
+                auto bg = oneStr.begin();
+                auto end = oneStr.end();
+                while (true) {
+                    for (int i = 0; i < searchForNumOfItems; ++i) {
+                        (sink << ... << findNextWithinLine(perItemInLine, bg, end));
+                    }
+                    if (sink.somethingNotFoundAt != -1) break;
+                }
+                sink.addLine = true;
+                sink.somethingNotFoundAt = -1;
             }
             return sink.data;
         }

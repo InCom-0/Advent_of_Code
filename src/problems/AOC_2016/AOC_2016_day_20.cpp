@@ -22,7 +22,7 @@ namespace AOC2016 {
         auto getRngStart = ctre::search<R"(\d+(?=\-))">;
         auto getRngEnd = ctre::search<R"((?<=\-)\d+)">;
 
-        auto VofV_IP_ranges = LC_commons::parseInputUsingCTRE::processFile(dataFile, getRngStart, getRngEnd);
+        auto VofV_IP_ranges = AOC_commons::parseInputUsingCTRE::processFile(dataFile, getRngStart, getRngEnd);
 
         for (int i = 0; i < VofV_IP_ranges[0].size(); ++i) {
             blockList.push_back(IPrange_t{std::stoul(VofV_IP_ranges[0][i]),std::stoul(VofV_IP_ranges[1][i])});
@@ -51,7 +51,7 @@ namespace AOC2016 {
         auto getRngStart = ctre::search<R"(\d+(?=\-))">;
         auto getRngEnd = ctre::search<R"((?<=\-)\d+)">;
 
-        auto VofV_IP_ranges = LC_commons::parseInputUsingCTRE::processFile(dataFile, getRngStart, getRngEnd);
+        auto VofV_IP_ranges = AOC_commons::parseInputUsingCTRE::processFile(dataFile, getRngStart, getRngEnd);
 
         for (int i = 0; i < VofV_IP_ranges[0].size(); ++i) {
             blockList.push_back(IPrange_t{std::stoul(VofV_IP_ranges[0][i]),std::stoul(VofV_IP_ranges[1][i])});

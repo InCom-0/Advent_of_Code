@@ -18,7 +18,7 @@ namespace AOC2016 {
 
         Using return parameters, because the alternative is some annoying tuple or a struct of complex types.
         */
-    bool day24_0(std::string dataFile, std::vector<day_24_location_t> &locations, std::unordered_map<std::pair<int,int>, int, LC_commons::XXH3Hasher> &shotestDistances) {
+    bool day24_0(std::string dataFile, std::vector<day_24_location_t> &locations, std::unordered_map<std::pair<int,int>, int, AOC_commons::XXH3Hasher> &shotestDistances) {
         std::ifstream iStream;
         iStream.clear();
         iStream.open(dataFile);
@@ -109,7 +109,7 @@ namespace AOC2016 {
     int day24_1(std::string dataFile) {
 
         std::vector<day_24_location_t> locations;
-        std::unordered_map<std::pair<int,int>, int, LC_commons::XXH3Hasher> shotestDistances;
+        std::unordered_map<std::pair<int,int>, int, AOC_commons::XXH3Hasher> shotestDistances;
         day24_0(dataFile, locations,shotestDistances);
 
         std::vector<int> locIDs (locations.size(), 0);
@@ -130,7 +130,7 @@ namespace AOC2016 {
     }
     int day24_2(std::string dataFile) {
         std::vector<day_24_location_t> locations;
-        std::unordered_map<std::pair<int,int>, int, LC_commons::XXH3Hasher> shotestDistances;
+        std::unordered_map<std::pair<int,int>, int, AOC_commons::XXH3Hasher> shotestDistances;
         day24_0(dataFile, locations,shotestDistances);
 
         std::vector<int> locIDs (locations.size()+1, 0);

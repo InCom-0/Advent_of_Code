@@ -12,7 +12,7 @@ namespace AOC2016 {
         int rowID;
         int colID;
     };
-    bool day24_0(std::string dataFile, std::vector<day_24_location_t> &locations, std::unordered_map<std::pair<int,int>, int, LC_commons::XXH3Hasher> &shotestDistances);
+    bool day24_0(std::string dataFile, std::vector<day_24_location_t> &locations, std::unordered_map<std::pair<int,int>, int, AOC_commons::XXH3Hasher> &shotestDistances);
     int day24_1(std::string dataFile);
     int day24_2(std::string dataFile);
 

@@ -13,7 +13,7 @@
 
 namespace AOC2016 {
     int day1_1(std::string dataFile) {
-        std::vector<std::vector<std::string>> inp = LC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(.\d+)">);
+        std::vector<std::vector<std::string>> inp = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(.\d+)">);
 
         /*
         Fun stuff with a simple bitfield ...
@@ -53,7 +53,7 @@ namespace AOC2016 {
     }
 
     int day1_2(std::string dataFile) {
-        std::vector<std::vector<std::string>> inp = LC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(.\d+)">);
+        std::vector<std::vector<std::string>> inp = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(.\d+)">);
 
         struct BF {
             unsigned int bf: 2 = 0;

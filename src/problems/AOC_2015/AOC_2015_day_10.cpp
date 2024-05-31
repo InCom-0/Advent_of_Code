@@ -13,7 +13,7 @@ namespace AOC2015 {
     Best performant
     */
     int day10_1(std::string dataFile, int rep) {
-        auto inputVofV = LC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">);
+        auto inputVofV = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">);
         auto lambda = [&](this auto const &self, std::string const lamInput) -> int {
             int identicalCount = 0;
             char prev = lamInput[0];
@@ -48,7 +48,7 @@ namespace AOC2015 {
     Might be worth investigating at some point to understand it better.
     */
     int day10_2(std::string dataFile, int rep) {
-        auto inputVofV = LC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">);
+        auto inputVofV = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">);
         auto lambda = [&](this auto const &self, std::string const &lamInput) -> int {
             std::string outString = "";
 
@@ -71,7 +71,7 @@ namespace AOC2015 {
     Worst performance, probbably because it is creating too many strings, concatenating them, etc.
     */
     int day10_3(std::string dataFile, int rep) {
-        auto inputVofV = LC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">);
+        auto inputVofV = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">);
 
         auto lambda = [&](this auto const &self, std::string const &lamInput) -> int {
             auto test = flux::ref(lamInput)

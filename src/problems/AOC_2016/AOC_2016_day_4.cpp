@@ -10,7 +10,7 @@
 
 namespace AOC2016 {
     int day4_1(std::string dataFile) {
-    auto inp = LC_commons::parseInputUsingCTRE::processFile(dataFile, ctre::search<R"(.+(?=-\d))">, ctre::search<R"(\d+(?=\[))">, ctre::search<R"((?<=\[)\w+)">);
+    auto inp = AOC_commons::parseInputUsingCTRE::processFile(dataFile, ctre::search<R"(.+(?=-\d))">, ctre::search<R"(\d+(?=\[))">, ctre::search<R"((?<=\[)\w+)">);
 
     std::vector<std::vector<std::pair<char,int>>> vectOfRoomMaps;
     for (auto roomStr: inp[0]) {
@@ -43,7 +43,7 @@ namespace AOC2016 {
 }
 
 int day4_2(std::string dataFile) {
-    auto inp = LC_commons::parseInputUsingCTRE::processFile(dataFile, ctre::search<R"(.+(?=-\d))">, ctre::search<R"(\d+(?=\[))">, ctre::search<R"((?<=\[)\w+)">);
+    auto inp = AOC_commons::parseInputUsingCTRE::processFile(dataFile, ctre::search<R"(.+(?=-\d))">, ctre::search<R"(\d+(?=\[))">, ctre::search<R"((?<=\[)\w+)">);
 
     std::vector<std::vector<std::pair<char,int>>> vectOfRoomMaps;
     for (auto roomStr: inp[0]) {

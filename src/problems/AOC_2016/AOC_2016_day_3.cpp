@@ -12,7 +12,7 @@ namespace AOC2016 {
     int day3_1(std::string dataFile) {
 
         auto ctr = ctre::search<R"(\d+)">;
-        auto inp = LC_commons::parseInputUsingCTRE::processFile(dataFile, ctr, ctr, ctr);
+        auto inp = AOC_commons::parseInputUsingCTRE::processFile(dataFile, ctr, ctr, ctr);
 
         auto const ans = flux::zip(flux::ref(inp[0]), flux::ref(inp[1]), flux::ref(inp[2]))
                                 .count_if([] (auto&& a) {
@@ -30,7 +30,7 @@ namespace AOC2016 {
 
     int day3_2(std::string dataFile) {
         auto ctr = ctre::search<R"(\d+)">;
-        auto inp = LC_commons::parseInputUsingCTRE::processFile(dataFile, ctr, ctr, ctr);
+        auto inp = AOC_commons::parseInputUsingCTRE::processFile(dataFile, ctr, ctr, ctr);
 
         return flux::ref(inp).fold([] (auto&& z, auto&& y) {
             return z +

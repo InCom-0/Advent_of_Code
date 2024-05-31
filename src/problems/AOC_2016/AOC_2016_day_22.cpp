@@ -17,7 +17,7 @@ namespace AOC2016 {
         auto digit_T_ctre = ctre::search<R"(\d+(?=T))">;
         auto digit_pct_ctre = ctre::search<R"(\d+(?=%))">;
 
-        auto VofV = LC_commons::parseInputUsingCTRE::processFile(dataFile, xCoord_ctre, yCoord_ctre, digit_T_ctre, digit_T_ctre, digit_T_ctre, digit_pct_ctre);
+        auto VofV = AOC_commons::parseInputUsingCTRE::processFile(dataFile, xCoord_ctre, yCoord_ctre, digit_T_ctre, digit_T_ctre, digit_T_ctre, digit_pct_ctre);
 
         std::vector<std::vector<day_22_oneDisc_t>> discVect;
 

@@ -11,7 +11,7 @@
 namespace AOC2016 {
     std::string day6_1(std::string &&dataFile) {
         auto ctreOneChar = ctre::search<R"(\w)">;
-        auto inp = LC_commons::parseInputUsingCTRE::processFile(dataFile, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar);
+        auto inp = AOC_commons::parseInputUsingCTRE::processFile(dataFile, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar);
 
         std::string ans;
         for (auto& letterVector: inp) {
@@ -24,7 +24,7 @@ namespace AOC2016 {
     }
     std::string day6_2(std::string &&dataFile) {
         auto ctreOneChar = ctre::search<R"(\w)">;
-        auto inp = LC_commons::parseInputUsingCTRE::processFile(dataFile, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar);
+        auto inp = AOC_commons::parseInputUsingCTRE::processFile(dataFile, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar);
 
         std::string ans;
         for (auto& letterVector: inp) {
