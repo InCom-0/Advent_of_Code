@@ -11,12 +11,73 @@ struct overloaded : Ts... {
     using Ts::operator()...;
 };
 
+namespace AOC_concepts {
+    template <typename T>
+    concept pair_t = requires(std::remove_cvref_t<T> pair) {
+        { pair.first } -> std::same_as<typename T::first_type&>;
+        { pair.second } -> std::same_as<typename T::second_type&>;
+    };
+    template <typename CONTAINER>
+    concept contigCofArithm = ( std::__is_specialization_of<std::remove_cvref_t<CONTAINER>,std::vector> ||
+                                    std::same_as<std::array<typename std::remove_cvref_t<CONTAINER>::value_type, std::tuple_size<CONTAINER>{}>, std::remove_cvref_t<CONTAINER>> ||
+                                    std::convertible_to<CONTAINER, std::string_view>) &&
+                                    std::is_arithmetic_v<typename std::remove_cvref_t<CONTAINER>::value_type> == true;
+
+}
+
+
 namespace AOC_commons {
 
-    // This isn't great as it doesn't take into account types with dynamically allocated content (typically containers).
+    /*
+    Hashes using XXH3_64bit 'state of the art' non-cryptographic hasher.
+    Can/should be used for hasing keys in maps, sets and the like.
+
+    Hashes arithmetic types + std::vector, std::array and std::pair of the former.
+    The std::pair can nest all of the above containers + recursive nesting is possible.
+
+    TODO: Extend this so that it can hash mostly everything.
+    TODO: Make it so that when used with a constant size array the size is used as compile time constant.
+    _
+    */
     struct XXH3Hasher {
-        size_t operator() (auto &&input) const {
-            return XXH3_64bits(&input, sizeof(input));
+        //DIRECTLY HASHABLE BECAUSE OF CONTIGUOUS DATA
+        template <typename T>
+        requires std::is_arithmetic_v<std::decay_t<T>>
+        constexpr size_t operator() (T&& input) const {
+            return XXH3_64bits(&input, sizeof(T));
+        }
+        template <AOC_concepts::contigCofArithm T>
+        constexpr size_t operator() (T&& input) const {
+            return XXH3_64bits(input.data(), sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
+        }
+
+        // REQUIRES GRADUAL BUILDUP OF XXH3_STATE OUT OF DIS-CONTIGUOUS DATA INSIDE THE INPUT TYPE
+        template <typename T>
+        constexpr size_t operator() (T&& input) const {
+            XXH3_state_t* state = XXH3_createState();
+            XXH3_64bits_reset(state);
+            this->_hashTypeX(input, state);
+
+            XXH64_hash_t result = XXH3_64bits_digest(state);
+            XXH3_freeState(state);
+            return result;
+        }
+
+        template <typename T>
+        requires std::is_arithmetic_v<std::decay_t<T>>
+        constexpr void _hashTypeX (T& input, XXH3_state_t* state) const {
+            XXH3_64bits_update(state, &input, sizeof(T));
+        }
+
+        template <AOC_concepts::pair_t T>
+        constexpr void _hashTypeX (T& input, XXH3_state_t* state) const {
+            this->_hashTypeX(input.first, state);
+            this->_hashTypeX(input.second, state);
+        }
+
+        template <AOC_concepts::contigCofArithm T>
+        constexpr void _hashTypeX (T& input, XXH3_state_t* state) const {
+            XXH3_64bits_update(state, input.data(), sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
         }
     };
 
@@ -71,6 +132,7 @@ namespace AOC_commons {
                 return *this;
             }
         };
+
 
         static auto findNextWithinLine(auto &ctreSrchObj, std::string::iterator &begin,
                                        const std::string::iterator &end) {
@@ -189,7 +251,7 @@ namespace AOC_commons {
                 sink.addLine = true;
                 sink.somethingNotFoundAt = -1;
             }
-            return sink.data;
+            return std::move(sink.data);
         }
     };
 }

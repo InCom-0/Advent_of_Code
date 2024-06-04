@@ -23,7 +23,6 @@ namespace AOC2016 {
 
         std::vector<oneDisc_t> discs;
 
-
         // Early exit if false is provided by the algo itself.
         auto testAllDiscs = [](auto &&dscs, const int &&posToCheck) -> bool {
             return flux::ref(dscs).all([&](auto &&a) { return a.position[posToCheck] == true; });
