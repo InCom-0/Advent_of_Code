@@ -31,7 +31,6 @@ find_package(glaze REQUIRED)
 find_package(flux REQUIRED)
 find_package(ctre REQUIRED)
 find_package(xxHash REQUIRED)
-find_package(xxHash REQUIRED)
 find_package(unordered_dense REQUIRED)
 
 add_subdirectory(src)

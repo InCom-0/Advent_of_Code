@@ -225,5 +225,6 @@ namespace AOC2017 {
                 if (ans > input) return ans;
             }
         }
+        std::unreachable();
     }
 }

@@ -6,10 +6,6 @@ set(CMAKE_CXX_STANDARD 23)
 
 file(GLOB AOC_TESTS_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/problems/*.cpp)
 
-foreach(test_file IN LISTS AOC_TESTS_CPPS)
-    message(STATUS ${test_file})
-endforeach()
-
 
 
 enable_testing()
