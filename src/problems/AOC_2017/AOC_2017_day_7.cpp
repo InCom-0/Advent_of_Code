@@ -39,6 +39,15 @@ namespace AOC2017 {
         return flux::read_at(fluxMap, res).first;
     }
 
+    /*
+    * Created as an experiment to learn whether it is reasonable to implement a 'tree-like' structure using references
+    * while the data is stored in a contiguous vector.
+    *
+    * CONCLUSION: It is pretty good.
+    * One just has to take care of how the references (using a wrapper) get passed around.
+    *
+    *
+    */
     int day7_2(std::string dataFile) {
         auto wrd_ctre = ctre::search<R"(\w+)">;
         auto weight_ctre = ctre::search<R"((?<=\()\d+)">;

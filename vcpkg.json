@@ -1,26 +1,34 @@
 {
-  "name" : "aoc2015",
-  "version-string" : "1.0.0",
-  "builtin-baseline" : "a164ace504d8fe6f50aeec7e235d22b9089ad0d5",
-  "dependencies" : [ {
-    "name" : "fmt",
-    "version>=" : "10.2.1#1"
-  }, {
-    "name" : "vcpkg-cmake-config",
-    "version>=" : "2022-02-06#1"
-  }, {
-    "name" : "vcpkg-cmake",
-    "version>=" : "2023-05-04"
-  }, {
-    "name" : "glaze"
-  }, {
-    "name" : "flux"
-  }, {
-    "name" : "ctre"
-  }, {
-    "name" : "xxhash"
-  }, {
-    "name" : "unordered-dense"
-  } ]
-
+  "name": "aoc2015",
+  "version-string": "1.0.0",
+  "builtin-baseline": "01f602195983451bc83e72f4214af2cbc495aa94",
+  "dependencies": [
+    {
+      "name": "fmt",
+      "version>=": "10.2.1#1"
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "version>=": "2022-02-06#1"
+    },
+    {
+      "name": "vcpkg-cmake",
+      "version>=": "2023-05-04"
+    },
+    {
+      "name": "glaze"
+    },
+    {
+      "name": "flux"
+    },
+    {
+      "name": "ctre"
+    },
+    {
+      "name": "xxhash"
+    },
+    {
+      "name": "unordered-dense"
+    }
+  ]
 }

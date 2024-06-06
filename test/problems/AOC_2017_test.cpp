@@ -3,8 +3,6 @@
 
 #include <filesystem>
 
-#include <AOC_2015.h>
-#include <AOC_2016.h>
 #include <AOC_2017.h>
 #include <AOC_commons.h>
 
@@ -75,4 +73,20 @@ TEST(A_2017_d7_1, A1) {
 TEST(A_2017_d7_2, A1) {
     auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_7_1.txt";
     EXPECT_EQ(362,AOC2017::day7_2(pth.generic_string()));
+}
+TEST(A_2017_d8_1, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_8_1.txt";
+    EXPECT_EQ(4448,AOC2017::day8_1(pth.generic_string()));
+}
+TEST(A_2017_d8_2, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_8_1.txt";
+    EXPECT_EQ(6582,AOC2017::day8_2(pth.generic_string()));
+}
+TEST(A_2017_d9_1, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_9_1.txt";
+    EXPECT_EQ(11898,AOC2017::day9_1(pth.generic_string()));
+}
+TEST(A_2017_d9_2, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_9_1.txt";
+    EXPECT_EQ(5601,AOC2017::day9_2(pth.generic_string()));
 }

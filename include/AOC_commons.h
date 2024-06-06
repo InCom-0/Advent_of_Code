@@ -120,13 +120,10 @@ namespace AOC_commons {
         };
 
         struct fileProcessedHolder_2 {
-            std::vector<std::vector<std::string> > data = std::vector<std::vector<std::string> >();
-            bool addLine = true;
+            std::vector<std::vector<std::string> > data = std::vector<std::vector<std::string>>();
             int somethingNotFoundAt = -1;
 
             fileProcessedHolder_2 &operator<<(auto &&toInsert) {
-                if (addLine) {data.push_back(std::vector<std::string>()); addLine = false;}
-
                 if (toInsert) data.back().push_back(toInsert.to_string());
                 else somethingNotFoundAt = data.size();
                 return *this;
@@ -240,6 +237,7 @@ namespace AOC_commons {
             constexpr size_t searchForNumOfItems = sizeof...(perItemInLine);
 
             while (std::getline(iStream, oneStr)) {
+                sink.data.push_back(std::vector<std::string>());
                 auto bg = oneStr.begin();
                 auto end = oneStr.end();
                 while (true) {
@@ -248,7 +246,6 @@ namespace AOC_commons {
                     }
                     if (sink.somethingNotFoundAt != -1) break;
                 }
-                sink.addLine = true;
                 sink.somethingNotFoundAt = -1;
             }
             return std::move(sink.data);

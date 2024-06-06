@@ -3,7 +3,6 @@
 
 #include <filesystem>
 
-#include <AOC_2015.h>
 #include <AOC_2016.h>
 #include <AOC_commons.h>
 
