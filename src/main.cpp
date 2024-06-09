@@ -12,16 +12,16 @@
 
 
 /*
-Compile and run 'AOC_Tests' (Google tests) target to execute solutions with the right input data, verify functionality etc.
+Compile and run 'AOC_Tests_ALL' (Google tests) target to execute solutions with the right input data, verify functionality etc.
 
 Note that this main is used while developing the solutions.
 */
 
 int main()
 {
-    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_9_1.txt";
+    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_10_1.txt";
 
-    std::cout << AOC2017::day9_2(pth.generic_string()) << '\n';
+    std::cout << AOC2017::day10_2(pth.generic_string()) << '\n';
 
     return 1;
 }
