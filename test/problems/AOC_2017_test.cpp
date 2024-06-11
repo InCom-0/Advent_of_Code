@@ -130,3 +130,19 @@ TEST(A_2017_d14_2, A1) {
     auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_14_1.txt";
     EXPECT_EQ(1141,AOC2017::day14_2(pth.generic_string()));
 }
+TEST(A_2017_d15_1, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_15_1.txt";
+    EXPECT_EQ(567,AOC2017::day15_1(pth.generic_string()));
+}
+TEST(A_2017_d15_2, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_15_1.txt";
+    EXPECT_EQ(323,AOC2017::day15_2(pth.generic_string()));
+}
+TEST(A_2017_d16_1, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_16_1.txt";
+    EXPECT_EQ("lgpkniodmjacfbeh",AOC2017::day16_1(pth.generic_string()));
+}
+TEST(DISABLED_A_2017_d16_2, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_16_1.txt";
+    EXPECT_EQ("hklecbpnjigoafmd",AOC2017::day16_2(pth.generic_string()));
+}
