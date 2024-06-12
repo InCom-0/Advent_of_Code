@@ -146,3 +146,7 @@ TEST(DISABLED_A_2017_d16_2, A1) {
     auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_16_1.txt";
     EXPECT_EQ("hklecbpnjigoafmd",AOC2017::day16_2(pth.generic_string()));
 }
+TEST(A_2017_d16_2, A2) {
+    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_16_1.txt";
+    EXPECT_EQ("hklecbpnjigoafmd",AOC2017::day16_3(pth.generic_string(), 1'000'000'000));
+}

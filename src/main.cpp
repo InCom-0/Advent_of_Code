@@ -21,7 +21,7 @@ int main()
 {
     auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_16_1.txt";
 
-    std::cout << AOC2017::day16_2(pth.generic_string()) << '\n';
+    std::cout << AOC2017::day16_3(pth.generic_string(), 1'000'000'000) << '\n';
 
     return 1;
 }

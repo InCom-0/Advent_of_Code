@@ -4,6 +4,8 @@
 
 #include <AOC_commons.h>
 #include <ctre.hpp>
+#include <unordered_set>
+
 #include "flux.hpp"
 
 
@@ -181,6 +183,85 @@ namespace AOC2017 {
             std::swap(theOne,theOtherOne);
             for (int j = 0; j < theOtherOne.size(); ++j) {
                 theOne[std::ranges::find(theOtherOne, nameBasedMap[theOtherOne[j]]) - theOtherOne.begin()] = theOtherOne[j];
+            }
+        }
+        return theOne;
+    }
+
+    /*
+    Much better solution as compared to day16_2.
+
+    Basically finding a cycle first and then computing just the remainder of necessary steps.
+    Wouldn't work all that well if there were significantly more than 16 'programs' 'dancing' ... but oh well.
+    */
+    std::string day16_3(std::string dataFile, unsigned int numOfDances) {
+        std::ifstream iStream;
+        iStream.clear();
+        iStream.open(dataFile);
+        std::string oneStr;
+        std::getline(iStream, oneStr);
+
+        // CUSTOM LOCAL TYPES DEFINITIONS
+        struct _instrBase {
+            unsigned short num_1 = 0;
+            unsigned short num_2 = 0;
+            char chr_1 = '_';
+            char chr_2 = '_';
+        };
+        struct spn : _instrBase {};
+        struct xch : _instrBase {};
+        struct prt : _instrBase {};
+
+        auto d_ctre = ctre::search<R"(\d+)">;
+
+        // DATA PREP
+        std::vector<std::variant<spn, xch, prt>> instructions;
+        auto instr_creater = [&] (std::string &&str) -> bool {
+            if (str.front() == 's') {
+                instructions.push_back(spn{(unsigned short)std::stoi(d_ctre(str.begin(), str.end()).to_string())});
+            }
+            else if (str.front() == 'x') {
+                auto ctre_res = d_ctre(str.begin(), str.end());
+                instructions.push_back(xch{(unsigned short)std::stoi(ctre_res.to_string()), (unsigned short)std::stoi(d_ctre(ctre_res.get_end_position(), str.end()).to_string())});
+            }
+            else if (str.front() == 'p') {
+                instructions.push_back(prt{0, 0, str[1], str[3]});
+            }
+            else return false;
+            return true;
+        };
+
+        flux::ref(oneStr).chunk_by([] (auto &&a, auto &&b) {return a != ',';})
+                        .for_each([&] (auto &&chnk) {
+                            instr_creater(chnk.template to<std::string>());
+                        });
+
+        auto charInit = std::views::iota(97, 113);          // a => ASCII 97, p => ASCII 112
+        std::string theOne (charInit.begin(),charInit.end());
+
+        auto overload2Visit = overloaded {
+            [&] (spn const &a) {std::rotate(theOne.rbegin(), theOne.rbegin()+a.num_1, theOne.rend());},
+            [&] (xch const &a) {std::swap(theOne[a.num_1], theOne[a.num_2]);},
+            [&] (prt const &a) {
+                std::swap(*std::ranges::find(theOne, a.chr_1), *std::ranges::find(theOne, a.chr_2));
+            },
+        };
+
+        std::unordered_set<std::string, AOC_commons::XXH3Hasher> pastResults;
+
+        // MAIN LOGIC
+        // Find a cycle (that is after X repeats end up where we started)
+        while (not pastResults.contains(theOne)) {
+            pastResults.emplace(theOne);
+            for (auto &oneInstr: instructions) {
+                std::visit(overload2Visit,oneInstr);
+            }
+        }
+
+        // Computed the 'remainder' number of dances.
+        for (int i = 0; i < (numOfDances % pastResults.size()); ++i) {
+            for (auto &oneInstr: instructions) {
+                std::visit(overload2Visit,oneInstr);
             }
         }
         return theOne;
