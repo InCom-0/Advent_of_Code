@@ -19,9 +19,9 @@ Note that this main is used while developing the solutions.
 
 int main()
 {
-    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_16_1.txt";
+    auto pth = std::filesystem::path(DATAFOLDER_2017)/ "2017_18_1.txt";
 
-    std::cout << AOC2017::day16_3(pth.generic_string(), 1'000'000'000) << '\n';
+    std::cout << AOC2017::day18_2(pth.generic_string(), 2) << '\n';
 
     return 1;
 }
