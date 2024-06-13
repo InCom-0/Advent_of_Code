@@ -9,6 +9,13 @@
 
 namespace AOC2017 {
 
+    /*
+    Very much simplified 'data setup' logic for these types of problems
+    Much simpler to write.
+
+    Complexity of manual writing of the conditions is cut.
+    It is probably also more efficient as virtually all of the data is stored in 1 vector.
+    */
     long long day18_1(std::string dataFile) {
         // CUSTOM LOCAL TYPES DEFINITIONS
         struct _instrBase {
@@ -116,10 +123,11 @@ namespace AOC2017 {
         auto VofV = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
 
         struct prog {
-            long long fakeRegister = LLONG_MIN;
+            long long fakeRegister = LLONG_MIN;         // Used for instructions that only have one part
             std::vector<long long> registers;
             std::vector<std::variant<snd, set, add, mul, mod, rcv, jgz>> instrVect;
 
+            // The one and only constructor of the 'prog' type
             prog (decltype(VofV) &input,  long long programID) {
                 std::unordered_map<char, std::reference_wrapper<long long>, AOC_commons::XXH3Hasher> mapping;
                 registers.reserve(input.size() * 2);             // Must NEVER reallocate.
@@ -157,7 +165,7 @@ namespace AOC2017 {
                         }
                     }
 
-                    // Actually create the right instruction and push_back it long longo the instrVect.
+                    // Actually create the right instruction and push_back it into the instrVect.
                     if (line.front() == "snd") {instrVect.push_back(snd{first,second});}
                     else if (line.front() == "set") {instrVect.push_back(set{first,second});}
                     else if (line.front() == "add") {instrVect.push_back(add{first,second});}
@@ -182,7 +190,8 @@ namespace AOC2017 {
         // LAMBDA DEFINITIONS
         int progID = 0;
         bool queuesChanged = true;
-        auto overload_obj = overloaded {
+        auto overload_obj = overloaded {    // If the 'snd' instruction specified ID of where to send the data, it would be possible to use arbitrary num of programs.
+                                            // In this case ... it is just switching to 'the other one' 0 or 1;
             [&] (const snd& a) {queues[(progID-1)*(progID-1)].push(a.source); senderCounter[progID]++; queuesChanged = true;},
             [&] (const set& a) {a.source = a.target;},
             [&] (const add& a) {a.source += a.target;},
@@ -210,7 +219,7 @@ namespace AOC2017 {
                     std::visit(overload_obj, programs[progID].instrVect[curInstrIDs[progID]++]);
                 }
             }
-            for (auto &swtch: switch_Xs) swtch = false;
+            std::ranges::fill(switch_Xs, false);
         }
 
         return senderCounter[1];
