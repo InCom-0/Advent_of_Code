@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.26)
 
 set(VCPKG_TARGET_TRIPLET x64-mingw-dynamic)
 set(VCPKG_HOST_TRIPLET x64-mingw-dynamic)
@@ -26,9 +26,17 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(bitlib)
 
 
+FetchContent_Declare(
+        flux
+        GIT_REPOSITORY https://github.com/tcbrindle/flux.git
+        GIT_TAG main
+)
+
+FetchContent_MakeAvailable(flux)
+
+
 find_package(fmt CONFIG REQUIRED)
 find_package(glaze REQUIRED)
-find_package(flux REQUIRED)
 find_package(ctre REQUIRED)
 find_package(xxHash REQUIRED)
 find_package(unordered_dense REQUIRED)

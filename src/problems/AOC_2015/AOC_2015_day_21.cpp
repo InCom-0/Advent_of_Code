@@ -125,7 +125,7 @@ namespace AOC2015 {
                 })
                 .to<std::vector<equip> >();
 
-        toSort = flux::cartesian_product_with([](auto &&a, auto &&b, auto &&c) {
+        toSort = flux::cartesian_product_map([](auto &&a, auto &&b, auto &&c) {
                     return equip{
                         a.cost + b.cost + c.cost,
                         a.damage + b.damage + c.damage,
@@ -133,7 +133,7 @@ namespace AOC2015 {
                         a.name + "_" + b.name + "_" + c.name
                     };
                 }, flux::ref(weaponsL), flux::ref(armorL), std::move(toSort))
-                .to<std::vector<equip> >();
+                .to<std::vector<equip>>();
 
         std::sort(toSort.begin(), toSort.end(), [](auto &a, auto &b) {
             return a.damage * 64 + a.armor < b.damage * 64 + b.armor;
@@ -276,7 +276,7 @@ namespace AOC2015 {
                 })
                 .to<std::vector<equip> >();
 
-        toSort = flux::cartesian_product_with([](auto &&a, auto &&b, auto &&c) {
+        toSort = flux::cartesian_product_map([](auto &&a, auto &&b, auto &&c) {
                     return equip{
                         a.cost + b.cost + c.cost,
                         a.damage + b.damage + c.damage,
