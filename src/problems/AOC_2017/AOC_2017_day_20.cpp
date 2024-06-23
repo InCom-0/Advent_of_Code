@@ -69,15 +69,7 @@ namespace AOC2017 {
         }
 
         std::vector<std::vector<long long>> VofCollisions;                           // 0 = collision time, 1 = idx of particle 1, 2 = idx of particle 2
-        std::vector<std::pair<long long, long long>> allPairs;
         ankerl::unordered_dense::set<long long> collided;
-
-        // Select 2 particles (pair) in all permutations
-        for (long long i = 0; i < data.size(); ++i) {
-            for (long long j = i+1; j < data.size(); ++j) {
-                allPairs.push_back({i, j});
-            }
-        }
 
         // LAMBDA DEFINITIONS
         auto findQuadRoots = [] (long long &&a, long long &&b, long long &&c) -> std::vector<long long> {
@@ -111,24 +103,26 @@ namespace AOC2017 {
         };
 
         // MAIN LOGIC
-        for (auto &idxs: allPairs) {
-            auto roots = findQuadRoots (data[idxs.second][2].X - data[idxs.first][2].X,
-                                        (data[idxs.second][2].X - data[idxs.first][2].X) + 2*(data[idxs.second][1].X - data[idxs.first][1].X),
-                                        2*(data[idxs.second][0].X - data[idxs.first][0].X));
-
-            bool found = false;
-            for (auto &oneRoot: roots)  {
-                if (found) break;
-                if (oneRoot < 0) continue;
-
-                if (findAxisPosAt(data[idxs.first][0].Y, data[idxs.first][1].Y, data[idxs.first][2].Y, oneRoot) ==
-                    findAxisPosAt(data[idxs.second][0].Y, data[idxs.second][1].Y, data[idxs.second][2].Y, oneRoot))
-                {
-                    if (findAxisPosAt(data[idxs.first][0].Z, data[idxs.first][1].Z, data[idxs.first][2].Z, oneRoot) ==
-                        findAxisPosAt(data[idxs.second][0].Z, data[idxs.second][1].Z, data[idxs.second][2].Z, oneRoot))
+        for (long long i = 0; i < data.size(); ++i) {
+            for (long long j = i+1; j < data.size(); ++j) {
+                auto roots = findQuadRoots (data[j][2].X - data[i][2].X,
+                                            (data[j][2].X - data[i][2].X) + 2*(data[j][1].X - data[i][1].X),
+                                            2*(data[j][0].X - data[i][0].X));
+    
+                bool found = false;
+                for (auto &oneRoot: roots)  {
+                    if (found) break;
+                    if (oneRoot < 0) continue;
+    
+                    if (findAxisPosAt(data[i][0].Y, data[i][1].Y, data[i][2].Y, oneRoot) ==
+                        findAxisPosAt(data[j][0].Y, data[j][1].Y, data[j][2].Y, oneRoot))
                     {
-                        found = true;
-                        VofCollisions.push_back(std::vector{oneRoot, idxs.first, idxs.second});
+                        if (findAxisPosAt(data[i][0].Z, data[i][1].Z, data[i][2].Z, oneRoot) ==
+                            findAxisPosAt(data[j][0].Z, data[j][1].Z, data[j][2].Z, oneRoot))
+                        {
+                            found = true;
+                            VofCollisions.push_back(std::vector{oneRoot, i, j});
+                        }
                     }
                 }
             }
