@@ -1,13 +1,9 @@
-#include <iostream>
-#include <fstream>
-#include <queue>
-
 #include <AOC_commons.h>
 #include <ctre.hpp>
 #include <bits/ranges_algo.h>
 
-#include "flux.hpp"
-#include "ankerl/unordered_dense.h"
+#include <flux.hpp>
+#include <ankerl/unordered_dense.h>
 #include <cmath>
 
 
@@ -81,17 +77,17 @@ namespace AOC2017 {
                 if (b != 0) ans1 = -c/(b-a);
             }
             else if (discrim == 0) {
-                tempRes = (-1) * (b / a) / 2;
+                tempRes = (-1) * ((double)b / a) / 2;
                 ans1 = tempRes == (long long)tempRes ? tempRes : LLONG_MIN;
             }
             else if (discrim > 0) {
                 tempRes = std::sqrt(discrim);
                 if (tempRes == (long long)tempRes) {
                     discrim = tempRes;
-                    tempRes = ((-b + discrim)) / (2*a);
+                    tempRes = (((double)-b + discrim)) / (2*a);
                     ans1 = tempRes == (long long)tempRes ? tempRes : LLONG_MIN;
 
-                    tempRes = ((-b - discrim)) / (2*a);
+                    tempRes = (((double)-b - discrim)) / (2*a);
                     ans2 = tempRes == (long long)tempRes ? tempRes : LLONG_MIN;
                 }
             }
