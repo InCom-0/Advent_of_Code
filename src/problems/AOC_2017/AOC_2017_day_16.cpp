@@ -1,18 +1,13 @@
-#include <iostream>
 #include <fstream>
-#include <queue>
 
 #include <AOC_commons.h>
 #include <ctre.hpp>
 #include <unordered_set>
 
-#include "flux.hpp"
+#include <flux.hpp>
 
 
 namespace AOC2017 {
-
-
-
     std::string day16_1(std::string dataFile) {
         std::ifstream iStream;
         iStream.clear();

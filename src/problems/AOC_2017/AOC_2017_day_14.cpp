@@ -8,7 +8,7 @@
 #include <bits/ranges_algo.h>
 #include "bitlib/bitlib.hpp"
 
-#include "flux.hpp"
+#include <flux.hpp>
 
 
 namespace AOC2017 {

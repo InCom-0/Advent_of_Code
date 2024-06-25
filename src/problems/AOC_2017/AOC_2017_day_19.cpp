@@ -6,7 +6,7 @@
 #include <ctre.hpp>
 #include <intrin.h>
 
-#include "flux.hpp"
+#include <flux.hpp>
 
 
 namespace AOC2017 {

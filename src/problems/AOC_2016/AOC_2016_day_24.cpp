@@ -1,11 +1,10 @@
-#include <iostream>
 #include <fstream>
 #include <queue>
 
 #include <AOC_commons.h>
 #include <ctre.hpp>
-#include "flux.hpp"
-#include "bitlib/bitlib.hpp"
+#include <flux.hpp>
+#include <bitlib/bitlib.hpp>
 
 #include <AOC_2016_day_24.h>
 
@@ -79,8 +78,9 @@ namespace AOC2016 {
                                                 curQueue.clear();
                                                 curQueue.push_back(std::queue<day_24_location_t>());
                                                 curQueue.front().emplace(day_24_location_t {0,
-                                                 flux::read_at(a, a.first()).first.rowID,
-                                                 flux::read_at(a, a.first()).first.colID});
+                                                flux::read_at(a, a.first()).first.rowID,
+                                                flux::read_at(a, a.first()).first.colID});
+                                                
                                                 mapCopy[curQueue.front().front().rowID][curQueue.front().front().colID].set(false);
 
                                                 auto sec = a.first();

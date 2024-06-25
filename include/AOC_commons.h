@@ -3,7 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <ctre.hpp>
-#include "xxhash.h"
+#include <xxhash.h>
 
 
 template<class... Ts>

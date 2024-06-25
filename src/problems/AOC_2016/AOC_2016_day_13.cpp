@@ -4,7 +4,7 @@
 
 #include <AOC_commons.h>
 #include <ctre.hpp>
-#include "flux.hpp"
+#include <flux.hpp>
 
 /*
 Adapted a kind of Djikstra algorithm for this problem.

@@ -6,7 +6,7 @@
 #include <ctre.hpp>
 #include <bits/ranges_algo.h>
 
-#include "flux.hpp"
+#include <flux.hpp>
 
 
 namespace AOC2017 {

@@ -6,7 +6,7 @@
 #include <ctre.hpp>
 #include <glaze/tuplet/tuple.hpp>
 
-#include "flux.hpp"
+#include <flux.hpp>
 
 
 namespace AOC2017 {

@@ -7,7 +7,7 @@
 #include <AOC_commons.h>
 #include <list>
 
-#include "flux.hpp"
+#include <flux.hpp>
 
 
 namespace AOC2016 {

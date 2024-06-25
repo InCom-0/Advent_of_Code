@@ -4,7 +4,7 @@
 
 #include <AOC_commons.h>
 #include <ctre.hpp>
-#include "flux.hpp"
+#include <flux.hpp>
 #include <glaze/glaze.hpp>
 
 #include "AOC_2016_day_1.h"

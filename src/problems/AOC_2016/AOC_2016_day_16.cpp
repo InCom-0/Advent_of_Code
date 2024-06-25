@@ -4,7 +4,7 @@
 
 #include <AOC_commons.h>
 #include <ctre.hpp>
-#include "flux.hpp"
+#include <flux.hpp>
 #include <md5.h>
 #include <algorithm>
 #include "bitlib/bitlib.hpp"
