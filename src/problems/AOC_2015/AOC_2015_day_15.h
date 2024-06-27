@@ -1,8 +1,3 @@
 #pragma once
 
-#include <vector>
-#include <string>
-
-namespace AOC2015 {
-
-}
+namespace AOC2015 {}

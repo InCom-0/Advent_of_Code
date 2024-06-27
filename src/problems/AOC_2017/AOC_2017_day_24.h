@@ -1,8 +1,6 @@
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
-namespace AOC2017 {
-
-}
+namespace AOC2017 {}
