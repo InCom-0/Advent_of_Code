@@ -6,7 +6,6 @@ file(GLOB HASH_LIBRARY_FILES ${CMAKE_SOURCE_DIR}/src/external/hash-library/*.cpp
 add_library(hash-library ${HASH_LIBRARY_FILES})
 target_include_directories(hash-library PUBLIC ${CMAKE_SOURCE_DIR}/src/external/hash-library)
 
-
 file(GLOB AOC_2015_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/problems/AOC_2015/*.cpp)
 file(GLOB AOC_2016_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/problems/AOC_2016/*.cpp)
 file(GLOB AOC_2017_CPPS ${CMAKE_CURRENT_SOURCE_DIR}/problems/AOC_2017/*.cpp)
@@ -27,7 +26,7 @@ target_precompile_headers(AOC_2015 REUSE_FROM AOC_Commons)
 target_precompile_headers(AOC_2016 REUSE_FROM AOC_Commons)
 target_precompile_headers(AOC_2017 REUSE_FROM AOC_Commons)
 
-target_link_libraries(AOC_Commons PUBLIC  fmt::fmt glaze::glaze flux::flux ctre::ctre hash-library xxHash::xxhash bitlib::bitlib unordered_dense::unordered_dense)
+target_link_libraries(AOC_Commons PUBLIC  fmt::fmt glaze::glaze flux::flux ctre::ctre hash-library xxHash::xxhash bitlib::bitlib unordered_dense::unordered_dense more_concepts::more_concepts)
 target_link_options(AOC_Commons PUBLIC -static-libgcc -static-libstdc++ "LINKER:-Bstatic,--whole-archive" -lwinpthread "LINKER:-Bdynamic,--no-whole-archive")
 
 target_link_libraries(AOC_2015 PUBLIC AOC_Commons)

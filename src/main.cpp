@@ -18,9 +18,13 @@ Note that this main is used while developing the solutions.
 */
 
 int main() {
-    auto pth = std::filesystem::path(DATAFOLDER_2017) / "2017_20_1.txt";
+    std::vector<std::vector<int>> testVect;
 
-    std::cout << AOC2017::day20_2(pth.generic_string()) << '\n';
+
+    auto pth = std::filesystem::path(DATAFOLDER_2017) / "2017_21_1.txt";
+
+    std::cout << AOC2017::day21_1(pth.generic_string()) << '\n';
+
 
     return 1;
 }

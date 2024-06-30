@@ -1,9 +1,14 @@
 #pragma once
 
-#include <ctre.hpp>
+#include <concepts>
 #include <fstream>
 #include <vector>
+
+#include <ctre.hpp>
+#include <flux.hpp>
+#include <more_concepts/more_concepts.hpp>
 #include <xxhash.h>
+
 
 template <class... Ts>
 struct overloaded : Ts... {
@@ -29,6 +34,48 @@ concept contigCofArithm =
 namespace AOC_commons {
 
 /*
+Matrix rotation of 'indexed' random access containers.
+Uses 'swapping in circles' method ... should be pretty fast
+*/
+template <typename T>
+requires more_concepts::random_access_container<T> && more_concepts::random_access_container<typename T::value_type> &&
+         std::swappable<typename T::value_type::value_type>
+void matrixRotateLeft(T &VofVlike) {
+    int sideLength = VofVlike.size() - 1;
+    if (sideLength < 1) { return; }
+    if (flux::ref(VofVlike).any([&](auto &&line) { return line.size() != VofVlike.size(); })) { return; }
+
+    int circles = (sideLength + 2) / 2;
+    for (int cir = 0; cir < circles; cir++) {
+        for (int i = 0; i < sideLength - (2 * cir); ++i) {
+            std::swap(VofVlike[cir][cir + i], VofVlike[cir + i][sideLength - cir]);
+            std::swap(VofVlike[cir + i][sideLength - cir], VofVlike[sideLength - cir][sideLength - cir - i]);
+            std::swap(VofVlike[sideLength - cir][sideLength - cir - i], VofVlike[sideLength - cir - i][cir]);
+        }
+    }
+    return;
+}
+template <typename T>
+requires more_concepts::random_access_container<T> && more_concepts::random_access_container<typename T::value_type> &&
+         std::swappable<typename T::value_type::value_type>
+void matrixRotateRight(T &VofVlike) {
+    int sideLength = VofVlike.size() - 1;
+    if (sideLength < 1) { return; }
+    if (sideLength + 1 != VofVlike.front().size()) { return; }
+    if (flux::ref(VofVlike).any([&](auto &&line) { return line.size() != VofVlike.size(); })) { return; }
+
+    int circles = (sideLength + 2) / 2;
+    for (int cir = 0; cir < circles; cir++) {
+        for (int i = 0; i < sideLength - (2 * cir); ++i) {
+            std::swap(VofVlike[cir][cir + i], VofVlike[sideLength - cir - i][cir]);
+            std::swap(VofVlike[sideLength - cir - i][cir], VofVlike[sideLength - cir][sideLength - cir - i]);
+            std::swap(VofVlike[sideLength - cir][sideLength - cir - i], VofVlike[cir + i][sideLength - cir]);
+        }
+    }
+    return;
+}
+
+/*
 Hashes using XXH3_64bit 'state of the art' non-cryptographic hasher.
 Can/should be used for hasing keys in maps, sets and the like.
 
@@ -42,7 +89,7 @@ _
 struct XXH3Hasher {
     // DIRECTLY HASHABLE BECAUSE OF CONTIGUOUS DATA
     template <typename T>
-        requires std::is_arithmetic_v<std::decay_t<T>>
+    requires std::is_arithmetic_v<std::decay_t<T>>
     constexpr size_t operator()(T &&input) const {
         return XXH3_64bits(&input, sizeof(T));
     }
@@ -65,7 +112,7 @@ struct XXH3Hasher {
     }
 
     template <typename T>
-        requires std::is_arithmetic_v<std::decay_t<T>>
+    requires std::is_arithmetic_v<std::decay_t<T>>
     constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
         XXH3_64bits_update(state, &input, sizeof(T));
     }
