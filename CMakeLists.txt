@@ -3,41 +3,39 @@ cmake_minimum_required(VERSION 3.26)
 set(VCPKG_TARGET_TRIPLET x64-mingw-dynamic)
 set(VCPKG_HOST_TRIPLET x64-mingw-dynamic)
 
-project (AOC)
+project(AOC)
 
 set(CMAKE_CXX_STANDARD 23)
-
 
 include(FetchContent)
 FetchContent_Declare(
     googletest
-    GIT_REPOSITORY      https://github.com/google/googletest.git
-    GIT_TAG             f8d7d77c06936315286eb55f8de22cd23c188571
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG f8d7d77c06936315286eb55f8de22cd23c188571
 )
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 FetchContent_Declare(
-        bitlib
-        GIT_REPOSITORY https://github.com/bkille/bitlib.git
-        GIT_TAG origin/master
+    bitlib
+    GIT_REPOSITORY https://github.com/bkille/bitlib.git
+    GIT_TAG origin/master
 )
 FetchContent_MakeAvailable(bitlib)
 
 FetchContent_Declare(
-        flux
-        GIT_REPOSITORY https://github.com/tcbrindle/flux.git
-        GIT_TAG main
+    flux
+    GIT_REPOSITORY https://github.com/tcbrindle/flux.git
+    GIT_TAG main
 )
 FetchContent_MakeAvailable(flux)
 
 FetchContent_Declare(
-        more_concepts
-        GIT_REPOSITORY https://github.com/MiSo1289/more_concepts.git
-        GIT_TAG origin/master
+    more_concepts
+    GIT_REPOSITORY https://github.com/MiSo1289/more_concepts.git
+    GIT_TAG origin/master
 )
 FetchContent_MakeAvailable(more_concepts)
-
 
 find_package(fmt CONFIG REQUIRED)
 find_package(glaze REQUIRED)

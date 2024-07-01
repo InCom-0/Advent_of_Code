@@ -20,7 +20,6 @@ int day21_0(std::string dataFile, unsigned int numOfIterations) {
     auto VofV = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, sideL_ctre, sideR_ctre);
 
     ankerl::unordered_dense::map<std::string, std::vector<std::vector<char>>> mp;
-
     for (auto &VofV_line : VofV) {
         std::string subsTarStr;
         auto        substituteTarget = flux::ref(VofV_line.front())
@@ -76,7 +75,6 @@ int day21_0(std::string dataFile, unsigned int numOfIterations) {
         subsTarStr.clear();
     }
 
-
     Pic picA;
     picA.push_back(std::vector<char>{'.', '#', '.'});
     picA.push_back(std::vector<char>{'.', '.', '#'});
@@ -86,7 +84,7 @@ int day21_0(std::string dataFile, unsigned int numOfIterations) {
     Pic *picOrig  = &picA;
     Pic *pic2Fill = &picB;
 
-
+    // MAIN LOGIC
     for (int iteration = 0; iteration < numOfIterations; ++iteration) {
         int picSideSize = (*picOrig).front().size();
         int patternSize = ((picSideSize % 2) == 0) ? 2 : 3;
@@ -116,11 +114,10 @@ int day21_0(std::string dataFile, unsigned int numOfIterations) {
         }
         std::swap(picOrig, pic2Fill);
     }
-    auto res = flux::ref(*picOrig).fold(
+
+    return flux::ref(*picOrig).fold(
         [](auto &&accu, auto &&line) { return accu + flux::ref(line).count_if([](auto &&aa) { return aa == '#'; }); },
         0);
-
-    return res;
 }
 
 int day21_1(std::string dataFile) {
