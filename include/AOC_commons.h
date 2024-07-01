@@ -61,7 +61,6 @@ requires more_concepts::random_access_container<T> && more_concepts::random_acce
 void matrixRotateRight(T &VofVlike) {
     int sideLength = VofVlike.size() - 1;
     if (sideLength < 1) { return; }
-    if (sideLength + 1 != VofVlike.front().size()) { return; }
     if (flux::ref(VofVlike).any([&](auto &&line) { return line.size() != VofVlike.size(); })) { return; }
 
     int circles = (sideLength + 2) / 2;

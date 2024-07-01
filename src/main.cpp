@@ -21,9 +21,9 @@ int main() {
     std::vector<std::vector<int>> testVect;
 
 
-    auto pth = std::filesystem::path(DATAFOLDER_2017) / "2017_21_1.txt";
+    auto pth = std::filesystem::path(DATAFOLDER_2017) / "2017_22_1.txt";
 
-    std::cout << AOC2017::day21_1(pth.generic_string()) << '\n';
+    std::cout << AOC2017::day22_3(pth.generic_string(), 10000000) << '\n';
 
 
     return 1;
