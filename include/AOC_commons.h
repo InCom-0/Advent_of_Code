@@ -1,8 +1,11 @@
 #pragma once
 
+#include <cassert>
 #include <concepts>
 #include <fstream>
+#include <source_location>
 #include <vector>
+
 
 #include <ctre.hpp>
 #include <flux.hpp>
@@ -32,7 +35,6 @@ concept contigCofArithm =
 } // namespace AOC_concepts
 
 namespace AOC_commons {
-
 /*
 Matrix rotation of 'indexed' random access containers.
 Uses 'swapping in circles' method ... should be pretty fast
@@ -300,4 +302,106 @@ public:
         return std::move(sink.data);
     }
 };
+
+// ENTIRELY POSSIBLE THAT THIS HACKY NAMESPACE IS NOT REALLY PORTABLE ... BEWARE.
+namespace PQA {
+/*
+Quasi compile time reflection for typenames
+*/
+template <typename T>
+auto TypeToString() {
+    auto EmbeddingSignature = std::string_view{std::source_location::current().function_name()};
+    auto firstPos           = EmbeddingSignature.rfind("::") + 2;
+    return EmbeddingSignature.substr(firstPos, EmbeddingSignature.size() - firstPos - 1);
+}
+struct _instrBase {
+    std::reference_wrapper<long long> source;
+    std::reference_wrapper<long long> target;
+};
+
+template <typename... instrT>
+requires(std::derived_from<instrT, _instrBase> && ...)
+struct ProgramQuasiAssembly {
+    std::unordered_map<char, std::reference_wrapper<long long>, AOC_commons::XXH3Hasher> mapping;
+    unsigned long long                                                                   instructionID = 0;
+    std::vector<long long>                                                               registers;
+    std::vector<std::variant<instrT...>>                                                 instrVect;
+    long long                                                                            fakeRegister = LLONG_MIN;
+
+    // The one and only constructor of the 'prog' type
+    ProgramQuasiAssembly(const std::vector<std::vector<std::string>> &input, const long long registersStartValue = 0) {
+        assert((void("Prog type instantiated with an empty input"), input.size() > 0));
+        for (auto &line : input) {
+            assert((void("Prog type instantiated with an input that has more than 3 items on some instruction line"),
+                    line.size() < 4));
+            assert(
+                (void("Prog type instantiated with an input that has some instruction line empty"), line.size() > 0));
+        }
+
+        // Mapping a type 'by string' to the same type inside a std::variant instance;
+        // TypeToString uses a very crude form of 'reflection'.
+        // ENTIRELY POSSIBLE THAT THIS HACK IS NOT REALLY PORTABLE ... BEWARE.
+        std::unordered_map<std::string, std::variant<instrT...>, AOC_commons::XXH3Hasher> instrTypeMap;
+        (instrTypeMap.emplace(TypeToString<instrT>(),
+                              std::variant<instrT...>{instrT{fakeRegister, fakeRegister}}),
+         ...);
+
+        registers.reserve(input.size() * 2); // Must NEVER reallocate.
+
+        for (auto &line : input) {
+            assert((void("Some instructions name in input doesn't match any type in template parameter pack"),
+                    instrTypeMap.contains(line.front())));
+
+            for (long long i = 1; i < line.size(); ++i) {
+                if (line[i].front() >= 'a' && line[i].front() <= 'z') {
+                    // 'Named' registers are inserted into a vector named registers + UOmap is created to
+                    // obtain the right reference later
+                    if (not mapping.contains(line[i].front())) {
+                        registers.push_back(registersStartValue);
+                        mapping.emplace(line[i].front(), registers.back());
+                    }
+                }
+            }
+        }
+        for (auto &line : input) {
+            std::reference_wrapper<long long> firstR  = fakeRegister;
+            std::reference_wrapper<long long> secondR = fakeRegister;
+            if (line.size() >= 2) {
+                if (line[1].front() >= 'a' && line[1].front() <= 'z') { firstR = mapping.at(line[1][0]); }
+                else {
+                    // Integer inputs in the instructions are treated 'as-if' it were another but 'unnamed' register
+                    // used only in that instruction
+                    registers.push_back(std::stoi(line[1]));
+                    firstR = registers.back();
+                }
+            }
+            if (line.size() >= 3) {
+                if (line[2].front() >= 'a' && line[2].front() <= 'z') { secondR = mapping.at(line[2][0]); }
+                else {
+                    // Integer inputs in the instructions are treated 'as-if' it were another but 'unnamed' register
+                    // used only in that instruction
+                    registers.push_back(std::stoi(line[2]));
+                    secondR = registers.back();
+                }
+            }
+
+            // Update just the right variant item in the instrTypeMap.
+            std::visit(
+                [&](auto &&a) {
+                    a.source = firstR;
+                    a.target = secondR;
+                },
+                instrTypeMap.at(line.front()));
+
+            // Push the right variant inside instrVect
+            instrVect.push_back(std::variant<instrT...>(instrTypeMap.at(line.front())));
+        }
+        return;
+    }
+
+    // Other convenience member functions
+    inline bool                     test_isInstructionIDvalid() { return instructionID < instrVect.size(); }
+    inline std::variant<instrT...> &getCurrentAndIncrement() { return instrVect[instructionID++]; }
+};
+} // namespace PQA
 } // namespace AOC_commons
