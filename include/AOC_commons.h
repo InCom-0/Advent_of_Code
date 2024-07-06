@@ -309,7 +309,7 @@ namespace PQA {
 Quasi compile time reflection for typenames
 */
 template <typename T>
-auto TypeToString() {
+consteval auto TypeToString() {
     auto EmbeddingSignature = std::string_view{std::source_location::current().function_name()};
     auto firstPos           = EmbeddingSignature.rfind("::") + 2;
     return EmbeddingSignature.substr(firstPos, EmbeddingSignature.size() - firstPos - 1);

@@ -64,22 +64,22 @@ long long day18_2(std::string dataFile, int numOfPrograms) {
     auto getWord_ctre = ctre::search<R"([[:^blank:]]+)">;
     auto VofV         = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
 
-    // DATA PREP
+    // DATA AND LAMBDA PREP
     std::vector<AOC_commons::PQA::ProgramQuasiAssembly<snd, set, add, mul, mod, rcv, jgz>> programs;
     for (int i = 0; i < numOfPrograms; ++i) { programs.emplace_back(VofV, i); }
 
-    std::vector<unsigned short> switch_Xs(numOfPrograms, false);
+    std::vector<unsigned short>        switch_Xs(numOfPrograms, false);
     std::vector<long long>             senderCounter(numOfPrograms, 0);
     std::vector<std::queue<long long>> queues(numOfPrograms, std::queue<long long>());
 
-    // LAMBDA DEFINITIONS
     int  progID        = 0;
     bool queuesChanged = true;
+    
     auto overload_obj  = overloaded{
         // If the 'snd' instruction specified ID of where to send the data, it would be possible to use arbitrary num of
         // programs. In this case ... it is just switching to 'the other one' 0 or 1;
         [&](const snd &a) {
-            queues[(progID - 1) * (progID - 1)].push(a.source);
+            queues[not (progID)].push(a.source);
             senderCounter[progID]++;
             queuesChanged = true;
         },

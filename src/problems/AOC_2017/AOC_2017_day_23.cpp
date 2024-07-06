@@ -68,9 +68,9 @@ int day23_2(std::string dataFile) {
     // MAIN LOGIC
     while (theProgram.test_isInstructionIDvalid()) { std::visit(overload_obj, theProgram.getCurrentAndIncrement()); }
 
-    long long startNum = theProgram.mapping.at('b').get();
-    long long endNum   = theProgram.mapping.at('c').get();
-    long long skip     = theProgram.mapping.at('f').get();
+    const long long startNum = theProgram.mapping.at('b').get();
+    const long long endNum   = theProgram.mapping.at('c').get();
+    const long long skip     = theProgram.mapping.at('f').get();
 
     unsigned long long counter = 0;
 
