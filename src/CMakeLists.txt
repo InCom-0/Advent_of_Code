@@ -2,7 +2,7 @@ project(AOC)
 
 add_library(AOC_Commons AOC_commons.cpp ${CMAKE_SOURCE_DIR}/include/AOC_commons.h)
 target_include_directories(AOC_Commons PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_precompile_headers(AOC_Commons PUBLIC ${CMAKE_SOURCE_DIR}/include/AOC_commons.h)
+target_precompile_headers(AOC_Commons PUBLIC ${CMAKE_SOURCE_DIR}/include/AOC_commons.h <vector> <string> <fstream> <flux.hpp> <ctre.hpp> <bitlib/bitlib.hpp> <ankerl/unordered_dense.h>)
 
 add_subdirectory(external)
 add_subdirectory(problems)
@@ -23,3 +23,4 @@ target_link_options(AOC_Commons PUBLIC -static-libgcc -static-libstdc++ "LINKER:
 target_link_libraries(AOC_2015 PUBLIC AOC_Commons)
 target_link_libraries(AOC_2016 PUBLIC AOC_Commons)
 target_link_libraries(AOC_2017 PUBLIC AOC_Commons)
+target_link_libraries(AOC_2018 PUBLIC AOC_Commons)

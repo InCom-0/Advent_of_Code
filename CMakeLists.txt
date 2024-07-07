@@ -56,6 +56,6 @@ add_subdirectory(src)
 add_subdirectory(test)
 
 add_executable(AOC src/main.cpp)
-target_link_libraries(AOC PRIVATE AOC_2015 AOC_2016 AOC_2017)
+target_link_libraries(AOC PRIVATE AOC_2015 AOC_2016 AOC_2017 AOC_2018)
 
 target_include_directories(AOC PUBLIC include)
