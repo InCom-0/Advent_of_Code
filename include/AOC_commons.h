@@ -94,7 +94,8 @@ struct XXH3Hasher {
     constexpr size_t operator()(T &&input) const {
         return XXH3_64bits(&input, sizeof(T));
     }
-    template <AOC_concepts::contigCofArithm T>
+    template <typename T>
+    requires more_concepts::random_access_container<T> && std::is_arithmetic_v<std::decay_t<typename T::value_type>>
     constexpr size_t operator()(T &&input) const {
         return XXH3_64bits(input.data(),
                            sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
