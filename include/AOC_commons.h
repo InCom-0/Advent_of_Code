@@ -24,13 +24,6 @@ concept pair_t = requires(std::remove_cvref_t<T> pair) {
     { pair.first } -> std::same_as<typename T::first_type &>;
     { pair.second } -> std::same_as<typename T::second_type &>;
 };
-template <typename CONTAINER>
-concept contigCofArithm =
-    (std::__is_specialization_of<std::remove_cvref_t<CONTAINER>, std::vector> ||
-     std::same_as<std::array<typename std::remove_cvref_t<CONTAINER>::value_type, std::tuple_size<CONTAINER>{}>,
-                  std::remove_cvref_t<CONTAINER>> ||
-     std::convertible_to<CONTAINER, std::string_view>) &&
-    std::is_arithmetic_v<typename std::remove_cvref_t<CONTAINER>::value_type> == true;
 
 } // namespace AOC_concepts
 
@@ -95,7 +88,7 @@ struct XXH3Hasher {
         return XXH3_64bits(&input, sizeof(T));
     }
     template <typename T>
-    requires more_concepts::random_access_container<T> && std::is_arithmetic_v<std::decay_t<typename T::value_type>>
+    requires more_concepts::random_access_container<std::remove_cvref_t<T>> && std::is_arithmetic_v<typename T::value_type>
     constexpr size_t operator()(T &&input) const {
         return XXH3_64bits(input.data(),
                            sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
@@ -125,7 +118,8 @@ struct XXH3Hasher {
         this->_hashTypeX(input.second, state);
     }
 
-    template <AOC_concepts::contigCofArithm T>
+    template <typename T>
+    requires more_concepts::random_access_container<std::remove_cvref_t<T>> && std::is_arithmetic_v<typename T::value_type>
     constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
         XXH3_64bits_update(state, input.data(),
                            sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
@@ -325,9 +319,9 @@ requires(std::derived_from<instrT, _instrBase> && ...)
 struct ProgramQuasiAssembly {
     std::unordered_map<char, std::reference_wrapper<long long>, AOC_commons::XXH3Hasher> mapping;
     unsigned long long                                                                   instructionID = 0;
+    long long                                                                            fakeRegister = LLONG_MIN;
     std::vector<long long>                                                               registers;
     std::vector<std::variant<instrT...>>                                                 instrVect;
-    long long                                                                            fakeRegister = LLONG_MIN;
 
     // The one and only constructor of the 'prog' type
     ProgramQuasiAssembly(const std::vector<std::vector<std::string>> &input, const long long registersStartValue = 0) {
