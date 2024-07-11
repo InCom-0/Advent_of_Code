@@ -18,7 +18,6 @@ int day5_1(std::string dataFile) {
     };
 
     bit::bit_vector<unsigned char> bv(line.size(), bit::bit1);
-
     std::stack<int, std::vector<int>> stck;
     for (int i = 0; i < line.size(); ++i) {
         if (not stck.empty() && toBeDeleted(line[stck.top()], line[i])) {
