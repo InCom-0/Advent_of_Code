@@ -37,8 +37,6 @@ int day4_1(std::string dataFile) {
             ins = std::stoi(line[2]);
             guardToMinutes.emplace(ins, std::vector<int>(60, 0));
         }
-
-
         data.push_back(std::make_pair(tm1, ins));
     }
     std::ranges::sort(data, [](auto &&a, auto &&b) { return a.first < b.first; });
@@ -46,7 +44,6 @@ int day4_1(std::string dataFile) {
     // MAIN LOGIC
     int thisGuardID;
     for (int i = 0; i < data.size(); ++i) {
-
         // Guard arrival
         if (data[i].second > 0) { thisGuardID = data[i].second; }
 
