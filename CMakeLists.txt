@@ -1,13 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
-
-# if(CMAKE_GENERATOR MATCHES "Ninja")
-#     file(
-#         WRITE "${CMAKE_BINARY_DIR}/GNUMakeRulesOverwrite.cmake"
-#             "STRING(REPLACE \"-MD\" \"-MMD\" CMAKE_DEPFILE_FLAGS_C \"\${CMAKE_DEPFILE_FLAGS_C}\")\n"
-#             "STRING(REPLACE \"-MD\" \"-MMD\" CMAKE_DEPFILE_FLAGS_CXX \"\${CMAKE_DEPFILE_FLAGS_CXX}\")\n"
-#     )
-#     set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_BINARY_DIR}/GNUMakeRulesOverwrite.cmake" CACHE INTERNAL "")
-# endif()
+cmake_minimum_required(VERSION 3.27)
 
 set(VCPKG_TARGET_TRIPLET x64-mingw-dynamic)
 set(VCPKG_HOST_TRIPLET x64-mingw-dynamic)
@@ -55,7 +46,8 @@ find_package(unordered_dense REQUIRED)
 add_subdirectory(src)
 add_subdirectory(test)
 
-add_executable(AOC src/main.cpp)
-target_link_libraries(AOC PRIVATE AOC_2015 AOC_2016 AOC_2017 AOC_2018)
+add_executable(AOC)
+target_sources(AOC PUBLIC src/main.cpp
+    PUBLIC FILE_SET HEADERS BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_include_directories(AOC PUBLIC include)
+target_link_libraries(AOC PRIVATE AOC_2015 AOC_2016 AOC_2017 AOC_2018)

@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <cassert>
 
 #include <AOC_commons.h>
