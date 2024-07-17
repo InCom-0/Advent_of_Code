@@ -3,14 +3,12 @@
 #include <bits/ranges_algo.h>
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <iostream>
 #include <list>
 #include <string>
 
 
 namespace AOC2018 {
 unsigned long long day9_1(std::string dataFile) {
-
     auto d_ctre = ctre::search<R"(\d+)">;
     auto VofS   = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front();
 
