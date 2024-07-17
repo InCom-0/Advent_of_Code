@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.30)
 
 set(VCPKG_TARGET_TRIPLET x64-mingw-dynamic)
 set(VCPKG_HOST_TRIPLET x64-mingw-dynamic)
@@ -6,6 +6,7 @@ set(VCPKG_HOST_TRIPLET x64-mingw-dynamic)
 project(AOC)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -36,6 +37,13 @@ FetchContent_Declare(
     GIT_TAG origin/master
 )
 FetchContent_MakeAvailable(more_concepts)
+
+FetchContent_Declare(
+    foonathan_memory
+    GIT_REPOSITORY https://github.com/foonathan/memory.git
+    GIT_TAG main
+)
+FetchContent_MakeAvailable(foonathan_memory)
 
 find_package(fmt CONFIG REQUIRED)
 find_package(glaze REQUIRED)

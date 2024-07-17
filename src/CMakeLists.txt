@@ -1,8 +1,7 @@
 project(AOC)
 
-add_library(AOC_Commons)
-target_sources(AOC_Commons PRIVATE AOC_commons.cpp
-    PRIVATE FILE_SET HEADERS BASE_DIRS ${CMAKE_SOURCE_DIR}/include)
+add_library(AOC_Commons AOC_commons.cpp ${CMAKE_SOURCE_DIR}/include/AOC_commons.h)
+target_include_directories(AOC_Commons PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 add_subdirectory(external)
 add_subdirectory(problems)
@@ -16,9 +15,9 @@ target_link_libraries(AOC_Commons PUBLIC
     xxHash::xxhash
     bitlib::bitlib
     unordered_dense::unordered_dense
-    more_concepts::more_concepts)
+    more_concepts::more_concepts
+    foonathan_memory)
 
-set_target_properties(AOC_Commons PROPERTIES UNITY_BUILD ON)
 target_link_options(AOC_Commons PUBLIC -static-libgcc -static-libstdc++ "LINKER:-Bstatic,--whole-archive" -lwinpthread "LINKER:-Bdynamic,--no-whole-archive")
 
 target_link_libraries(AOC_2015 PUBLIC AOC_Commons)
