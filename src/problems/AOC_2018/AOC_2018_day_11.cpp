@@ -1,5 +1,3 @@
-#include <climits>
-
 #include <AOC_commons.h>
 #include <bitlib/bitlib.hpp>
 #include <ctre.hpp>
@@ -42,9 +40,11 @@ std::string day11_1(std::string dataFile) {
 
 // Heavy brute force solution ... not so nice. Test for this is DISABLED
 std::string day11_2(std::string dataFile) {
+    // CUSTOM DATA TYPES
     auto d_ctre = ctre::search<R"(\d+)">;
     int  input  = std::stoi(AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front());
 
+    // DATA PREP
     std::vector vecOfMaps(301, std::vector<std::vector<int>>(301, std::vector<int>(301, 0)));
 
     for (int row = 1; row < 301; ++row) {
@@ -53,6 +53,7 @@ std::string day11_2(std::string dataFile) {
         }
     }
 
+    // LAMBDA DEFINITIONS
     std::vector<int> maxSoFar{INT_MIN, INT_MIN, INT_MIN, INT_MIN};
 
     auto computeMapRawAdd = [&](auto &&sqSize) {
@@ -144,31 +145,31 @@ std::string day11_3(std::string dataFile) {
         }
     }
 
-    // Computer 'right' and 'bottom' sides SUMS of each 'square' in the vecOfMaps
-    // Indices are 0) size of square in question, 1) row, 2) column of bottom right corner.
+    // Computes 'right' and 'bottom' sides SUMS of each 'square' in the vecOfMaps
+    // Indices are 0) row, 1) column of bottom right corner, 2) size of square in question.
     std::vector mapOfRightAndBottomSides(301, std::vector<std::vector<int>>(301, std::vector<int>(301, 0)));
     for (int i = 2; i < 301; ++i) {
         for (int start = 1; start < 300; ++start) {
             int prevHor = 0;
             int prevVer = 0;
-            for (int end = start; end < start+i && end < 301; ++end) {
-                mapOfRightAndBottomSides[end - start + 1][i][end] = prevHor + vecOfMaps[1][i][end];
-                prevHor                             = prevHor + vecOfMaps[1][i][end];
+            for (int end = start; end < start + i && end < 301; ++end) {
+                mapOfRightAndBottomSides[i][end][end - start + 1] += prevHor + vecOfMaps[1][i][end];
+                prevHor                                           = prevHor + vecOfMaps[1][i][end];
 
-                mapOfRightAndBottomSides[end - start + 1][end][i] += prevVer + vecOfMaps[1][end][i];
-                prevVer                              = prevVer + vecOfMaps[1][end][i];
+                mapOfRightAndBottomSides[end][i][end - start + 1] += prevVer + vecOfMaps[1][end][i];
+                prevVer                                            = prevVer + vecOfMaps[1][end][i];
             }
         }
     }
 
     std::vector<int> maxSoFar{INT_MIN, INT_MIN, INT_MIN, INT_MIN};
 
-    auto computeMapRawAdd = [&](auto &&sqSize) {
+    auto computeMapRawAdd = [&](const auto &sqSize) {
         int mapSideSize2create = 302 - sqSize;
         for (int row = 1; row < mapSideSize2create; ++row) {
             for (int col = 1; col < mapSideSize2create; ++col) {
                 vecOfMaps[sqSize][row][col]  = vecOfMaps[sqSize - 1][row][col];
-                vecOfMaps[sqSize][row][col] += mapOfRightAndBottomSides[sqSize][row + sqSize - 1][col + sqSize - 1];
+                vecOfMaps[sqSize][row][col] += mapOfRightAndBottomSides[row + sqSize - 1][col + sqSize - 1][sqSize];
                 vecOfMaps[sqSize][row][col] -= vecOfMaps[1][row + sqSize - 1][col + sqSize - 1];
 
                 if (vecOfMaps[sqSize][row][col] > maxSoFar[2]) {
