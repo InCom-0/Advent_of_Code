@@ -16,6 +16,7 @@ My solutions to Advent of Code (<https://adventofcode.com>) puzzles.
 * Uses CMake. Not recommended to build the solutions without CMake as its linking various external libraries.
 * Uses vcpkg as well as CMake's FetchContent
 * Intended to be built on Windows in MSYS2 MinGW environment. Might not build 'as-is' on other platforms. However, minor appropriate CMakeLists adjustment should be enough to compile on Linux.
+* Uses gtest and one can verify the correctness of the provided 'puzzle solutions' by running one of the respective gtest targets.
 
 ## External libraries used ##
 
