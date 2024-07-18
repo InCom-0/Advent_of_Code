@@ -20,9 +20,9 @@ Note that this main is used while developing the solutions.
 
 int main() {
 
-    auto pth = std::filesystem::path(DATAFOLDER_2018) / "2018_10_1.txt";
+    auto pth = std::filesystem::path(DATAFOLDER_2018) / "2018_11_1.txt";
 
-    std::cout << AOC2018::day10_1(pth.generic_string()) << '\n';
+    std::cout << AOC2018::day11_3(pth.generic_string()) << '\n';
     
 
     return 1;
