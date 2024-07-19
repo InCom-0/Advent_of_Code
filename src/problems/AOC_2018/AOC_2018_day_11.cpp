@@ -162,6 +162,7 @@ std::string day11_3(std::string dataFile) {
         }
     }
 
+    // LAMBDA DEFINITIONS
     std::vector<int> maxSoFar{INT_MIN, INT_MIN, INT_MIN, INT_MIN};
 
     auto computeMapRawAdd = [&](const auto &sqSize) {

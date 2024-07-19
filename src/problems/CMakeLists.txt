@@ -1,5 +1,3 @@
-project(AOC)
-
 set(AOC_2015_SRC
     AOC_2015_day_1.cpp
     AOC_2015_day_1.h

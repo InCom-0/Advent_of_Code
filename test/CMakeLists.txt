@@ -1,5 +1,3 @@
-project(AOC)
-
 enable_testing()
 
 add_executable(AOC_Tests_2015)

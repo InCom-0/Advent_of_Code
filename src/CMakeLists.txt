@@ -1,5 +1,3 @@
-project(AOC)
-
 add_library(AOC_Commons AOC_commons.cpp ${CMAKE_SOURCE_DIR}/include/AOC_commons.h)
 target_include_directories(AOC_Commons PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
@@ -11,11 +9,11 @@ target_link_libraries(AOC_Commons PUBLIC
     glaze::glaze
     flux::flux
     ctre::ctre
-    hash-library
     xxHash::xxhash
     bitlib::bitlib
     unordered_dense::unordered_dense
     more_concepts::more_concepts
+    hash-library::hash-library
     foonathan_memory)
 
 target_link_options(AOC_Commons PUBLIC -static-libgcc -static-libstdc++ "LINKER:-Bstatic,--whole-archive" -lwinpthread "LINKER:-Bdynamic,--no-whole-archive")
