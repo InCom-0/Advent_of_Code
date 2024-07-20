@@ -8,7 +8,7 @@ My solutions to Advent of Code (<https://adventofcode.com>) puzzles.
 * The code is written in (I dare say) very modern C++ particularly utilizing the more 'functional programming' features.
 * That being said, the code is not the 'pinnacle of perfection' in terms of performance or any other metric nor is it 'industrial grade' and it doesn't attempt to be.
 * That being said, an effort was expended to obtain reasonably performant as well as a reasonably structured code as opposed to writing 'working' solution as quickly as possible.
-* All the solutions are developed by myself only. Nothing is copied from anywhere including from the output of LLMs.
+* All the solutions were developed by myself only. Nothing is copied from anywhere including from the output of LLMs.
 * Naturally though, inspiration was drawn from various sources mostly in terms of programmatic idioms, broad problem solving strategies and various technicalities of the language and STL.
 
 ## Technical information ##
