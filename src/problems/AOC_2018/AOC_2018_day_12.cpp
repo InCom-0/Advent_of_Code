@@ -60,8 +60,8 @@ int day12_1(std::string dataFile, long long generationsToSimulate) {
             std::string toLookup(curStateB.begin() + fiveBlock, curStateB.begin() + fiveBlock + 5);
             if (map.contains(toLookup)) { curStateA[fiveBlock + 2] = map.at(toLookup); }
         }
-        std::cout << addedOnTheLeft << '\n';
-        std::cout << curStateA << '\n';
+        // std::cout << addedOnTheLeft << '\n';
+        // std::cout << curStateA << '\n';
     }
 
     auto res = flux::ref(curStateA).fold(
