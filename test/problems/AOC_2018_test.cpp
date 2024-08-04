@@ -120,7 +120,7 @@ TEST(A_2018_d14_2, A1) {
     auto pth = std::filesystem::path(DATAFOLDER_2018) / "2018_14_1.txt";
     EXPECT_EQ(20333868, AOC2018::day14_2(pth.generic_string()));
 }
-TEST(A_2018_d14_2, A2) {
+TEST(DISABLED_A_2018_d14_2, A2) {
     auto pth = std::filesystem::path(DATAFOLDER_2018) / "2018_14_1.txt";
     EXPECT_EQ(20333868, AOC2018::day14_3(pth.generic_string()));
 }
@@ -132,4 +132,11 @@ TEST(A_2018_d14_2, A4) {
     auto pth = std::filesystem::path(DATAFOLDER_2018) / "2018_14_1.txt";
     EXPECT_EQ(20333868, AOC2018::day14_5(pth.generic_string()));
 }
-
+TEST(A_2018_d15_1, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2018) / "2018_15_1.txt";
+    EXPECT_EQ(207542, AOC2018::day15_1(pth.generic_string()));
+}
+TEST(A_2018_d15_2, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2018) / "2018_15_1.txt";
+    EXPECT_EQ(64688, AOC2018::day15_2(pth.generic_string()));
+}

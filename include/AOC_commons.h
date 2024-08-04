@@ -13,6 +13,8 @@
 #include <xxhash.h>
 
 
+// A lambda operator() overload 'trick' type.
+// Mostly used for 'inline' creation of logic for std::visit of std::variant
 template <class... Ts>
 struct overloaded : Ts... {
     using Ts::operator()...;

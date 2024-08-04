@@ -128,8 +128,9 @@ std::string day13_2(std::string dataFile) {
         for (auto &oneCart_2 : cartsVec) {
             // NOTE: Yes this is correct, comparing the addresses ie. &oneCart_2 != &oneCart
             // Relatively simple 'hack' to find 'some other one' matching the criteria inside the vector
-            // Naturaly wouldn't work in a member function as this physically requires that the lambda gets passed a reference to some element in the cartsVec
-            // As opposed to a reference to some randomly created 'Cart' object 
+            // Naturaly wouldn't work in a member function as this physically requires that the lambda gets passed a
+            // reference to some element in the cartsVec As opposed to a reference to some randomly created 'Cart'
+            // object
             if (oneCart_2.yCoord == oneCart.yCoord && oneCart_2.xCoord == oneCart.xCoord &&
                 oneCart_2.deadCart == false && &oneCart_2 != &oneCart) {
                 oneCart_2.deadCart  = true;
