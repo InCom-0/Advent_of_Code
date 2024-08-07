@@ -315,6 +315,22 @@ struct _instrBase {
     std::reference_wrapper<long long> source;
     std::reference_wrapper<long long> target;
 };
+struct _instrBase_2018 {
+    std::reference_wrapper<long long> A;
+    std::reference_wrapper<long long> B;
+    std::reference_wrapper<long long> C;
+
+    _instrBase_2018(long long &aRef, long long &bRef, long long &cRef) : A{aRef}, B{bRef}, C{cRef} {};
+
+    std::reference_wrapper<std::reference_wrapper<long long>> getMappedRef(const int &id) {
+        if (id == 1) { return std::reference_wrapper<std::reference_wrapper<long long>>(A); }
+        else if (id == 2) { return std::reference_wrapper<std::reference_wrapper<long long>>(B); }
+        else if (id == 3) { return std::reference_wrapper<std::reference_wrapper<long long>>(C); }
+        else { assert((void("ERROR"), false)); };
+        std::unreachable();
+    }
+    virtual const std::vector<int> getRS() = 0;
+};
 
 template <typename... instrT>
 requires(std::derived_from<instrT, _instrBase> && ...)
@@ -399,6 +415,206 @@ struct ProgramQuasiAssembly {
     // Other convenience member functions
     inline bool                     test_isInstructionIDvalid() { return instructionID < instrVect.size(); }
     inline std::variant<instrT...> &getCurrentAndIncrement() { return instrVect[instructionID++]; }
+};
+
+template <typename... instrT>
+requires(std::derived_from<instrT, _instrBase_2018> && ...)
+struct ProgramQuasiAssembly_2018 {
+    // std::unordered_map<char, std::reference_wrapper<long long>, AOC_commons::XXH3Hasher> mapping;
+    unsigned long long                   instructionID = 0;
+    std::vector<long long>               registers;
+    std::vector<std::variant<instrT...>> instrVect;
+
+    // Other convenience member functions
+    inline bool                     test_isInstructionIDvalid() { return instructionID < instrVect.size(); }
+    inline std::variant<instrT...> &getCurrentAndIncrement() { return instrVect[instructionID++]; }
+
+    static std::unordered_map<int, std::variant<instrT...>, AOC_commons::XXH3Hasher> instrTypeMapCreator(
+        const std::vector<std::vector<std::string>> &rawExampleInput, auto &overloadSet, const int registersCount = 4,
+        const std::vector<long long> regStartVal = {0, 0, 0, 0}) {
+
+        std::vector<long long> registers_local(registersCount, 0); // Registers
+        std::vector<long long> fakeRegisters(4, LLONG_MIN);  // Fake registers
+        std::vector<long long> values(4, LLONG_MIN);         // Values
+        long long              fakeLong = LLONG_MIN;
+
+        // Parses 3 lines from the example (that is one sample: 1) start regState, 2) OpCode, 3) end regState) into simple VofV of 'long long'.
+        // Skips the 4th line which is always empty in input data. 
+        std::vector<std::vector<long long>> parsed(4, std::vector<long long>());
+        auto parseOneSet = [&, line = 0]() mutable -> bool {
+            for (int i = 0; i < 4; ++i) { parsed[i].clear(); }
+            for (int i = 0; i < 3; ++i) {
+                if (line >= rawExampleInput.size()) {
+                    assert((void("Exit of parsing one example set when the 'parsed' vector isn't empty"),
+                            parsed[0].empty() && parsed[1].empty() && parsed[2].empty() && parsed[3].empty()));
+                    return false;
+                }
+
+                for (int k = 0; k < 4; ++k) { parsed[i].push_back(std::stoll(rawExampleInput[line][k])); }
+                line++;
+            }
+            line++;
+            return true;
+        };
+
+        // Matcher attempts to execute a sample as if it were each OpCode.
+        // Outputs a vector of valid instruction IDs (the IDs match the position in the parameter pack). 
+        auto matcher = [&]() -> std::vector<int> {
+            std::vector<std::variant<instrT...>> variantVector;
+            (variantVector.push_back(instrT{fakeLong, fakeLong, fakeLong}), ...);
+
+            for (auto &var : variantVector) {
+                auto regValInstructions = std::visit([](auto &&a) { return a.getRS(); }, var);
+                for (int k = 1; auto &regOrVal : regValInstructions) {
+                    auto refToRef = std::visit([&](auto &&a) { return a.getMappedRef(k); }, var);
+
+                    if (regOrVal == 1) { refToRef.get() = values[k]; }
+                    else if (parsed[1][k] >= registersCount) { refToRef.get() = fakeRegisters[k]; }
+                    else { refToRef.get() = registers_local[parsed[1][k]]; }
+                    k++;
+                }
+            }
+            values[1] = parsed[1][1];
+            values[2] = parsed[1][2];
+            values[3] = parsed[1][3];
+
+            std::vector<int> res;
+            for (int j = 0; j < sizeof...(instrT); ++j) {
+                for (int i = 0; i < registersCount; ++i) { registers_local[i] = parsed[0][i]; }
+                std::visit(overloadSet, variantVector[j]);
+
+                int innerCounter = 0;
+                for (int k = 0; k < registersCount; ++k) {
+                    if (registers_local[k] == parsed[2][k]) { innerCounter++; }
+                }
+                if (innerCounter == registersCount) { res.push_back(j); }
+            }
+            return res;
+        };
+
+
+        // Push_backs a vector of valid instrIDs to the right rawID position in the top-level vector of
+        // rawIdToVofV_InstrIDs
+        std::vector rawIdToVofV_InstrIDs(sizeof...(instrT), std::vector<std::vector<int>>());
+        std::vector counter(sizeof...(instrT), std::vector<int>(sizeof...(instrT), 0));
+
+        while (parseOneSet()) { rawIdToVofV_InstrIDs[parsed[1][0]].push_back(matcher()); }
+
+        for (int i = 0; auto &rawIDgroup : rawIdToVofV_InstrIDs) {
+            for (auto &validIDsGroup : rawIDgroup) {
+                for (auto &validIDinGroup : validIDsGroup) { counter[i][validIDinGroup]++; }
+            }
+            i++;
+        }
+
+
+        // There can only be one 'real' matching 'instrID' per rawID and must match for all (ie. the size of
+        // the vector). Depending on input might be necessary to gradually eliminate multiple matches.
+        std::unordered_map<int, int, AOC_commons::XXH3Hasher> IDsMap;
+
+        while (IDsMap.size() < counter.size()) {
+            for (int j = 0; auto &counterRangePerID : counter) {
+                int idMatched = INT_MIN;
+                for (int i = 0; auto &cnt : counterRangePerID) {
+                    if (cnt == rawIdToVofV_InstrIDs[j].size()) {
+                        if (idMatched != INT_MIN) {
+                            idMatched = INT_MIN;
+                            break;
+                        }
+                        idMatched = i;
+                    }
+                    i++;
+                }
+                if (idMatched != INT_MIN) {
+                    IDsMap.emplace(idMatched, j);
+                    for (auto &cntrRng : counter) { cntrRng[idMatched] = 0; }
+                }
+                j++;
+            }
+        }
+
+        std::unordered_map<int, std::variant<instrT...>, AOC_commons::XXH3Hasher> instrTypeMap;
+        long long                                                                 cntr = 0;
+
+        // Horrifying hack creating a dangling reference with the 'counter' being passed into Instr_T constructor
+        (instrTypeMap.emplace(IDsMap.at(cntr++), std::variant<instrT...>{instrT{cntr, cntr, cntr}}), ...);
+        return instrTypeMap;
+    };
+
+    // The one and only constructor of the 'prog' type
+    ProgramQuasiAssembly_2018(const std::vector<std::vector<std::string>>                               &rawInstrInput,
+                              std::unordered_map<int, std::variant<instrT...>, AOC_commons::XXH3Hasher> &mapped,
+                              const std::vector<long long> regStartVal = {0, 0, 0, 0}) {
+
+        assert((void("Prog type instantiated with an empty input"), rawInstrInput.size() > 0));
+        for (auto &line : rawInstrInput) {
+            assert((void("Prog type instantiated with an input that has more than 4 items on some instruction line"),
+                    line.size() < 5));
+            assert(
+                (void("Prog type instantiated with an input that has some instruction line empty"), line.size() > 0));
+        }
+
+        registers.resize(rawInstrInput.size() * 3); // Must NEVER reallocate.
+
+        // This loop finds out how many registers there actually are.
+        int lastRegOccupied = INT_MIN;
+        for (auto &line : rawInstrInput) {
+            assert((void("Some instructions name in input doesn't match any type in template parameter pack"),
+                    mapped.contains(std::stoi(line.front()))));
+
+            auto refVal_instructions =
+                std::visit([&](auto &&a) -> std::vector<int> { return a.getRS(); }, mapped.at(std::stoi(line.front())));
+
+            std::visit(
+                [&](auto &&a) -> void {
+                    if (refVal_instructions[0] == 0) {
+                        lastRegOccupied = std::max(lastRegOccupied, std::stoi(line[1]));
+                    }
+                    if (refVal_instructions[1] == 0) {
+                        lastRegOccupied = std::max(lastRegOccupied, std::stoi(line[1]));
+                    }
+                    if (refVal_instructions[2] == 0) {
+                        lastRegOccupied = std::max(lastRegOccupied, std::stoi(line[1]));
+                    }
+                },
+                mapped.at(std::stoi(line.front())));
+        }
+
+
+        assert((void("Inferred number of registers do not match the number of registers presumed by the programmer"),
+                regStartVal.size() == (lastRegOccupied + 1)));
+
+        // This loop set the right reference and copies the right variant into instrVect
+        for (auto &line : rawInstrInput) {
+            auto &variantInMap = mapped.at(std::stoi(line.front()));
+            auto  refVal_instructions_2 =
+                std::visit([&](auto &&a) -> std::vector<int> { return a.getRS(); }, variantInMap);
+
+            std::visit(
+                [&](auto &&a) -> void {
+                    if (refVal_instructions_2[0] == 0) { a.A = registers[std::stoi(line[1])]; }
+                    else {
+                        registers[++lastRegOccupied] = std::stoll(line[1]);
+                        a.A                          = registers[lastRegOccupied];
+                    }
+                    if (refVal_instructions_2[1] == 0) { a.B = registers[std::stoi(line[2])]; }
+                    else {
+                        registers[++lastRegOccupied] = std::stoll(line[2]);
+                        a.B                          = registers[lastRegOccupied];
+                    }
+                    if (refVal_instructions_2[2] == 0) { a.C = registers[std::stoi(line[3])]; }
+                    else {
+                        registers[++lastRegOccupied] = std::stoll(line[3]);
+                        a.C                          = registers[lastRegOccupied];
+                    }
+                },
+                variantInMap);
+            // Push the right variant inside instrVect
+            instrVect.push_back(std::variant<instrT...>(variantInMap));
+        }
+        // Set registers to their initial values (defaulted 4 registers to 0).
+        for (int i = 0; auto &oneVal : regStartVal) { registers[i++] = oneVal; }
+    }
 };
 } // namespace PQA
 } // namespace AOC_commons
