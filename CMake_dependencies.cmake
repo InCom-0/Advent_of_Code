@@ -17,7 +17,7 @@ FetchContent_MakeAvailable(bitlib)
 FetchContent_Declare(
     flux
     GIT_REPOSITORY https://github.com/tcbrindle/flux.git
-    GIT_TAG main
+    GIT_TAG v0.4.0
 )
 FetchContent_MakeAvailable(flux)
 
@@ -35,12 +35,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(hash-library)
 
-FetchContent_Declare(
-    foonathan_memory
-    GIT_REPOSITORY https://github.com/foonathan/memory.git
-    GIT_TAG main
-)
-FetchContent_MakeAvailable(foonathan_memory)
+# FetchContent_Declare(
+#     foonathan_memory
+#     GIT_REPOSITORY https://github.com/foonathan/memory.git
+#     GIT_TAG main
+# )
+# FetchContent_MakeAvailable(foonathan_memory)
 
 find_package(fmt CONFIG REQUIRED)
 find_package(glaze REQUIRED)
