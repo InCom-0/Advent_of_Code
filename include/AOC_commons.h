@@ -31,6 +31,32 @@ concept pair_t = requires(std::remove_cvref_t<T> pair) {
 
 namespace AOC_commons {
 /*
+Simple 'double buffer' class that can be useful while employing iterative algorithms that simply 'mutate' the input in each iteration.
+Particularly useful for non-trivial data structures ... for instance containers of containers.
+*/
+template <typename T>
+class doubleBuffer {
+private:
+    T __dataA;
+    T __dataB;
+
+    T *current = &__dataA;
+    T *next    = &__dataB;
+
+public:
+    doubleBuffer() {};
+    doubleBuffer(T initial_data) {
+        __dataA = initial_data;
+        __dataB = initial_data;
+    };
+
+    T &getCurrent() const { return (*current); };
+    T &getNext() const { return (*next); }
+
+    void swapBuffers() { std::swap(current, next); }
+};
+
+/*
 Matrix rotation of 'indexed' random access containers.
 Uses 'swapping in circles' method ... should be pretty fast
 */
@@ -125,6 +151,12 @@ struct XXH3Hasher {
     constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
         XXH3_64bits_update(state, input.data(),
                            sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
+    }
+
+    template <typename T>
+    requires more_concepts::random_access_container<std::remove_cvref_t<T>> && more_concepts::random_access_container<std::remove_cvref_t<typename T::value_type>>
+    constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
+        for (auto &VinV : input) {this->_hashTypeX(VinV, state);}
     }
 };
 

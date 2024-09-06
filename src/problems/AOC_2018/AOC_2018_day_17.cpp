@@ -2,7 +2,6 @@
 #include <bitlib/bitlib.hpp>
 #include <climits>
 #include <ctre.hpp>
-#include <filesystem>
 #include <flux.hpp>
 #include <print>
 #include <stack>
@@ -183,8 +182,6 @@ std::pair<size_t, size_t> day17_0(std::string dataFile) {
             return acc + flux::ref(line).count_if([](auto &chr) { return (chr == 'F'); });
         },
         0);
-
-
     /* const auto    tmpPth = (std::filesystem::path("../data") / "test.txt");
     std::ofstream oStream; */
 
@@ -208,5 +205,4 @@ size_t day17_1(std::string dataFile) {
 size_t day17_2(std::string dataFile) {
     return day17_0(dataFile).first;
 }
-
 } // namespace AOC2018
