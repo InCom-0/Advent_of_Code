@@ -30,9 +30,22 @@ concept pair_t = requires(std::remove_cvref_t<T> pair) {
 } // namespace AOC_concepts
 
 namespace AOC_commons {
+
+// This tiny type is used to simplify dealing with parameter packs.
+// Usually used to invoke a closure (lambda) over each parameter in the pack.
+// The closure is successivelly passed an in-place constructed instance of each type in the pack (the constructors are
+// passed the 'ttptc' as an initializer)
+template <typename... T>
+struct argPackHLPR {
+    template <typename... TypesToPassToConstructors>
+    static void invokeOverConstructedPack(auto &&func, TypesToPassToConstructors &...ttptc) {
+        (func(T{ttptc...}), ...);
+    };
+};
+
 /*
-Simple 'double buffer' class that can be useful while employing iterative algorithms that simply 'mutate' the input in each iteration.
-Particularly useful for non-trivial data structures ... for instance containers of containers.
+Simple 'double buffer' class that can be useful when employing iterative algorithms that simply 'mutate' the input in
+each iteration. Particularly useful for non-trivial data structures ... for instance containers of containers.
 */
 template <typename T>
 class doubleBuffer {
@@ -116,7 +129,8 @@ struct XXH3Hasher {
         return XXH3_64bits(&input, sizeof(T));
     }
     template <typename T>
-    requires more_concepts::random_access_container<std::remove_cvref_t<T>> && std::is_arithmetic_v<typename T::value_type>
+    requires more_concepts::random_access_container<std::remove_cvref_t<T>> &&
+             std::is_arithmetic_v<typename T::value_type>
     constexpr size_t operator()(T &&input) const {
         return XXH3_64bits(input.data(),
                            sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
@@ -147,16 +161,18 @@ struct XXH3Hasher {
     }
 
     template <typename T>
-    requires more_concepts::random_access_container<std::remove_cvref_t<T>> && std::is_arithmetic_v<typename T::value_type>
+    requires more_concepts::random_access_container<std::remove_cvref_t<T>> &&
+             std::is_arithmetic_v<typename T::value_type>
     constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
         XXH3_64bits_update(state, input.data(),
                            sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
     }
 
     template <typename T>
-    requires more_concepts::random_access_container<std::remove_cvref_t<T>> && more_concepts::random_access_container<std::remove_cvref_t<typename T::value_type>>
+    requires more_concepts::random_access_container<std::remove_cvref_t<T>> &&
+             more_concepts::random_access_container<std::remove_cvref_t<typename T::value_type>>
     constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
-        for (auto &VinV : input) {this->_hashTypeX(VinV, state);}
+        for (auto &VinV : input) { this->_hashTypeX(VinV, state); }
     }
 };
 
@@ -369,7 +385,7 @@ requires(std::derived_from<instrT, _instrBase> && ...)
 struct ProgramQuasiAssembly {
     std::unordered_map<char, std::reference_wrapper<long long>, AOC_commons::XXH3Hasher> mapping;
     unsigned long long                                                                   instructionID = 0;
-    long long                                                                            fakeRegister = LLONG_MIN;
+    long long                                                                            fakeRegister  = LLONG_MIN;
     std::vector<long long>                                                               registers;
     std::vector<std::variant<instrT...>>                                                 instrVect;
 
@@ -387,8 +403,7 @@ struct ProgramQuasiAssembly {
         // TypeToString uses a very crude form of 'reflection'.
         // ENTIRELY POSSIBLE THAT THIS HACK IS NOT REALLY PORTABLE ... BEWARE.
         std::unordered_map<std::string, std::variant<instrT...>, AOC_commons::XXH3Hasher> instrTypeMap;
-        (instrTypeMap.emplace(TypeToString<instrT>(),
-                              std::variant<instrT...>{instrT{fakeRegister, fakeRegister}}),
+        (instrTypeMap.emplace(TypeToString<instrT>(), std::variant<instrT...>{instrT{fakeRegister, fakeRegister}}),
          ...);
 
         registers.reserve(input.size() * 2); // Must NEVER reallocate.
@@ -461,19 +476,22 @@ struct ProgramQuasiAssembly_2018 {
     inline bool                     test_isInstructionIDvalid() { return instructionID < instrVect.size(); }
     inline std::variant<instrT...> &getCurrentAndIncrement() { return instrVect[instructionID++]; }
 
-    static std::unordered_map<int, std::variant<instrT...>, AOC_commons::XXH3Hasher> instrTypeMapCreator(
+    // In order to dynamically use the 'right' type for each instruction, one has to generate a map that maps the string
+    // name representation (as found in the instructions) to the instantiation of std::variant<instrT...> with the
+    // correct type
+    static std::unordered_map<std::string, std::variant<instrT...>, AOC_commons::XXH3Hasher> instrTypeMapCreator(
         const std::vector<std::vector<std::string>> &rawExampleInput, auto &overloadSet, const int registersCount = 4,
         const std::vector<long long> regStartVal = {0, 0, 0, 0}) {
 
         std::vector<long long> registers_local(registersCount, 0); // Registers
-        std::vector<long long> fakeRegisters(4, LLONG_MIN);  // Fake registers
-        std::vector<long long> values(4, LLONG_MIN);         // Values
+        std::vector<long long> fakeRegisters(4, LLONG_MIN);        // Fake registers
+        std::vector<long long> values(4, LLONG_MIN);               // Values
         long long              fakeLong = LLONG_MIN;
 
-        // Parses 3 lines from the example (that is one sample: 1) start regState, 2) OpCode, 3) end regState) into simple VofV of 'long long'.
-        // Skips the 4th line which is always empty in input data. 
+        // Parses 3 lines from the example (that is one sample: 1) start regState, 2) OpCode, 3) end regState) into
+        // simple VofV of 'long long'. Skips the 4th line which is always empty in input data.
         std::vector<std::vector<long long>> parsed(4, std::vector<long long>());
-        auto parseOneSet = [&, line = 0]() mutable -> bool {
+        auto                                parseOneSet = [&, line = 0]() mutable -> bool {
             for (int i = 0; i < 4; ++i) { parsed[i].clear(); }
             for (int i = 0; i < 3; ++i) {
                 if (line >= rawExampleInput.size()) {
@@ -490,7 +508,7 @@ struct ProgramQuasiAssembly_2018 {
         };
 
         // Matcher attempts to execute a sample as if it were each OpCode.
-        // Outputs a vector of valid instruction IDs (the IDs match the position in the parameter pack). 
+        // Outputs a vector of valid instruction IDs (the IDs match the position in the parameter pack).
         auto matcher = [&]() -> std::vector<int> {
             std::vector<std::variant<instrT...>> variantVector;
             (variantVector.push_back(instrT{fakeLong, fakeLong, fakeLong}), ...);
@@ -542,7 +560,7 @@ struct ProgramQuasiAssembly_2018 {
 
         // There can only be one 'real' matching 'instrID' per rawID and must match for all (ie. the size of
         // the vector). Depending on input might be necessary to gradually eliminate multiple matches.
-        std::unordered_map<int, int, AOC_commons::XXH3Hasher> IDsMap;
+        std::unordered_map<int, std::string, AOC_commons::XXH3Hasher> IDsMap;
 
         while (IDsMap.size() < counter.size()) {
             for (int j = 0; auto &counterRangePerID : counter) {
@@ -558,15 +576,15 @@ struct ProgramQuasiAssembly_2018 {
                     i++;
                 }
                 if (idMatched != INT_MIN) {
-                    IDsMap.emplace(idMatched, j);
+                    IDsMap.emplace(idMatched, std::to_string(j));
                     for (auto &cntrRng : counter) { cntrRng[idMatched] = 0; }
                 }
                 j++;
             }
         }
 
-        std::unordered_map<int, std::variant<instrT...>, AOC_commons::XXH3Hasher> instrTypeMap;
-        long long                                                                 cntr = 0;
+        std::unordered_map<std::string, std::variant<instrT...>, AOC_commons::XXH3Hasher> instrTypeMap;
+        long long                                                                         cntr = 0;
 
         // Horrifying hack creating a dangling reference with the 'counter' being passed into Instr_T constructor
         (instrTypeMap.emplace(IDsMap.at(cntr++), std::variant<instrT...>{instrT{cntr, cntr, cntr}}), ...);
@@ -574,8 +592,8 @@ struct ProgramQuasiAssembly_2018 {
     };
 
     // The one and only constructor of the 'prog' type
-    ProgramQuasiAssembly_2018(const std::vector<std::vector<std::string>>                               &rawInstrInput,
-                              std::unordered_map<int, std::variant<instrT...>, AOC_commons::XXH3Hasher> &mapped,
+    ProgramQuasiAssembly_2018(const std::vector<std::vector<std::string>> &rawInstrInput,
+                              std::unordered_map<std::string, std::variant<instrT...>, AOC_commons::XXH3Hasher> &mapped,
                               const std::vector<long long> regStartVal = {0, 0, 0, 0}) {
 
         assert((void("Prog type instantiated with an empty input"), rawInstrInput.size() > 0));
@@ -592,10 +610,10 @@ struct ProgramQuasiAssembly_2018 {
         int lastRegOccupied = INT_MIN;
         for (auto &line : rawInstrInput) {
             assert((void("Some instructions name in input doesn't match any type in template parameter pack"),
-                    mapped.contains(std::stoi(line.front()))));
+                    mapped.contains(line.front())));
 
             auto refVal_instructions =
-                std::visit([&](auto &&a) -> std::vector<int> { return a.getRS(); }, mapped.at(std::stoi(line.front())));
+                std::visit([&](auto &&a) -> std::vector<int> { return a.getRS(); }, mapped.at(line.front()));
 
             std::visit(
                 [&](auto &&a) -> void {
@@ -609,7 +627,7 @@ struct ProgramQuasiAssembly_2018 {
                         lastRegOccupied = std::max(lastRegOccupied, std::stoi(line[1]));
                     }
                 },
-                mapped.at(std::stoi(line.front())));
+                mapped.at(line.front()));
         }
 
 
@@ -618,7 +636,7 @@ struct ProgramQuasiAssembly_2018 {
 
         // This loop set the right reference and copies the right variant into instrVect
         for (auto &line : rawInstrInput) {
-            auto &variantInMap = mapped.at(std::stoi(line.front()));
+            auto &variantInMap = mapped.at(line.front());
             auto  refVal_instructions_2 =
                 std::visit([&](auto &&a) -> std::vector<int> { return a.getRS(); }, variantInMap);
 
