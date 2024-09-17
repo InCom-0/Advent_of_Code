@@ -20,9 +20,9 @@ Note that this main is used while developing the solutions.
 
 int main() {
 
-    auto pth_1 = std::filesystem::path(DATAFOLDER_2018) / "2018_19_1.txt";
+    auto pth_1 = std::filesystem::path(DATAFOLDER_2018) / "2018_20_1.txt";
 
-    std::cout << AOC2018::day19_1(pth_1.generic_string(), std::vector<long long> {0,0,0,0,0,0}) << '\n';
+    std::cout << AOC2018::day20_1(pth_1.generic_string()) << '\n';
     
 
     return 1;
