@@ -11,8 +11,9 @@ namespace AOC2018 {
 
 long long day20_1(std::string dataFile) {
 
+    Omni_Vector<long long,3,17,8> ov1;
 
-
+    ov1.expand_ifNecessary(35, 47, -117);
 
 
     return -999;
