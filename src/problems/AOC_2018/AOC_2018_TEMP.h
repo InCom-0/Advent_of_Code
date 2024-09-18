@@ -101,7 +101,7 @@ private:
         // TODO: Would be fantastic to add iterator and ranges support
 
         // Acess style modelling vector
-        T &operator[](long long const id) const {
+        T &operator[](long long const id) {
             if (id < 0) { return m_negVect[(-id) - 1]; }
             else { return m_posVect[id]; }
         }
@@ -263,7 +263,7 @@ private:
     consteval static auto __getContainedType_sampleInst() {
 
         if constexpr (lvlToGo == 1) { return __OV<Data_T>(); }
-        else { return __OV<decltype(__getContainedType_inst<lvlToGo - 1>())>(); }
+        else { return __OV<decltype(__getContainedType_sampleInst<lvlToGo - 1>())>(); }
     }
 
     // The member below is where all the contained data lives
@@ -272,7 +272,7 @@ private:
 public:
     Omni_Vector() : m_data() {};
 
-    auto &operator[](long long const id) const { return m_data[id]; }
+    auto &operator[](long long const id) { return m_data[id]; }
 
     template <typename... IDs>
     size_t expand_ifNecessary(IDs... ids) {
