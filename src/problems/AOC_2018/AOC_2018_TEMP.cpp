@@ -1,0 +1,2 @@
+
+namespace AOC2018 {}

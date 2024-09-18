@@ -1,5 +1,6 @@
 #pragma once
 
+#include <AOC_2018_TEMP.h>
 #include <AOC_2018_day_1.h>
 #include <AOC_2018_day_10.h>
 #include <AOC_2018_day_11.h>
