@@ -1,10 +1,12 @@
 #pragma once
 
+#include <ankerl/unordered_dense.h>
+#include <cmath>
 #include <ctre.hpp>
 #include <flux.hpp>
+#include <mdspan/mdspan.hpp>
 #include <more_concepts/more_concepts.hpp>
 #include <type_traits>
-#include <xxhash.h>
 
 
 namespace AOC2018 {
@@ -17,16 +19,28 @@ template <typename T, template <typename...> typename Template>
 concept SpecializationOf = is_specialization_of<T, Template>::value;
 
 
+template <size_t N, typename T, typename... Ts>
+struct _c_generateTuple {
+    using type = typename _c_generateTuple<N - 1, T, T, Ts...>::type;
+};
+
+template <typename T, typename... Ts>
+struct _c_generateTuple<0, T, Ts...> {
+    using type = std::tuple<Ts...>;
+};
+
+
 /* 'Omni Vector' container type
 
 Omni => The vector goes both ways ... that is you can index into 'Omni_Vector' with negative indices.
 Omni => Made to nativelly supports N dimensions aka: nesting (as in eg. 'vector<vector<int>>' is 2-dimensional)
+
 By no means 'industrial grade'
 
 -
 
 Above all the most important feature:
-There is an internal type (__OV) that the Omni Vector uses and that supports templated nesting within itself.
+There is an internal type (_OV) that the Omni Vector uses and that supports templated nesting within itself.
 It knows at compile time when and how many times it is nested within itself (enabled through features of the type system
 AND template metaprogramming). This enables programmatic control of the whole structure by calling functions on the top
 level only (for commonly used tasks). Thereby abstracting away most of the pesky details of managing such nested data
@@ -57,11 +71,11 @@ number of dimensions and the 'exploration' happens from a central point 'one ste
 (including extreme cases).
 _
 
-Mostly created as an excercise into compile time (meta)programming and usage of the various more modern features of the C++ typesystem.
+Mostly created as an excercise into compile time (meta)programming and usage of the various more modern features of the
+C++ typesystem.
 
 
  */
-
 
 template <typename Data_T, size_t c_numOfDimensions = 1, Data_T c_defaultValue = Data_T(), size_t c_blockSize = 8>
 requires std::copy_constructible<Data_T> && std::is_default_constructible_v<Data_T>
@@ -69,7 +83,7 @@ class Omni_Vector {
 
 private:
     template <typename T>
-    class __OV {
+    class _OV {
     private:
         // DATA MEMBERS
         std::vector<T> m_posVect;
@@ -79,11 +93,11 @@ private:
         // CONSTRUCTION AND DESTRUCTION
 
         // Constructs all 'levels' below automatically. Contained data is default copy initialized to the value of
-        // 'data_v'. Default data is created in each dimension: 'blockSize' number of elements in each direction. For 2
-        // dimensions with blocksize 16 => (2^2=4)*(16^2) = 1'024. For 3 dimensions with blocksize 16 => (2^3=8)*(16^3)
-        // = 32'768. Beware of dimensionality !!!
-        __OV() {
-            if constexpr (SpecializationOf<T, __OV>) {
+        // 'c_defaultValue'. Default data is created in each dimension: 'c_blockSize' number of elements in each
+        // direction. For 2 dimensions with c_blockSize 16 => (2^2=4)*(16^2) = 1'024. For 3 dimensions with c_blockSize
+        // 16 => (2^3=8)*(16^3) = 32'768. Beware of dimensionality !!!
+        _OV() {
+            if constexpr (SpecializationOf<T, _OV>) {
                 m_posVect = std::vector<T>(c_blockSize, T());
                 m_negVect = std::vector<T>(c_blockSize, T());
             }
@@ -92,8 +106,9 @@ private:
                 m_negVect = std::vector<T>(c_blockSize, c_defaultValue);
             }
             else {
-                static_assert(false, "Impossible to construct due to passed default Data_t type is not the same as the "
-                                     "'last level' type instantiation in top level constructor");
+                static_assert(
+                    false,
+                    "Impossible to construct on the last level due to Data_T type not the same as the 'typename T'");
             }
         }
 
@@ -101,9 +116,18 @@ private:
         // TODO: Would be fantastic to add iterator and ranges support
 
         // Acess style modelling vector
-        T &operator[](long long const id) {
-            if (id < 0) { return m_negVect[(-id) - 1]; }
-            else { return m_posVect[id]; }
+        // Can use the
+        template <typename First_ID, typename... Other_IDs>
+        auto &operator[](First_ID const &&id, Other_IDs const &&...other_ids) {
+            if constexpr (sizeof...(other_ids) == 0) {
+                if (id < 0) { return m_negVect[(-id) - 1]; }
+                else { return m_posVect[id]; }
+            }
+            else {
+                if (id < 0) { return m_negVect[(-id) - 1, std::forward<decltype(other_ids)>(other_ids)...]; }
+                else { return m_posVect[id, std::forward<decltype(other_ids)>(other_ids)...]; }
+            }
+            std::unreachable();
         }
 
         // CONSTEVAL STATIC QUERYING
@@ -112,7 +136,7 @@ private:
         consteval static size_t get_depthFromTop() { return c_numOfDimensions; }
 
         consteval static size_t get_depth() {
-            if constexpr (SpecializationOf<T, __OV>) { return T::get_depth() + 1; }
+            if constexpr (SpecializationOf<T, _OV>) { return T::get_depth() + 1; }
             else { return 1; }
         }
 
@@ -137,15 +161,14 @@ private:
         template <typename... OtherIDs>
         void expand_atSignedLvl(long long signedLvlToExpand, long long idx_onThisLevel,
                                 OtherIDs... idxs_onOtherLevels) {
-            static_assert(
-                get_depth() == (sizeof...(idxs_onOtherLevels) + 1),
-                "Incorrect argument passing to 'expand_atSignedLvl' ... (size of pack + 1) doesn't match getDepth()");
+            static_assert(get_depth() == (sizeof...(idxs_onOtherLevels) + 1),
+                          "Incorrect argument passing to 'expand_atSignedLvl' ...");
 
             // Specialized using if constexpr
             // This must be done, because one can only call 'expand_atSignedLvl' when T is a specialization of
             // Omni_Vector
 
-            if constexpr (SpecializationOf<T, __OV>) {
+            if constexpr (SpecializationOf<T, _OV>) {
                 if (std::abs(signedLvlToExpand) != 1) {
                     // The whole 'block size' number of elements in which idx_onThisLevel lies needs to be called with
                     // 'expand_atSignedLvl'
@@ -167,10 +190,10 @@ private:
                 }
                 else {
                     if (signedLvlToExpand < 0) {
-                        for (int i = 0; i < c_blockSize; ++i) { this->m_negVect.push_back(typename T::__OV()); }
+                        for (int i = 0; i < c_blockSize; ++i) { this->m_negVect.push_back(typename T::_OV()); }
                     }
                     else {
-                        for (int i = 0; i < c_blockSize; ++i) { this->m_posVect.push_back(typename T::__OV()); }
+                        for (int i = 0; i < c_blockSize; ++i) { this->m_posVect.push_back(typename T::_OV()); }
                     }
                 }
             }
@@ -184,9 +207,8 @@ private:
                 }
             }
             else {
-                static_assert(false,
-                              "Incorrect argument passing to expand_atSignedLvl ... T is neither Omni_Vector nor is "
-                              "it the 'last level' with 'idxs_onOtherLevels' pack of size 0");
+                static_assert(false, "Incorrect argument passing to expand_atSignedLvl ... T is neither '_OV' nor is "
+                                     "it the 'last level' with 'idxs_onOtherLevels' pack of size 0");
             }
         }
 
@@ -201,7 +223,7 @@ private:
         template <typename... IDS>
         requires true && ((std::convertible_to<IDS, long long>) && ...)
         long long find_firstInvalidSignedDepth(IDS const &&...ids) {
-            long long depthOfInvalid = __find_DepthOfFirstInvalid(std::forward<decltype(ids)>(ids)...);
+            long long depthOfInvalid = _find_DepthOfFirstInvalid(std::forward<decltype(ids)>(ids)...);
             if (depthOfInvalid > get_depth()) { return 0; }
 
             size_t    depthOfInvalidCPY = depthOfInvalid;
@@ -216,14 +238,14 @@ private:
         // TODO: Attempt to move this function inside the function above to avoid clutter
         template <typename FirstID, typename... IDs>
         requires std::convertible_to<FirstID, long long> && ((std::convertible_to<IDs, long long>) && ...)
-        size_t __find_DepthOfFirstInvalid(FirstID const &&first_id, IDs const &&...ids) {
+        size_t _find_DepthOfFirstInvalid(FirstID const &&first_id, IDs const &&...ids) {
             static_assert(
                 get_depth() == (sizeof...(ids) + 1),
-                "Incorrect argument passing to __findDepthOfFirstInvalid ... size of pack doesn't match getDepth()");
+                "Incorrect argument passing to findDepthOfFirstInvalid ... size of pack doesn't match getDepth()");
 
-            if constexpr (SpecializationOf<T, __OV>) {
+            if constexpr (SpecializationOf<T, _OV>) {
                 if (test_idIsValid(first_id)) {
-                    return 1 + (*this)[std::forward<decltype(first_id)>(first_id)].__find_DepthOfFirstInvalid(
+                    return 1 + (*this)[std::forward<decltype(first_id)>(first_id)]._find_DepthOfFirstInvalid(
                                    std::forward<decltype(ids)>(ids)...);
                 }
                 else { return 1; }
@@ -232,7 +254,7 @@ private:
                 if (test_idIsValid(first_id)) { return 2; }
                 else { return 1; }
             }
-            else { static_assert(false, "Incorrect argument passing to __findDepthOfFirstInvalid"); }
+            else { static_assert(false, "Incorrect argument passing to _findDepthOfFirstInvalid"); }
             std::unreachable();
         }
 
@@ -260,19 +282,26 @@ private:
 
 private:
     template <size_t lvlToGo>
-    consteval static auto __getContainedType_sampleInst() {
+    consteval static auto _getContainedType_sampleInst() {
 
-        if constexpr (lvlToGo == 1) { return __OV<Data_T>(); }
-        else { return __OV<decltype(__getContainedType_sampleInst<lvlToGo - 1>())>(); }
+        if constexpr (lvlToGo == 1) { return _OV<Data_T>(); }
+        else { return _OV<decltype(_getContainedType_sampleInst<lvlToGo - 1>())>(); }
     }
 
     // The member below is where all the contained data lives
-    decltype(__getContainedType_sampleInst<c_numOfDimensions>()) m_data;
+    decltype(_getContainedType_sampleInst<c_numOfDimensions>()) m_data;
 
 public:
     Omni_Vector() : m_data() {};
 
-    auto &operator[](long long const id) { return m_data[id]; }
+    template <typename First_ID, typename... Other_IDs>
+    requires(std::same_as<std::remove_cvref_t<std::remove_pointer_t<std::decay_t<First_ID>>>, long long>) &&
+            ((std::same_as<std::remove_cvref_t<std::remove_pointer_t<std::decay_t<Other_IDs>>>, long long>), ...)
+    auto &operator[](First_ID const &&id, Other_IDs const &&...other_ids) {
+        if constexpr (sizeof...(other_ids) == 0) { return m_data[std::forward<decltype(id)>(id)]; }
+        else { return m_data[std::forward<decltype(id)>(id), std::forward<decltype(other_ids)>(other_ids)...]; }
+        std::unreachable();
+    }
 
     template <typename... IDs>
     size_t expand_ifNecessary(IDs... ids) {
@@ -283,6 +312,94 @@ public:
     consteval static size_t get_blockSize() { return c_blockSize; }
     consteval static Data_T get_defaultValue() { return c_defaultValue; }
     consteval static size_t get_numOfDimensions() { return c_numOfDimensions; }
+};
+
+
+/* aaa
+
+ */
+template <typename Data_T, size_t c_numOfDimensions = 1, Data_T c_defaultValue = Data_T(), size_t c_blockSize = 4>
+requires std::is_trivially_copyable_v<Data_T>
+class Omni_Store {
+public:
+    using Key_Type = typename std::array<long long, c_numOfDimensions>;
+
+private:
+    template <size_t N, size_t T, size_t... Sx>
+    struct _c_gen_xIDs_sequence {
+        using type = typename _c_gen_xIDs_sequence<N - 1, T, T, Sx...>::type;
+    };
+
+    template <size_t S, size_t... Sx>
+    struct _c_gen_xIDs_sequence<0, S, Sx...> {
+        using type = std::integer_sequence<size_t, Sx...>;
+    };
+
+    template <typename T, T... ints>
+    static constexpr size_t _detail_get_chunkItemCount(std::integer_sequence<T, ints...> int_seq) {
+        return (ints * ...);
+    }
+
+
+    using c_xIDs_sequence = _c_gen_xIDs_sequence<c_numOfDimensions, c_blockSize>::type;
+
+    static constexpr const auto   c_xIDs_sequence_inst = c_xIDs_sequence{};
+    static constexpr const size_t c_chunkItemCount     = _detail_get_chunkItemCount(c_xIDs_sequence_inst);
+
+
+    class _Chunk {
+    private:
+        std::array<Data_T, c_chunkItemCount> m_data;
+
+        template <typename T, T... ints>
+        constexpr auto _detail_gen_mdspan_toSelf(std::integer_sequence<T, ints...> const &int_seq) const {
+            return Kokkos::mdspan(m_data.data(), ints...);
+        }
+
+
+    public:
+        _Chunk() { m_data.fill(c_defaultValue); };
+        _Chunk(Data_T defaultDataValue) { m_data.fill(defaultDataValue); };
+
+        constexpr auto generate_mdspan_toSelf() const { return _detail_gen_mdspan_toSelf(c_xIDs_sequence_inst); }
+
+
+        template <typename... IDS>
+        Data_T &operator[](IDS &&...ids) {
+            if constexpr (sizeof...(ids) == c_numOfDimensions) {}
+            else {}
+            std::unreachable();
+        }
+    };
+
+    decltype(_Chunk::generate_mdspan_toSelf()) m_mds_to_lastChunk;
+    Key_Type                                   m_lastChunk_Corner;
+    Key_Type                                   m_lastChunk_DiagCorner;
+
+    template <typename T>
+    Data_T &_detail_get(T &&key) {}
+
+    inline bool is_LastChunkSameAS(Key_Type &key) {
+        int invalidDims = 0;
+        for (int i = 0; i < c_numOfDimensions; ++i) { invalidDims += key[i] < m_lastChunk_Corner[i]; }
+        for (int i = 0; i < c_numOfDimensions; ++i) { invalidDims += key[i] > m_lastChunk_Corner[i]; }
+        return not invalidDims;
+    }
+
+
+
+    template <typename T, T... ints>
+    Data_T &_detail_get_isFromThisChunk(Key_Type &key, std::integer_sequence<T, ints...>) {
+        return m_mds_to_lastChunk[key[ints]...];
+    }
+
+    Data_T &get(Key_Type &key) {
+        if (is_LastChunkSameAS(key)) {
+            return _detail_get_isFromThisChunk(key, std::make_integer_sequence<size_t, c_numOfDimensions>{});
+        }
+        else {}
+        std::unreachable();
+    }
 };
 
 

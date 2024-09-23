@@ -35,6 +35,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(hash-library)
 
+FetchContent_Declare(
+    mdspan
+    GIT_REPOSITORY https://github.com/InCom-0/mdspan
+    GIT_TAG stable
+)
+FetchContent_MakeAvailable(mdspan)
+
+
 # FetchContent_Declare(
 #     foonathan_memory
 #     GIT_REPOSITORY https://github.com/foonathan/memory.git
