@@ -12,6 +12,7 @@ target_link_libraries(AOC_Commons PUBLIC
     xxHash::xxhash
     bitlib::bitlib
     unordered_dense::unordered_dense
+    robin_hood::robin_hood
     more_concepts::more_concepts
     hash-library::hash-library
     std::mdspan)

@@ -25,6 +25,9 @@
     },
     {
       "name": "unordered-dense"
+    },
+    {
+      "name": "robin-hood-hashing"
     }
   ]
 }

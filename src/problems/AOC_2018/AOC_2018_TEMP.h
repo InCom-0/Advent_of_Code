@@ -1,32 +1,59 @@
 #pragma once
 
-#include <ankerl/unordered_dense.h>
-#include <cmath>
+#include <AOC_commons.h>
+
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <mdspan/mdspan.hpp>
 #include <more_concepts/more_concepts.hpp>
+#include <robin_hood.h>
+
+
+#include <concepts>
 #include <type_traits>
 
 
 namespace AOC2018 {
 
+
 template <typename T, template <typename...> typename Template>
 struct is_specialization_of : std::false_type {};
 template <template <typename...> typename Template, typename... Args>
 struct is_specialization_of<Template<Args...>, Template> : std::true_type {};
+// Note: SpecializationOf does not support non-type template parameteres (at all) ... beware
 template <typename T, template <typename...> typename Template>
 concept SpecializationOf = is_specialization_of<T, Template>::value;
 
-
+// Generating a tuple with of N times the supplied type
+// Usage: pass the N parameter and the T type only, leave the ...Ts pack empty
+// Note: If you don't adhere to the above the output tuple will have more 'member types' than you want. Beware.
+// Note: Uses recursive template instantiation.
+// Note: T and Ts all must be the same types.
 template <size_t N, typename T, typename... Ts>
+requires(std::same_as<T, Ts> && ...)
 struct _c_generateTuple {
     using type = typename _c_generateTuple<N - 1, T, T, Ts...>::type;
 };
-
 template <typename T, typename... Ts>
+requires(std::same_as<T, Ts> && ...)
 struct _c_generateTuple<0, T, Ts...> {
     using type = std::tuple<Ts...>;
+};
+
+// Generating an 'integer_sequence' of N identical size_t integers of value S.
+// Usage: pass the N parameter and the S integer only, leave the ...Sx pack empty
+// Note: If you don't adhere to the above the output integer_sequence will be longer than you (probably) want. Beware.
+// Note: Uses recursive template instantiation.
+// Note: S and Sx must all be the same value.
+template <size_t N, size_t S, size_t... Sx>
+requires((S == Sx) && ...)
+struct c_gen_X_repeat_sequence {
+    using type = typename c_gen_X_repeat_sequence<N - 1, S, S, Sx...>::type;
+};
+template <size_t S, size_t... Sx>
+requires((S == Sx) && ...)
+struct c_gen_X_repeat_sequence<0, S, Sx...> {
+    using type = std::integer_sequence<size_t, Sx...>;
 };
 
 
@@ -325,81 +352,196 @@ public:
     using Key_Type = typename std::array<long long, c_numOfDimensions>;
 
 private:
-    template <size_t N, size_t T, size_t... Sx>
-    struct _c_gen_xIDs_sequence {
-        using type = typename _c_gen_xIDs_sequence<N - 1, T, T, Sx...>::type;
-    };
+    // FORWARD DECLARATIONS
+    class _Chunk;
 
-    template <size_t S, size_t... Sx>
-    struct _c_gen_xIDs_sequence<0, S, Sx...> {
-        using type = std::integer_sequence<size_t, Sx...>;
-    };
+    // PRIVATE STATIC
+
 
     template <typename T, T... ints>
-    static constexpr size_t _detail_get_chunkItemCount(std::integer_sequence<T, ints...> int_seq) {
+    consteval static size_t _c_detail_get_variadicPower(const std::integer_sequence<T, ints...>) {
         return (ints * ...);
     }
 
+    template <typename T, T... ints>
+    consteval static Key_Type _c_detail_get_cornerDefault(const std::integer_sequence<T, ints...>) {
+        return Key_Type{ints...};
+    }
 
-    using c_xIDs_sequence = _c_gen_xIDs_sequence<c_numOfDimensions, c_blockSize>::type;
+    consteval static auto _c_detail_mds_convArrayPair() {
+        std::array<std::pair<long long, long long>, c_numOfDimensions> res;
+        for (int i = 0; i < c_numOfDimensions; ++i) {
+            res[i].first  = i;
+            res[i].second = 1;
+            for (int j = 0; j < c_numOfDimensions - i - 1; ++j) { res[i].second *= c_blockSize; }
+        }
+        return res;
+    }
 
-    static constexpr const auto   c_xIDs_sequence_inst = c_xIDs_sequence{};
-    static constexpr const size_t c_chunkItemCount     = _detail_get_chunkItemCount(c_xIDs_sequence_inst);
 
+    static constexpr const auto c_X_repeat_blockSize =
+        (typename c_gen_X_repeat_sequence<c_numOfDimensions, c_blockSize>::type){};
+    static constexpr const auto c_X_repeat_three = (typename c_gen_X_repeat_sequence<c_numOfDimensions, 3LL>::type){};
+    static constexpr const auto c_X_repeat_LLONG_MIN =
+        (typename c_gen_X_repeat_sequence<c_numOfDimensions, LLONG_MAX>::type){};
 
+    static constexpr const auto      c_mds_convPairArray  = _c_detail_mds_convArrayPair();
+    static constexpr const auto      c_IDs_sequence       = std::make_integer_sequence<size_t, c_numOfDimensions>{};
+    static constexpr const size_t    c_chunkItemCount     = _c_detail_get_variadicPower(c_X_repeat_blockSize);
+    static constexpr const size_t    c_blockOfChunksCount = _c_detail_get_variadicPower(c_X_repeat_three);
+    static constexpr const long long c_blockSize_long     = c_blockSize;
+    // static constexpr const _Chunk    fake_Chunk = _Chunk();
+
+    // CHUNK NESTED TYPE DEFINITION
     class _Chunk {
-    private:
-        std::array<Data_T, c_chunkItemCount> m_data;
+    public:
+        // MEMBERS
+        std::array<Data_T, c_chunkItemCount>                             m_data;
+        std::array<std::reference_wrapper<_Chunk>, c_blockOfChunksCount> m_refsToSurrChunks;
+        bool                                                             m_refsToSurrChunkAllValid = false;
 
+        // _DETAIL
         template <typename T, T... ints>
-        constexpr auto _detail_gen_mdspan_toSelf(std::integer_sequence<T, ints...> const &int_seq) const {
+        constexpr auto _detail_gen_mdspan_toSelf(const std::integer_sequence<T, ints...>) {
             return Kokkos::mdspan(m_data.data(), ints...);
         }
+        template <typename T, T... ints>
+        constexpr auto _detail_gen_mdspan_toSurrChunks(const std::integer_sequence<T, ints...>) {
+            return Kokkos::mdspan(m_refsToSurrChunks.data(), ints...);
+        }
 
+        void _setSurrValidFlag_True() { m_refsToSurrChunkAllValid = true; }
 
     public:
-        _Chunk() { m_data.fill(c_defaultValue); };
-        _Chunk(Data_T defaultDataValue) { m_data.fill(defaultDataValue); };
+        // _DETAIL
+        template <typename T, T... ints>
+        consteval static auto _detail_gen_mdspan_type(const std::integer_sequence<T, ints...>) {
+            std::array<Data_T, c_chunkItemCount> some_data_instance;
+            return Kokkos::mdspan(some_data_instance.data(), ints...);
+        }
 
-        constexpr auto generate_mdspan_toSelf() const { return _detail_gen_mdspan_toSelf(c_xIDs_sequence_inst); }
+        // CONSTRUCT
+        constexpr _Chunk() : _Chunk(c_defaultValue) {};
+        constexpr _Chunk(Data_T defaultDataValue) {
+            m_data.fill(defaultDataValue);
+            // m_refsToSurrChunks.fill(fake_Chunk);
+        };
+
+        // ACCESS
+        constexpr auto gen_mdspan_toSelf() { return _detail_gen_mdspan_toSelf(c_X_repeat_blockSize); }
+        constexpr auto gen_mdspan_ToSurrChunks() { return _detail_gen_mdspan_toSurrChunks(c_blockOfChunksCount); }
+
+        bool is_refsToSurrAllValid() { return m_refsToSurrChunkAllValid; }
 
 
-        template <typename... IDS>
-        Data_T &operator[](IDS &&...ids) {
-            if constexpr (sizeof...(ids) == c_numOfDimensions) {}
-            else {}
-            std::unreachable();
+        template <typename... MDS_IDs, typename T, T... ints>
+        std::reference_wrapper<_Chunk> get_surrChunk(MDS_IDs &&...mds_IDs, const std::integer_sequence<T, ints...>) {
+            return Kokkos::mdspan(m_refsToSurrChunks.data(), ints...)[mds_IDs...];
         }
     };
 
-    decltype(_Chunk::generate_mdspan_toSelf()) m_mds_to_lastChunk;
-    Key_Type                                   m_lastChunk_Corner;
-    Key_Type                                   m_lastChunk_DiagCorner;
 
-    template <typename T>
-    Data_T &_detail_get(T &&key) {}
+    // PRIVATE DETAIL INTERNAL
+    // Get reference to one Data_T instance ... the 'goal'
+    template <typename T, T... ints>
+    Data_T &_get_fromSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...>) {
+        return m_mds_to_chunkData[(key[ints] - m_selChunk_Corner[ints]) * m_selChunk_negOrPos[ints] +
+                                  m_selChunk_offsetsForNeg[ints]...];
+    }
 
-    inline bool is_LastChunkSameAS(Key_Type &key) {
+    template <typename T, T... ints>
+    constexpr Key_Type _get_chunkCornerFromKey(Key_Type const &key, const std::integer_sequence<T, ints...>) {
+        return Key_Type{(((key[ints] + std::signbit(key[ints])) / c_blockSize_long) * c_blockSize_long) +
+                        (std::signbit(key[ints]) * (-c_blockSize_long))...};
+    }
+
+    template <typename T, T... ints>
+    constexpr void _update_selChunkMembers(Key_Type const &key, const std::integer_sequence<T, ints...>) {
+        // Seems comlicated, but it just sets the helper variables so that access to said chunk is fast later on.
+        // Most of this is done in order to 'remap' negative indices the correct way
+        // Should be calculated nearly instantenously on any modern CPU
+        m_selChunk_Corner        = _get_chunkCornerFromKey(key, c_IDs_sequence);
+        m_selChunk_negOrPos      = Key_Type{(std::signbit(key[ints]) * (-2LL) + 1LL)...};
+        m_selChunk_offsetsForNeg = Key_Type{std::signbit(key[ints]) * (-1LL)...};
+    }
+
+
+    template <typename... PAIRS>
+    void convert_linIDtoArrOfIDs(Key_Type &arr_out, size_t const &linearID, const PAIRS &...pairs) {
+        ((arr_out[(pairs).first] = linearID / (pairs).second), ...);
+        arr_out[arr_out.size() - 1] = linearID % c_blockSize_long;
+    }
+
+    // 'Hard' lookup ... direct reference unavailable must lookup in 'dense map'
+    template <typename T, T... ints>
+    void _hardLookup(Key_Type const &key, const std::integer_sequence<T, ints...>) {
+
+        _update_selChunkMembers(key, c_IDs_sequence);
+
+        // BEWARE: May not insert if _Chunk with that key already exists ... in that case just returns it
+        auto mpInsertResult = mp.insert({m_selChunk_Corner, _Chunk()});
+        selChunk            = mpInsertResult.first->second;
+        m_mds_to_chunkData  = selChunk.gen_mdspan_toSelf();
+
+        if (not selChunk.get().is_refsToSurrAllValid()) {
+            auto mds_SurrChunks = selChunk.get().gen_mdspan_ToSurrChunks();
+        }
+    }
+
+    template <typename T, T... ints>
+    void _softLookup(Key_Type const &key, const std::integer_sequence<T, ints...>) {
+        Key_Type oldCorner = m_selChunk_Corner;
+        _update_selChunkMembers(key, c_IDs_sequence);
+
+        // First argument is Key_Type with each value in array 0, 1 or 2, based on which surrChunk ref we want
+        selChunk = selChunk.get().get_surrChunk(
+            Key_Type{(((m_selChunk_Corner[ints] - oldCorner[ints]) / c_blockSize) + 1)...}, c_X_repeat_three);
+
+        if (not selChunk.get().is_refsToSurrAllValid()) {
+            auto mds_SurrChunks = selChunk.get().gen_mdspan_ToSurrChunks();
+        }
+    }
+
+
+    // MEMBERS
+
+
+    // This is where all of the _Chunk data resides
+
+public:
+    // IS_ FUNCTIONS
+    bool is_inSelChunk(Key_Type const &key) const {
         int invalidDims = 0;
-        for (int i = 0; i < c_numOfDimensions; ++i) { invalidDims += key[i] < m_lastChunk_Corner[i]; }
-        for (int i = 0; i < c_numOfDimensions; ++i) { invalidDims += key[i] > m_lastChunk_Corner[i]; }
+        for (int i = 0; (i < c_numOfDimensions && invalidDims == 0); ++i) {
+            invalidDims += (key[i] < m_selChunk_Corner[i]) || (key[i] >= (m_selChunk_Corner[i] + c_blockSize));
+        }
+        return not invalidDims;
+    }
+    bool is_outsideSurrChunks(Key_Type const &key) const {
+        int invalidDims = 0;
+        for (int i = 0; (i < c_numOfDimensions && invalidDims == 0); ++i) {
+            invalidDims +=
+                (key[i] < (m_selChunk_Corner[i] - c_blockSize)) || (key[i] >= (m_selChunk_Corner[i] + 2 * c_blockSize));
+        }
         return not invalidDims;
     }
 
-
-
-    template <typename T, T... ints>
-    Data_T &_detail_get_isFromThisChunk(Key_Type &key, std::integer_sequence<T, ints...>) {
-        return m_mds_to_lastChunk[key[ints]...];
+    // MAIN INTERFACE
+    Data_T &get(Key_Type const &key) {
+        if (is_outsideSurrChunks(key)) { _hardLookup(key, c_IDs_sequence); }
+        else if (not is_inSelChunk(key)) { _softLookup(key, c_IDs_sequence); }
+        return _get_fromSelChunk(key, c_IDs_sequence);
     }
 
-    Data_T &get(Key_Type &key) {
-        if (is_LastChunkSameAS(key)) {
-            return _detail_get_isFromThisChunk(key, std::make_integer_sequence<size_t, c_numOfDimensions>{});
-        }
-        else {}
-        std::unreachable();
-    }
+
+    Key_Type m_selChunk_Corner = _c_detail_get_cornerDefault(c_X_repeat_LLONG_MIN);
+    Key_Type m_selChunk_negOrPos;
+    Key_Type m_selChunk_offsetsForNeg;
+
+    std::reference_wrapper<_Chunk>                                  selChunk = _Chunk();
+    decltype(_Chunk::_detail_gen_mdspan_type(c_X_repeat_blockSize)) m_mds_to_chunkData;
+
+    robin_hood::unordered_node_map<Key_Type, _Chunk, AOC_commons::XXH3Hasher> mp;
 };
 
 
