@@ -29,6 +29,8 @@ long long day20_1(std::string dataFile) {
 
     Omni_Store<char, 3, '_', 4> os2;
 
+    auto aaa = os2.get(rr);
+
 
 
 
