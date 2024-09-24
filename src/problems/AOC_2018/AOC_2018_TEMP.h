@@ -395,7 +395,7 @@ private:
         (typename c_gen_X_repeat_sequence<c_numOfDimensions, LLONG_MIN>::type){};
 
     static constexpr const size_t    c_blockOfChunksCount = _c_detail_get_variadicPower(c_X_repeat_three);
-    // static constexpr const auto      c_mds_convPairArray  = _c_detail_mds_convArrayPair();
+    static constexpr const auto      c_mds_convPairArray  = _c_detail_mds_convArrayPair();
     static constexpr const auto      c_IDs_sequence       = std::make_integer_sequence<size_t, c_numOfDimensions>{};
     static constexpr const size_t    c_chunkItemCount     = _c_detail_get_variadicPower(c_X_repeat_blockSize);
     static constexpr const long long c_blockSize_long     = c_blockSize;
@@ -432,17 +432,12 @@ private:
             return Kokkos::mdspan(some_data_instance.data(), ints...);
         }
 
-        template <typename T, T... ints>
-        constexpr auto _ddd(const std::integer_sequence<T, ints...>) {
-            return std::array<std::reference_wrapper<_Chunk>, c_blockOfChunksCount>{(ints, _Chunk())...};
-        }
-
         // CONSTRUCT
         constexpr _Chunk() { m_data.fill(c_defaultValue); };
-        constexpr _Chunk(Data_T defaultDataValue) {
+        constexpr _Chunk(Data_T defaultDataValue, _Chunk &fakeChunkRef)
+            : m_refsToSurrChunks(c_blockOfChunksCount, fakeChunkRef) {
             m_data.fill(defaultDataValue);
-            m_refsToSurrChunks.reserve(c_blockOfChunksCount);
-            // m_refsToSurrChunks = std::vector<std::reference_wrapper<_Chunk>> (c_blockOfChunksCount, _Chunk());
+            // m_refsToSurrChunks.reserve(c_blockOfChunksCount);
         };
 
         // ACCESS
@@ -453,10 +448,12 @@ private:
         bool is_refsToSurrAllValid() { return m_refsToSurrChunkAllValid; }
         void set_refsToSurrAllValid_true() { m_refsToSurrChunkAllValid = true; }
 
+        Data_T &_get_dataItemBySizeT(size_t &id) { return m_data[id]; }
+
 
         template <typename... PAIRS>
         std::reference_wrapper<_Chunk> _get_surrChunk(PAIRS const &...pairs) {
-             return Kokkos::mdspan(m_refsToSurrChunks.data(), pairs.first...)[pairs.second...];
+            return Kokkos::mdspan(m_refsToSurrChunks.data(), pairs.first...)[pairs.second...].get();
         }
     };
 
@@ -464,9 +461,13 @@ private:
     // PRIVATE DETAIL INTERNAL
     // Get reference to one Data_T instance ... the 'goal'
     template <typename T, T... ints>
-    Data_T &_get_fromSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...>) {
-        return m_mds_to_chunkData[(key[ints] - m_selChunk_Corner[ints]) * m_selChunk_negOrPos[ints] +
-                                  m_selChunk_offsetsForNeg[ints]...];
+    Data_T &_get_fromSelChunk(Key_Type key, const std::integer_sequence<T, ints...>) {
+
+        ((key[ints] = ((key[ints] - m_selChunk_Corner[ints]))), ...);
+
+        size_t id = ((key[ints] * c_mds_convPairArray[ints].second) + ...);
+
+        return m_selChunk.get()._get_dataItemBySizeT(id);
     }
 
     template <typename T, T... ints>
@@ -486,22 +487,17 @@ private:
     }
 
 
-    template <typename... PAIRS>
-    void convert_linIDtoArrOfIDs(Key_Type &arr_out, size_t const &linearID, const PAIRS &...pairs) {
-        ((arr_out[(pairs).first] = linearID / (pairs).second), ...);
-        arr_out[arr_out.size() - 1] = linearID % c_blockSize_long;
-    }
     template <typename T, T... ints>
     _Chunk &_get_chunkFromMapOrGenerate(Key_Type key, const std::integer_sequence<T, ints...>) {
-        (((key[ints] = m_selChunk_Corner[ints]) + (key[ints] * c_blockSize_long)), ...);
-        auto iter = mp.insert({key, _Chunk()});
+        ((key[ints] = m_selChunk_Corner[ints] + (key[ints] * c_blockSize_long)), ...);
+        auto iter = mp.insert({key, _Chunk(c_defaultValue, fake_chunk)});
         return iter.first->second;
     }
 
     template <typename T, T... ints>
     void _gen_missingSurrChunks(const std::integer_sequence<T, ints...>) {
-        Key_Type curIDs{(ints, 0)...};
-        auto     surrChunks_ref = m_selChunk.get().get_surrChunks();
+        Key_Type curIDs{(ints, -1)...};
+        auto    &surrChunks_ref = m_selChunk.get().get_surrChunks();
 
         for (auto &refWrap_chunk : surrChunks_ref) {
             if (&(refWrap_chunk.get()) == &fake_chunk) {
@@ -510,8 +506,8 @@ private:
 
             curIDs[c_numOfDimensions - 1]++;
             for (int i = c_numOfDimensions - 1; i > 0; --i) {
-                curIDs[i - 1] += (curIDs[i] / c_numOfDimensions);
-                curIDs[i]     -= (curIDs[i] / c_numOfDimensions) * c_numOfDimensions;
+                curIDs[i - 1] += (curIDs[i] / 2);
+                curIDs[i]     -= (curIDs[i] / 2) * 3;
             }
         }
     }
@@ -524,10 +520,21 @@ private:
 
         // BEWARE: May not insert if _Chunk with that key already exists ... in that case just returns it
         // auto mpInsertResult = mp.insert({m_selChunk_Corner, _Chunk()});
-        m_selChunk         = mp.insert({m_selChunk_Corner, _Chunk()}).first->second;
+        auto iter = mp.insert({m_selChunk_Corner, _Chunk(c_defaultValue, fake_chunk)});
+
+        m_selChunk         = iter.first->second;
         m_mds_to_chunkData = m_selChunk.get().gen_mdspan_toSelf();
 
-        if (not m_selChunk.get().is_refsToSurrAllValid()) {}
+        // If new was inserted, then it needs to obtain
+        // if (iter.second == true) {
+        //     auto surrChunks_ref = m_selChunk.get().get_surrChunks();
+        //     surrChunks_ref = std::vector<std::reference_wrapper<_Chunk>> (c_blockOfChunksCount, fake_chunk);
+        // }
+
+        if (not m_selChunk.get().is_refsToSurrAllValid()) {
+            _gen_missingSurrChunks(c_IDs_sequence);
+            m_selChunk.get().set_refsToSurrAllValid_true();
+        }
     }
 
     template <typename T, T... ints>
@@ -537,7 +544,7 @@ private:
 
         // This update the pairs_fFSS with the right value for the 'second'.
         // The 'second' is essentially an offset from m_selChunk_Corner of -1, 0 or 1 for each dimension.
-        ((pairs_fFSS[ints].second = (((m_selChunk_Corner[ints] - oldCorner[ints]) / c_blockSize) + 1)), ...);
+        ((pairs_fFSS[ints].second = (((m_selChunk_Corner[ints] - oldCorner[ints]) / c_blockSize_long) + 1LL)), ...);
 
         // We lookup the new chunk inside the m_refsToSurrChunks using the pairs_fFSS we updated earlier.
         m_selChunk = m_selChunk.get()._get_surrChunk(pairs_fFSS[ints]...);
@@ -559,17 +566,20 @@ public:
     bool is_inSelChunk(Key_Type const &key) const {
         int invalidDims = 0;
         for (int i = 0; (i < c_numOfDimensions && invalidDims == 0); ++i) {
-            invalidDims += (key[i] < m_selChunk_Corner[i]) || (key[i] >= (m_selChunk_Corner[i] + c_blockSize));
+            invalidDims += (key[i] < m_selChunk_Corner[i]) || (key[i] >= (m_selChunk_Corner[i] + c_blockSize_long));
         }
         return not invalidDims;
     }
     bool is_outsideSurrChunks(Key_Type const &key) const {
         int invalidDims = 0;
         for (int i = 0; (i < c_numOfDimensions && invalidDims == 0); ++i) {
-            invalidDims +=
-                (key[i] < (m_selChunk_Corner[i] - c_blockSize)) || (key[i] >= (m_selChunk_Corner[i] + 2 * c_blockSize));
+
+            bool condA   = (key[i] < (m_selChunk_Corner[i] - c_blockSize_long));
+            bool condB   = (key[i] >= (m_selChunk_Corner[i] + (2 * c_blockSize_long)));
+            invalidDims += ((key[i] < (m_selChunk_Corner[i] - c_blockSize_long)) ||
+                            (key[i] >= (m_selChunk_Corner[i] + (2 * c_blockSize_long))));
         }
-        return not invalidDims;
+        return invalidDims;
     }
 
     // MAIN INTERFACE
@@ -587,7 +597,7 @@ public:
     std::reference_wrapper<_Chunk>                                  m_selChunk = fake_chunk;
     decltype(_Chunk::_detail_gen_mdspan_type(c_X_repeat_blockSize)) m_mds_to_chunkData;
 
-    robin_hood::unordered_node_map<Key_Type, _Chunk, AOC_commons::XXH3Hasher> mp;
+    std::unordered_map<Key_Type, _Chunk, AOC_commons::XXH3Hasher> mp;
 };
 
 
