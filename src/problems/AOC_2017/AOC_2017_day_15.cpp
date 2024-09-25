@@ -1,13 +1,13 @@
 #include <queue>
 
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 
 namespace AOC2017 {
 int day15_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto VofV   = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto VofV   = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     unsigned long long lastA = std::stoi(VofV.front().front());
     unsigned long long lastB = std::stoi(VofV.back().front());
@@ -29,7 +29,7 @@ int day15_1(std::string dataFile) {
 }
 int day15_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto VofV   = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto VofV   = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     unsigned long long lastA = std::stoi(VofV.front().front());
     unsigned long long lastB = std::stoi(VofV.back().front());

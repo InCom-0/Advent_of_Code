@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <bitlib/bitlib.hpp>
 #include <ctre.hpp>
 #include <flux.hpp>
@@ -10,7 +10,7 @@ namespace AOC2018 {
 int day6_1(std::string dataFile) {
     // CUSTOM DATA TYPES
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto VofV   = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto VofV   = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     // DATA AND LAMBDA PREP
     std::vector<std::pair<int, int>> input;
@@ -58,7 +58,7 @@ int day6_1(std::string dataFile) {
 int day6_2(std::string dataFile, int distanceLessThan) {
     // CUSTOM DATA TYPES
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto VofV   = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto VofV   = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     // DATA AND LAMBDA PREP
     std::vector<std::pair<int, int>> input;

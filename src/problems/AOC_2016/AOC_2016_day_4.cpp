@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <glaze/glaze.hpp>
@@ -6,7 +6,7 @@
 
 namespace AOC2016 {
 int day4_1(std::string dataFile) {
-    auto inp = AOC_commons::parseInputUsingCTRE::processFile(
+    auto inp = incom::commons::parseInputUsingCTRE::processFile(
         dataFile, ctre::search<R"(.+(?=-\d))">, ctre::search<R"(\d+(?=\[))">, ctre::search<R"((?<=\[)\w+)">);
 
     std::vector<std::vector<std::pair<char, int>>> vectOfRoomMaps;
@@ -40,7 +40,7 @@ int day4_1(std::string dataFile) {
 }
 
 int day4_2(std::string dataFile) {
-    auto inp = AOC_commons::parseInputUsingCTRE::processFile(
+    auto inp = incom::commons::parseInputUsingCTRE::processFile(
         dataFile, ctre::search<R"(.+(?=-\d))">, ctre::search<R"(\d+(?=\[))">, ctre::search<R"((?<=\[)\w+)">);
 
     std::vector<std::vector<std::pair<char, int>>> vectOfRoomMaps;

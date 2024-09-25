@@ -3,7 +3,7 @@
 #include <flux.hpp>
 #include <vector>
 
-#include <AOC_commons.h>
+#include <incom_commons.h>
 
 
 namespace AOC2017 {
@@ -17,7 +17,7 @@ int day21_0(std::string dataFile, unsigned int numOfIterations) {
     auto sideR_ctre = ctre::search<R"((?<==> ).+)">;
 
     // DATA PREP
-    auto VofV = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, sideL_ctre, sideR_ctre);
+    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, sideL_ctre, sideR_ctre);
 
     ankerl::unordered_dense::map<std::string, std::vector<std::vector<char>>> mp;
     for (auto &VofV_line : VofV) {
@@ -54,7 +54,7 @@ int day21_0(std::string dataFile, unsigned int numOfIterations) {
         subsTarStr.clear();
 
         // Rotate right, insert and do the 3 steps above one more time.
-        AOC_commons::matrixRotateRight(substituteTarget);
+        incom::commons::matrixRotateRight(substituteTarget);
         for (auto &subsLine : substituteTarget) { subsTarStr.append(subsLine.begin(), subsLine.end()); }
         mp.emplace(subsTarStr, substituteWith);
         subsTarStr.clear();

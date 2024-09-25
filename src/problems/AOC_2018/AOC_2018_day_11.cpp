@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <bitlib/bitlib.hpp>
 #include <ctre.hpp>
 #include <flux.hpp>
@@ -9,7 +9,7 @@
 namespace AOC2018 {
 std::string day11_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    int  input  = std::stoi(AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front());
+    int  input  = std::stoi(incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front());
 
     std::vector<std::pair<int, int>> dirs{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 0}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
 
@@ -42,7 +42,7 @@ std::string day11_1(std::string dataFile) {
 std::string day11_2(std::string dataFile) {
     // CUSTOM DATA TYPES
     auto d_ctre = ctre::search<R"(\d+)">;
-    int  input  = std::stoi(AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front());
+    int  input  = std::stoi(incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front());
 
     // DATA PREP
     std::vector vecOfMaps(301, std::vector<std::vector<int>>(301, std::vector<int>(301, 0)));
@@ -135,7 +135,7 @@ std::string day11_2(std::string dataFile) {
 std::string day11_3(std::string dataFile) {
     // CUSTOM TYPES
     auto d_ctre = ctre::search<R"(\d+)">;
-    int  input  = std::stoi(AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front());
+    int  input  = std::stoi(incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front());
 
     // DATA PREP
     std::vector vecOfMaps(301, std::vector<std::vector<int>>(301, std::vector<int>(301, 0)));

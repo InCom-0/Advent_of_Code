@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <bits/ranges_algo.h>
 #include <ctre.hpp>
 
@@ -20,7 +20,7 @@ unsigned long long day20_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(-?\d+)">;
 
     // DATA PREP
-    auto VofV = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<std::vector<coord>> data;
     for (auto &inputLine : VofV) {
@@ -51,7 +51,7 @@ unsigned long long day20_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(-?\d+)">;
 
     // DATA PREP
-    auto VofV = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<std::vector<coord>> data;
     for (auto &inputLine : VofV) {

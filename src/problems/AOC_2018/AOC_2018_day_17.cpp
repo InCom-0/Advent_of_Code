@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <bitlib/bitlib.hpp>
 #include <climits>
 #include <ctre.hpp>
@@ -24,8 +24,8 @@ std::pair<size_t, size_t> day17_0(std::string dataFile) {
     auto dCtre = ctre::search<R"(\d+)">;
 
     // DATA PREP
-    auto xCoords_string = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, xCtre);
-    auto yCoords_string = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, yCtre);
+    auto xCoords_string = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, xCtre);
+    auto yCoords_string = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, yCtre);
 
     std::vector<OnePos> xCoords;
     std::vector<OnePos> yCoords;
@@ -36,7 +36,7 @@ std::pair<size_t, size_t> day17_0(std::string dataFile) {
     for (auto &line : xCoords_string) {
         if (line.front().contains("..")) {
             std::vector<std::string> split =
-                AOC_commons::parseInputUsingCTRE::processOneLineRPToneVect(line.front(), dCtre);
+                incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(line.front(), dCtre);
             xCoords.push_back(OnePos{std::stoul(split.front()), std::stoul(split.back())});
         }
         else { xCoords.push_back(OnePos{std::stoul(line.front()), std::stoul(line.front())}); }
@@ -45,7 +45,7 @@ std::pair<size_t, size_t> day17_0(std::string dataFile) {
     for (auto &line : yCoords_string) {
         if (line.front().contains("..")) {
             std::vector<std::string> split =
-                AOC_commons::parseInputUsingCTRE::processOneLineRPToneVect(line.front(), dCtre);
+                incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(line.front(), dCtre);
             yCoords.push_back(OnePos{std::stoul(split.front()), std::stoul(split.back())});
         }
         else { yCoords.push_back(OnePos{std::stoul(line.front()), std::stoul(line.front())}); }

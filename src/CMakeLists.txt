@@ -1,28 +1,16 @@
-add_library(AOC_Commons AOC_commons.cpp ${CMAKE_SOURCE_DIR}/include/AOC_commons.h)
-target_include_directories(AOC_Commons PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 add_subdirectory(external)
+add_subdirectory(internal)
 add_subdirectory(problems)
 
-target_link_libraries(AOC_Commons PUBLIC
-    fmt::fmt
-    glaze::glaze
-    flux::flux
-    ctre::ctre
-    xxHash::xxhash
-    bitlib::bitlib
-    unordered_dense::unordered_dense
-    robin_hood::robin_hood
-    more_concepts::more_concepts
-    hash-library::hash-library
-    std::mdspan)
 
-target_link_options(AOC_Commons PUBLIC -static-libgcc -static-libstdc++ "LINKER:-Bstatic,--whole-archive" -lwinpthread "LINKER:-Bdynamic,--no-whole-archive")
 
-target_link_libraries(AOC_2015 PUBLIC AOC_Commons)
-target_link_libraries(AOC_2016 PUBLIC AOC_Commons)
-target_link_libraries(AOC_2017 PUBLIC AOC_Commons)
-target_link_libraries(AOC_2018 PUBLIC AOC_Commons)
+target_link_options(incom_commons PUBLIC -static-libgcc -static-libstdc++ "LINKER:-Bstatic,--whole-archive" -lwinpthread "LINKER:-Bdynamic,--no-whole-archive")
+
+target_link_libraries(AOC_2015 PUBLIC incom_commons)
+target_link_libraries(AOC_2016 PUBLIC incom_commons)
+target_link_libraries(AOC_2017 PUBLIC incom_commons)
+target_link_libraries(AOC_2018 PUBLIC incom_omni incom_commons)
 
 set_target_properties(AOC_2015 PROPERTIES UNITY_BUILD ON)
 set_target_properties(AOC_2016 PROPERTIES UNITY_BUILD ON)

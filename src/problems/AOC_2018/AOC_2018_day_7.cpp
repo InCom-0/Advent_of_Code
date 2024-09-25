@@ -1,5 +1,5 @@
 
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <bitlib/bitlib.hpp>
 #include <ctre.hpp>
 #include <flux.hpp>
@@ -18,10 +18,10 @@ struct node {
 std::string day7_1(std::string dataFile) {
     // CUSTOM TYPES
     auto oneLetter_ctre = ctre::search<R"((?<= ).(?= ))">;
-    auto VofV           = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, oneLetter_ctre);
+    auto VofV           = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, oneLetter_ctre);
 
     std::vector<node>                                 lockedOnes;
-    std::unordered_set<char, AOC_commons::XXH3Hasher> tmpOnes;
+    std::unordered_set<char, incom::commons::XXH3Hasher> tmpOnes;
 
     // DATA PREP
     for (auto &line : VofV) {
@@ -64,10 +64,10 @@ std::string day7_1(std::string dataFile) {
 int day7_2(std::string dataFile, const int workers) {
     // CUSTOM TYPES
     auto oneLetter_ctre = ctre::search<R"((?<= ).(?= ))">;
-    auto VofV           = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, oneLetter_ctre);
+    auto VofV           = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, oneLetter_ctre);
 
     std::vector<node>                                 lockedOnes;
-    std::unordered_set<char, AOC_commons::XXH3Hasher> tmpOnes;
+    std::unordered_set<char, incom::commons::XXH3Hasher> tmpOnes;
 
     // DATA PREP
     for (auto &line : VofV) {

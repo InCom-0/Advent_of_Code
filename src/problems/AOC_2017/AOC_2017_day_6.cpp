@@ -3,7 +3,7 @@
 #include <iostream>
 #include <queue>
 
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <glaze/glaze.hpp>
 #include <unordered_set>
@@ -11,11 +11,11 @@
 namespace AOC2017 {
 
 int day6_1(std::string dataFile) {
-    auto             VofV = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, ctre::search<R"(\d+)">);
+    auto             VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, ctre::search<R"(\d+)">);
     std::vector<int> banks;
 
     for (auto &bank : VofV.front()) { banks.push_back(std::stoi(bank)); }
-    std::unordered_set<std::vector<int>, AOC_commons::XXH3Hasher> pastConfs;
+    std::unordered_set<std::vector<int>, incom::commons::XXH3Hasher> pastConfs;
 
     int cycleCount = 0;
     while (not pastConfs.contains(banks)) {
@@ -36,11 +36,11 @@ int day6_1(std::string dataFile) {
     return cycleCount;
 }
 int day6_2(std::string dataFile) {
-    auto             VofV = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, ctre::search<R"(\d+)">);
+    auto             VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, ctre::search<R"(\d+)">);
     std::vector<int> banks;
 
     for (auto &bank : VofV.front()) { banks.push_back(std::stoi(bank)); }
-    std::unordered_map<std::vector<int>, int, AOC_commons::XXH3Hasher> pastConfs;
+    std::unordered_map<std::vector<int>, int, incom::commons::XXH3Hasher> pastConfs;
 
     int cycleCount = 0;
     while (not pastConfs.contains(banks)) {

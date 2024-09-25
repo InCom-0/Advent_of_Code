@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <glaze/glaze.hpp>
@@ -9,7 +9,7 @@ VERSION 1:
 Best performant
 */
 int day10_1(std::string dataFile, int rep) {
-    auto inputVofV = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">);
+    auto inputVofV = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">);
     auto lambda    = [&](this auto const &self, std::string const lamInput) -> int {
         int         identicalCount = 0;
         char        prev           = lamInput[0];
@@ -43,7 +43,7 @@ Naturaly the culprit must be the 'chunk_by' ... but don't know why.
 Might be worth investigating at some point to understand it better.
 */
 int day10_2(std::string dataFile, int rep) {
-    auto inputVofV = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">);
+    auto inputVofV = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">);
     auto lambda    = [&](this auto const &self, std::string const &lamInput) -> int {
         std::string outString = "";
 
@@ -64,7 +64,7 @@ VERSION 3:
 Worst performance, probbably because it is creating too many strings, concatenating them, etc.
 */
 int day10_3(std::string dataFile, int rep) {
-    auto inputVofV = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">);
+    auto inputVofV = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">);
 
     auto lambda = [&](this auto const &self, std::string const &lamInput) -> int {
         auto test = flux::ref(lamInput)

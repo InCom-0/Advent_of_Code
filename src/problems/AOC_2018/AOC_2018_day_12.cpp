@@ -1,5 +1,5 @@
 #include "flux/op/ref.hpp"
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <algorithm>
 #include <bitlib/bitlib.hpp>
 #include <climits>
@@ -24,7 +24,7 @@ int day12_1(std::string dataFile, long long generationsToSimulate) {
     curStateA.append(4, '.');
     std::getline(iStream, oneStr);
 
-    std::unordered_map<std::string, char, AOC_commons::XXH3Hasher> map;
+    std::unordered_map<std::string, char, incom::commons::XXH3Hasher> map;
     while (std::getline(iStream, oneStr)) {
         map.emplace(std::string(oneStr.begin(), oneStr.begin() + 5), oneStr.back());
     };
@@ -88,7 +88,7 @@ long long day12_2(std::string dataFile, long long generationsToSimulate) {
     curStateA.append(4, '.');
     std::getline(iStream, oneStr);
 
-    std::unordered_map<std::string, char, AOC_commons::XXH3Hasher> map;
+    std::unordered_map<std::string, char, incom::commons::XXH3Hasher> map;
     while (std::getline(iStream, oneStr)) {
         map.emplace(std::string(oneStr.begin(), oneStr.begin() + 5), oneStr.back());
     };

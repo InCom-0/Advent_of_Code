@@ -1,7 +1,7 @@
 #include <cassert>
 #include <iostream>
 
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <vector>
@@ -9,16 +9,16 @@
 namespace AOC2017 {
 int day23_1(std::string dataFile) {
     // CUSTOM LOCAL TYPES
-    struct set : AOC_commons::PQA::_instrBase {};
-    struct sub : AOC_commons::PQA::_instrBase {};
-    struct mul : AOC_commons::PQA::_instrBase {};
-    struct jnz : AOC_commons::PQA::_instrBase {};
+    struct set : incom::commons::PQA::_instrBase {};
+    struct sub : incom::commons::PQA::_instrBase {};
+    struct mul : incom::commons::PQA::_instrBase {};
+    struct jnz : incom::commons::PQA::_instrBase {};
 
 
     auto getWord_ctre = ctre::search<R"([[:^blank:]]+)">;
-    auto VofV         = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
+    auto VofV         = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
 
-    AOC_commons::PQA::ProgramQuasiAssembly<set, sub, mul, jnz> theProgram(VofV);
+    incom::commons::PQA::ProgramQuasiAssembly<set, sub, mul, jnz> theProgram(VofV);
 
     // DATA AND LAMBDA PREP
     unsigned long long mulInvocations = 0;
@@ -44,15 +44,15 @@ int day23_1(std::string dataFile) {
 // Essentially finding the number of composite (that is non-prime) numbers between 2 integers.
 int day23_2(std::string dataFile) {
     // CUSTOM LOCAL TYPES
-    struct set : AOC_commons::PQA::_instrBase {};
-    struct sub : AOC_commons::PQA::_instrBase {};
-    struct mul : AOC_commons::PQA::_instrBase {};
-    struct jnz : AOC_commons::PQA::_instrBase {};
+    struct set : incom::commons::PQA::_instrBase {};
+    struct sub : incom::commons::PQA::_instrBase {};
+    struct mul : incom::commons::PQA::_instrBase {};
+    struct jnz : incom::commons::PQA::_instrBase {};
 
     auto getWord_ctre = ctre::search<R"([[:^blank:]]+)">;
-    auto VofV         = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
+    auto VofV         = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
 
-    AOC_commons::PQA::ProgramQuasiAssembly<set, sub, mul, jnz> theProgram(VofV);
+    incom::commons::PQA::ProgramQuasiAssembly<set, sub, mul, jnz> theProgram(VofV);
     theProgram.mapping.at('a').get() = 1;
 
     // DATA AND LAMBDA PREP

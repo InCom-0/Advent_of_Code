@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <bitlib/bitlib.hpp>
 #include <climits>
 #include <ctre.hpp>
@@ -17,7 +17,7 @@ int day10_1(std::string dataFile) {
     };
 
     auto d_ctre = ctre::search<R"(-?\d+)">;
-    auto VofV   = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto VofV   = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     // DATA PREP
     std::vector<SimplePair> positions;

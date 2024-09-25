@@ -20,16 +20,63 @@ struct overloaded : Ts... {
     using Ts::operator()...;
 };
 
-namespace AOC_concepts {
+namespace incom {
+    namespace concepts {
+        
+namespace detail {
+template <typename T, template <typename...> typename Template>
+struct is_specialization_of : std::false_type {};
+template <template <typename...> typename Template, typename... Args>
+struct is_specialization_of<Template<Args...>, Template> : std::true_type {};
+} // namespace detail
+
 template <typename T>
 concept pair_t = requires(std::remove_cvref_t<T> pair) {
     { pair.first } -> std::same_as<typename T::first_type &>;
     { pair.second } -> std::same_as<typename T::second_type &>;
 };
+template <size_t N>
+concept isPowerOf2 = ((N != 0) && ! (N & (N - 1)));
 
-} // namespace AOC_concepts
+// Note: SpecializationOf does not support non-type template parameteres (at all) ... beware
+template <typename T, template <typename...> typename Template>
+concept SpecializationOf = detail::is_specialization_of<T, Template>::value;
 
-namespace AOC_commons {
+// Generating a tuple with of N times the supplied type
+// Usage: pass the N parameter and the T type only, leave the ...Ts pack empty
+// Note: If you don't adhere to the above the output tuple will have more 'member types' than you want. Beware.
+// Note: Uses recursive template instantiation.
+// Note: T and Ts all must be the same types.
+template <size_t N, typename T, typename... Ts>
+requires(std::same_as<T, Ts> && ...)
+struct _c_generateTuple {
+    using type = typename _c_generateTuple<N - 1, T, T, Ts...>::type;
+};
+template <typename T, typename... Ts>
+requires(std::same_as<T, Ts> && ...)
+struct _c_generateTuple<0, T, Ts...> {
+    using type = std::tuple<Ts...>;
+};
+
+// Generating an 'integer_sequence' of N identical size_t integers of value S.
+// Usage: pass the N parameter and the S integer only, leave the ...Sx pack empty
+// Note: If you don't adhere to the above the output integer_sequence will be longer than you (probably) want. Beware.
+// Note: Uses recursive template instantiation.
+// Note: S and Sx must all be the same value.
+template <size_t N, long long S, long long... Sx>
+requires((S == Sx) && ...)
+struct c_gen_X_repeat_sequence {
+    using type = typename c_gen_X_repeat_sequence<N - 1, S, S, Sx...>::type;
+};
+template <long long S, long long... Sx>
+requires((S == Sx) && ...)
+struct c_gen_X_repeat_sequence<0, S, Sx...> {
+    using type = std::integer_sequence<long long, Sx...>;
+};
+
+
+    }
+    namespace commons {
 
 // This tiny type is used to simplify dealing with parameter packs.
 // Usually used to invoke a closure (lambda) over each parameter in the pack.
@@ -154,7 +201,7 @@ struct XXH3Hasher {
         XXH3_64bits_update(state, &input, sizeof(T));
     }
 
-    template <AOC_concepts::pair_t T>
+    template <incom::concepts::pair_t T>
     constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
         this->_hashTypeX(input.first, state);
         this->_hashTypeX(input.second, state);
@@ -383,7 +430,7 @@ struct _instrBase_2018 {
 template <typename... instrT>
 requires(std::derived_from<instrT, _instrBase> && ...)
 struct ProgramQuasiAssembly {
-    std::unordered_map<char, std::reference_wrapper<long long>, AOC_commons::XXH3Hasher> mapping;
+    std::unordered_map<char, std::reference_wrapper<long long>, incom::commons::XXH3Hasher> mapping;
     unsigned long long                                                                   instructionID = 0;
     long long                                                                            fakeRegister  = LLONG_MIN;
     std::vector<long long>                                                               registers;
@@ -402,7 +449,7 @@ struct ProgramQuasiAssembly {
         // Mapping a type 'by string' to the same type inside a std::variant instance;
         // TypeToString uses a very crude form of 'reflection'.
         // ENTIRELY POSSIBLE THAT THIS HACK IS NOT REALLY PORTABLE ... BEWARE.
-        std::unordered_map<std::string, std::variant<instrT...>, AOC_commons::XXH3Hasher> instrTypeMap;
+        std::unordered_map<std::string, std::variant<instrT...>, incom::commons::XXH3Hasher> instrTypeMap;
         (instrTypeMap.emplace(TypeToString<instrT>(), std::variant<instrT...>{instrT{fakeRegister, fakeRegister}}),
          ...);
 
@@ -467,7 +514,7 @@ struct ProgramQuasiAssembly {
 template <typename... instrT>
 requires(std::derived_from<instrT, _instrBase_2018> && ...)
 struct ProgramQuasiAssembly_2018 {
-    // std::unordered_map<char, std::reference_wrapper<long long>, AOC_commons::XXH3Hasher> mapping;
+    // std::unordered_map<char, std::reference_wrapper<long long>, incom::commons::XXH3Hasher> mapping;
     unsigned long long                   instructionID = 0;
     std::vector<long long>               registers;
     std::vector<std::variant<instrT...>> instrVect;
@@ -479,7 +526,7 @@ struct ProgramQuasiAssembly_2018 {
     // In order to dynamically use the 'right' type for each instruction, one has to generate a map that maps the string
     // name representation (as found in the instructions) to the instantiation of std::variant<instrT...> with the
     // correct type
-    static std::unordered_map<std::string, std::variant<instrT...>, AOC_commons::XXH3Hasher> instrTypeMapCreator(
+    static std::unordered_map<std::string, std::variant<instrT...>, incom::commons::XXH3Hasher> instrTypeMapCreator(
         const std::vector<std::vector<std::string>> &rawExampleInput, auto &overloadSet, const int registersCount = 4,
         const std::vector<long long> regStartVal = {0, 0, 0, 0}) {
 
@@ -560,7 +607,7 @@ struct ProgramQuasiAssembly_2018 {
 
         // There can only be one 'real' matching 'instrID' per rawID and must match for all (ie. the size of
         // the vector). Depending on input might be necessary to gradually eliminate multiple matches.
-        std::unordered_map<int, std::string, AOC_commons::XXH3Hasher> IDsMap;
+        std::unordered_map<int, std::string, incom::commons::XXH3Hasher> IDsMap;
 
         while (IDsMap.size() < counter.size()) {
             for (int j = 0; auto &counterRangePerID : counter) {
@@ -583,7 +630,7 @@ struct ProgramQuasiAssembly_2018 {
             }
         }
 
-        std::unordered_map<std::string, std::variant<instrT...>, AOC_commons::XXH3Hasher> instrTypeMap;
+        std::unordered_map<std::string, std::variant<instrT...>, incom::commons::XXH3Hasher> instrTypeMap;
         long long                                                                         cntr = 0;
 
         // Horrifying hack creating a dangling reference with the 'counter' being passed into Instr_T constructor
@@ -593,7 +640,7 @@ struct ProgramQuasiAssembly_2018 {
 
     // The one and only constructor of the 'prog' type
     ProgramQuasiAssembly_2018(const std::vector<std::vector<std::string>> &rawInstrInput,
-                              std::unordered_map<std::string, std::variant<instrT...>, AOC_commons::XXH3Hasher> &mapped,
+                              std::unordered_map<std::string, std::variant<instrT...>, incom::commons::XXH3Hasher> &mapped,
                               const std::vector<long long> regStartVal = {0, 0, 0, 0}) {
 
         assert((void("Prog type instantiated with an empty input"), rawInstrInput.size() > 0));
@@ -667,4 +714,5 @@ struct ProgramQuasiAssembly_2018 {
     }
 };
 } // namespace PQA
+    }
 } // namespace AOC_commons

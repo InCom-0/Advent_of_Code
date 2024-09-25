@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <bitlib/bitlib.hpp>
 #include <ctre.hpp>
 #include <flux.hpp>
@@ -8,7 +8,7 @@ namespace AOC2018 {
 int day1_1(std::string dataFile) {
 
     auto d_ctre = ctre::search<R"(.+)">;
-    auto VofV   = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto VofV   = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<int> values;
     for (auto &line : VofV) { values.push_back(std::stoi(line.front())); }
@@ -21,7 +21,7 @@ int day1_1(std::string dataFile) {
 
 int day1_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(.+)">;
-    auto VofV   = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto VofV   = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<int> values;
     for (auto &line : VofV) { values.push_back(std::stoi(line.front())); }

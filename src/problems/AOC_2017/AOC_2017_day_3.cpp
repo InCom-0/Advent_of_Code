@@ -3,14 +3,14 @@
 #include <math.h>
 #include <queue>
 
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 
 namespace AOC2017 {
 int day3_1(std::string dataFile) {
     auto ctr  = ctre::search<R"(\d+)">;
-    auto VofV = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctr);
+    auto VofV = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctr);
 
     int input = std::stoi(VofV.front().front());
 
@@ -29,7 +29,7 @@ int day3_1(std::string dataFile) {
 // THIS DOESN'T WORK ... unnecessarily cumbersome :-)
 int day3_2(std::string dataFile) {
     auto ctr  = ctre::search<R"(\d+)">;
-    auto VofV = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctr);
+    auto VofV = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctr);
 
     int input = std::stoi(VofV.front().front());
 
@@ -156,7 +156,7 @@ int day3_2(std::string dataFile) {
 // BETTER IDEA. Check all surroundings always and only add if wasn't previously visited.
 int day3_3(std::string dataFile) {
     auto ctr   = ctre::search<R"(\d+)">;
-    auto VofV  = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctr);
+    auto VofV  = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctr);
     int  input = std::stoi(VofV.front().front());
 
     struct spiralItem {

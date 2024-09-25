@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 
@@ -8,7 +8,7 @@ int day8_1(std::string dataFile) {
     auto w_ctre     = ctre::search<R"([^ ]+(?=[[:blank:]]))">;
     auto w_ctre_end = ctre::search<R"((?<= )-?.*)">;
 
-    auto VofV = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre, w_ctre, w_ctre, w_ctre, w_ctre,
+    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre, w_ctre, w_ctre, w_ctre, w_ctre,
                                                                  w_ctre, w_ctre_end);
 
     // DATA PREP
@@ -136,7 +136,7 @@ int day8_2(std::string dataFile) {
     auto w_ctre     = ctre::search<R"([^ ]+(?=[[:blank:]]))">;
     auto w_ctre_end = ctre::search<R"((?<= )-?.*)">;
 
-    auto VofV = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre, w_ctre, w_ctre, w_ctre, w_ctre,
+    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre, w_ctre, w_ctre, w_ctre, w_ctre,
                                                                  w_ctre, w_ctre_end);
 
     // DATA PREP

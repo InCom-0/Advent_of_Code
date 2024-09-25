@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <bitlib/bitlib.hpp>
 #include <ctre.hpp>
 #include <flux.hpp>
@@ -7,7 +7,7 @@
 namespace AOC2018 {
 long long day14_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input = std::stoi(AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre).front().front());
+    auto input = std::stoi(incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre).front().front());
 
     std::vector<unsigned int> line{3, 7};
     line.reserve(input + 11);
@@ -36,7 +36,7 @@ long long day14_1(std::string dataFile) {
 
 long long day14_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre).front().front();
+    auto input  = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre).front().front();
 
     std::vector<unsigned int> line{3, 7};
     line.reserve(33'554'432);
@@ -71,7 +71,7 @@ long long day14_2(std::string dataFile) {
 
 long long day14_3(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre).front().front();
+    auto input  = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre).front().front();
 
     std::vector<unsigned int> line{3, 7};
     line.reserve(33'554'432);
@@ -107,7 +107,7 @@ long long day14_3(std::string dataFile) {
 }
 long long day14_4(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre).front().front();
+    auto input  = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre).front().front();
 
     std::vector<std::string> strRange(input.size(), std::string(input.size(), 'X'));
 
@@ -153,7 +153,7 @@ long long day14_4(std::string dataFile) {
 }
 long long day14_5(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = AOC_commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre).front().front();
+    auto input  = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre).front().front();
 
     std::vector<std::string> strRange(input.size(), std::string(input.size(), 'X'));
 

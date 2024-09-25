@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 
@@ -24,7 +24,7 @@ int day15_1(std::string dataFile) {
     };
 
     auto all_ctre = ctre::search<R"(.+)">;
-    auto map      = AOC_commons::parseInputUsingCTRE::processFile(dataFile, all_ctre).front();
+    auto map      = incom::commons::parseInputUsingCTRE::processFile(dataFile, all_ctre).front();
 
     std::vector<Pawn>                         goblins;
     std::vector<Pawn>                         elves;
@@ -216,7 +216,7 @@ int day15_2(std::string dataFile) {
     };
 
     auto all_ctre = ctre::search<R"(.+)">;
-    auto mapOrig  = AOC_commons::parseInputUsingCTRE::processFile(dataFile, all_ctre).front();
+    auto mapOrig  = incom::commons::parseInputUsingCTRE::processFile(dataFile, all_ctre).front();
     auto map      = mapOrig;
 
     std::vector<Pawn>                         goblins;

@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <bitlib/bitlib.hpp>
 #include <ctre.hpp>
 #include <flux.hpp>
@@ -9,7 +9,7 @@ namespace AOC2018 {
 
 
 template <typename OverloadSet, typename... _instrT>
-requires(std::derived_from<_instrT, AOC_commons::PQA::_instrBase_2018> && ...)
+requires(std::derived_from<_instrT, incom::commons::PQA::_instrBase_2018> && ...)
 int day16_1_matcher(const std::vector<std::vector<long long>> &parsed, const OverloadSet &olSet,
                     std::vector<long long> &registers) {
 
@@ -34,74 +34,74 @@ int day16_1_matcher(const std::vector<std::vector<long long>> &parsed, const Ove
 
 
 int day16_1(std::string dataFile, int behaveLikeXorMoreOpCodes) {
-    struct addr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct addr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 0, 0}; }
     };
-    struct addi : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct addi : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
 
-    struct mulr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct mulr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 0, 0}; }
     };
-    struct muli : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct muli : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
 
-    struct banr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct banr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 0, 0}; }
     };
-    struct bani : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct bani : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
 
-    struct borr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct borr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 0, 0}; }
     };
-    struct bori : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct bori : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
 
-    struct setr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct setr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
-    struct seti : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct seti : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {1, 1, 0}; }
     };
 
-    struct gtir : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct gtir : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {1, 0, 0}; }
     };
-    struct gtri : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct gtri : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
-    struct gtrr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct gtrr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 0, 0}; }
     };
 
-    struct eqir : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct eqir : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {1, 0, 0}; }
     };
-    struct eqri : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct eqri : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
-    struct eqrr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct eqrr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 0, 0}; }
     };
 
@@ -120,7 +120,7 @@ int day16_1(std::string dataFile, int behaveLikeXorMoreOpCodes) {
         for (int i = 0; i < 4; ++i) { parsed[i].clear(); }
         for (int i = 0; i < 4; ++i) {
             std::getline(iStream, tempStr);
-            auto split = AOC_commons::parseInputUsingCTRE::processOneLineRPToneVect(tempStr, d_ctre);
+            auto split = incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(tempStr, d_ctre);
             if (split.empty()) { continue; }
             else {
                 counter++;
@@ -171,81 +171,81 @@ int day16_1(std::string dataFile, int behaveLikeXorMoreOpCodes) {
 }
 
 long long day16_2(std::string dataFile_1, std::string dataFile_2) {
-    struct addr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct addr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 0, 0}; }
     };
-    struct addi : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct addi : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
 
-    struct mulr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct mulr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 0, 0}; }
     };
-    struct muli : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct muli : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
 
-    struct banr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct banr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 0, 0}; }
     };
-    struct bani : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct bani : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
 
-    struct borr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct borr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 0, 0}; }
     };
-    struct bori : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct bori : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
 
-    struct setr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct setr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
-    struct seti : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct seti : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {1, 1, 0}; }
     };
 
-    struct gtir : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct gtir : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {1, 0, 0}; }
     };
-    struct gtri : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct gtri : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
-    struct gtrr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct gtrr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 0, 0}; }
     };
 
-    struct eqir : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct eqir : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {1, 0, 0}; }
     };
-    struct eqri : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct eqri : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 1, 0}; }
     };
-    struct eqrr : AOC_commons::PQA::_instrBase_2018 {
-        using AOC_commons::PQA::_instrBase_2018::_instrBase_2018;
+    struct eqrr : incom::commons::PQA::_instrBase_2018 {
+        using incom::commons::PQA::_instrBase_2018::_instrBase_2018;
         const std::vector<int> getRS() override { return {0, 0, 0}; }
     };
 
     auto d_ctre = ctre::search<R"(\d+)">;
 
-    auto rawExampleInput = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile_1, d_ctre);
-    auto rawInstrInput   = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile_2, d_ctre);
+    auto rawExampleInput = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile_1, d_ctre);
+    auto rawInstrInput   = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile_2, d_ctre);
 
     auto overloadSet = overloaded{
         [&](addr &a) { a.C.get() = a.A.get() + a.B.get(); },
@@ -273,11 +273,11 @@ long long day16_2(std::string dataFile_1, std::string dataFile_2) {
     };
 
     auto instrTypeMap =
-        AOC_commons::PQA::ProgramQuasiAssembly_2018<addr, addi, mulr, muli, banr, bani, borr, bori, setr, seti, gtir,
+        incom::commons::PQA::ProgramQuasiAssembly_2018<addr, addi, mulr, muli, banr, bani, borr, bori, setr, seti, gtir,
                                                     gtri, gtrr, eqir, eqri, eqrr>::instrTypeMapCreator(rawExampleInput,
                                                                                                        overloadSet);
 
-    AOC_commons::PQA::ProgramQuasiAssembly_2018<addr, addi, mulr, muli, banr, bani, borr, bori, setr, seti, gtir, gtri,
+    incom::commons::PQA::ProgramQuasiAssembly_2018<addr, addi, mulr, muli, banr, bani, borr, bori, setr, seti, gtir, gtri,
                                                 gtrr, eqir, eqri, eqrr>
         pqa_2018(rawInstrInput, instrTypeMap);
 

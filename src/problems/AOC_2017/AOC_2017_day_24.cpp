@@ -2,7 +2,7 @@
 #include <iostream>
 #include <queue>
 
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <string>
@@ -21,7 +21,7 @@ int day24_1(std::string dataFile) {
     auto right_ctre = ctre::search<R"((?<=\/).+)">;
 
     // DATA AND LAMBDA PREP
-    auto VofV = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, left_ctre, right_ctre);
+    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, left_ctre, right_ctre);
     std::vector<std::vector<unsigned int>> inted;
     unsigned int                           maxPins = 0;
     for (auto &item : VofV) {
@@ -72,7 +72,7 @@ int day24_2(std::string dataFile) {
     auto right_ctre = ctre::search<R"((?<=\/).+)">;
 
     // DATA AND LAMBDA PREP
-    auto VofV = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, left_ctre, right_ctre);
+    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, left_ctre, right_ctre);
     std::vector<std::vector<unsigned int>> inted;
     unsigned int                           maxPins = 0;
     for (auto &item : VofV) {

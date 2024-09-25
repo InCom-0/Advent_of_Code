@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <glaze/glaze.hpp>
@@ -8,7 +8,7 @@ namespace AOC2016 {
 std::string day6_1(std::string &&dataFile) {
     auto ctreOneChar = ctre::search<R"(\w)">;
     auto inp =
-        AOC_commons::parseInputUsingCTRE::processFile(dataFile, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar,
+        incom::commons::parseInputUsingCTRE::processFile(dataFile, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar,
                                                       ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar);
 
     std::string ans;
@@ -24,7 +24,7 @@ std::string day6_1(std::string &&dataFile) {
 std::string day6_2(std::string &&dataFile) {
     auto ctreOneChar = ctre::search<R"(\w)">;
     auto inp =
-        AOC_commons::parseInputUsingCTRE::processFile(dataFile, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar,
+        incom::commons::parseInputUsingCTRE::processFile(dataFile, ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar,
                                                       ctreOneChar, ctreOneChar, ctreOneChar, ctreOneChar);
 
     std::string ans;

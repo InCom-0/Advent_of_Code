@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 #include <AOC_2015.h>
-#include <AOC_commons.h>
+#include <incom_commons.h>
 
 #define DATAFOLDER      "../../data"
 #define DATAFOLDER_2015 "../../data/AOC_2015"

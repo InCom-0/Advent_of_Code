@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 
@@ -7,7 +7,7 @@ namespace AOC2016 {
 int day3_1(std::string dataFile) {
 
     auto ctr = ctre::search<R"(\d+)">;
-    auto inp = AOC_commons::parseInputUsingCTRE::processFile(dataFile, ctr, ctr, ctr);
+    auto inp = incom::commons::parseInputUsingCTRE::processFile(dataFile, ctr, ctr, ctr);
 
     auto const ans = flux::zip(flux::ref(inp[0]), flux::ref(inp[1]), flux::ref(inp[2])).count_if([](auto &&a) {
         std::vector<int> tmpStorage{std::stoi(std::get<0>(a)), std::stoi(std::get<1>(a)), std::stoi(std::get<2>(a))};
@@ -22,7 +22,7 @@ int day3_1(std::string dataFile) {
 
 int day3_2(std::string dataFile) {
     auto ctr = ctre::search<R"(\d+)">;
-    auto inp = AOC_commons::parseInputUsingCTRE::processFile(dataFile, ctr, ctr, ctr);
+    auto inp = incom::commons::parseInputUsingCTRE::processFile(dataFile, ctr, ctr, ctr);
 
     return flux::ref(inp).fold(
         [](auto &&z, auto &&y) {

@@ -1,6 +1,6 @@
 #include <deque>
 
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 
@@ -8,7 +8,7 @@ namespace AOC2017 {
 int day22_1(std::string dataFile, int iterations) {
     // CUSTOM LOCAL TYPES
     auto line_ctre = ctre::search<R"(.+)">;
-    auto VofV      = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, line_ctre);
+    auto VofV      = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, line_ctre);
     struct BF {
         unsigned int dir : 2 = 0;
     } dir;
@@ -68,7 +68,7 @@ int day22_2(std::string dataFile, int iterations) {
 
     // CUSTOM LOCAL TYPES
     auto line_ctre = ctre::search<R"(.+)">;
-    auto VofV      = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, line_ctre);
+    auto VofV      = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, line_ctre);
     struct BF {
         unsigned int dir : 2 = 0;
     } dir;
@@ -127,7 +127,7 @@ int day22_2(std::string dataFile, int iterations) {
 int day22_3(std::string dataFile, int iterations) {
     // CUSTOM LOCAL TYPES
     auto line_ctre = ctre::search<R"(.+)">;
-    auto VofV      = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, line_ctre);
+    auto VofV      = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, line_ctre);
     struct BF {
         unsigned int dir : 2 = 0;
     } dir;

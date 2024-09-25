@@ -1,6 +1,6 @@
 #include <queue>
 
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 
@@ -15,19 +15,19 @@ It is probably also more efficient as virtually all of the data is stored in 1 v
 */
 long long day18_1(std::string dataFile) {
     // CUSTOM LOCAL TYPES DEFINITIONS
-    struct snd : AOC_commons::PQA::_instrBase {};
-    struct set : AOC_commons::PQA::_instrBase {};
-    struct add : AOC_commons::PQA::_instrBase {};
-    struct mul : AOC_commons::PQA::_instrBase {};
-    struct mod : AOC_commons::PQA::_instrBase {};
-    struct rcv : AOC_commons::PQA::_instrBase {};
-    struct jgz : AOC_commons::PQA::_instrBase {};
+    struct snd : incom::commons::PQA::_instrBase {};
+    struct set : incom::commons::PQA::_instrBase {};
+    struct add : incom::commons::PQA::_instrBase {};
+    struct mul : incom::commons::PQA::_instrBase {};
+    struct mod : incom::commons::PQA::_instrBase {};
+    struct rcv : incom::commons::PQA::_instrBase {};
+    struct jgz : incom::commons::PQA::_instrBase {};
 
     auto getWord_ctre = ctre::search<R"([[:^blank:]]+)">;
-    auto VofV         = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
+    auto VofV         = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
 
     // DATA PREP
-    AOC_commons::PQA::ProgramQuasiAssembly<snd, set, add, mul, mod, rcv, jgz> theProgram(VofV, 0);
+    incom::commons::PQA::ProgramQuasiAssembly<snd, set, add, mul, mod, rcv, jgz> theProgram(VofV, 0);
 
     // LAMBDA DEFINITIONS
     long long lastSoundPlayed = LLONG_MIN;
@@ -53,19 +53,19 @@ long long day18_1(std::string dataFile) {
 
 long long day18_2(std::string dataFile, int numOfPrograms) {
     // CUSTOM LOCAL TYPES DEFINITIONS
-    struct snd : AOC_commons::PQA::_instrBase {};
-    struct set : AOC_commons::PQA::_instrBase {};
-    struct add : AOC_commons::PQA::_instrBase {};
-    struct mul : AOC_commons::PQA::_instrBase {};
-    struct mod : AOC_commons::PQA::_instrBase {};
-    struct rcv : AOC_commons::PQA::_instrBase {};
-    struct jgz : AOC_commons::PQA::_instrBase {};
+    struct snd : incom::commons::PQA::_instrBase {};
+    struct set : incom::commons::PQA::_instrBase {};
+    struct add : incom::commons::PQA::_instrBase {};
+    struct mul : incom::commons::PQA::_instrBase {};
+    struct mod : incom::commons::PQA::_instrBase {};
+    struct rcv : incom::commons::PQA::_instrBase {};
+    struct jgz : incom::commons::PQA::_instrBase {};
 
     auto getWord_ctre = ctre::search<R"([[:^blank:]]+)">;
-    auto VofV         = AOC_commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
+    auto VofV         = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
 
     // DATA AND LAMBDA PREP
-    std::vector<AOC_commons::PQA::ProgramQuasiAssembly<snd, set, add, mul, mod, rcv, jgz>> programs;
+    std::vector<incom::commons::PQA::ProgramQuasiAssembly<snd, set, add, mul, mod, rcv, jgz>> programs;
     for (int i = 0; i < numOfPrograms; ++i) { programs.emplace_back(VofV, i); }
 
     std::vector<unsigned short>        switch_Xs(numOfPrograms, false);

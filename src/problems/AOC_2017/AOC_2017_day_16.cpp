@@ -1,6 +1,6 @@
 #include <fstream>
 
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <ctre.hpp>
 #include <unordered_set>
 
@@ -167,7 +167,7 @@ std::string day16_2(std::string dataFile) {
                 oneInstr);
         }
     }
-    std::unordered_map<char, char, AOC_commons::XXH3Hasher> nameBasedMap;
+    std::unordered_map<char, char, incom::commons::XXH3Hasher> nameBasedMap;
     for (auto &oneChar : theOne) {
         nameBasedMap.emplace(oneChar, theOne[std::ranges::find(theOtherOne, oneChar) - theOtherOne.begin()]);
     }
@@ -243,7 +243,7 @@ std::string day16_3(std::string dataFile, unsigned int numOfDances) {
         [&](prt const &a) { std::swap(*std::ranges::find(theOne, a.chr_1), *std::ranges::find(theOne, a.chr_2)); },
     };
 
-    std::unordered_set<std::string, AOC_commons::XXH3Hasher> pastResults;
+    std::unordered_set<std::string, incom::commons::XXH3Hasher> pastResults;
 
     // MAIN LOGIC
     // Find a cycle (that is after X repeats end up where we started)

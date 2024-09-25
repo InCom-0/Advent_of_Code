@@ -1,4 +1,4 @@
-#include <AOC_commons.h>
+#include <incom_commons.h>
 #include <bitlib/bitlib.hpp>
 #include <ctre.hpp>
 #include <flux.hpp>
@@ -8,7 +8,7 @@ namespace AOC2018 {
 size_t day18_1(std::string dataFile) {
     auto any_ctre = ctre::search<R"(.+)">;
 
-    auto VofV = AOC_commons::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto VofV = incom::commons::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
     for (auto &line : VofV) {
         line.insert(0, 1, 'B');
         line.push_back('B');
@@ -16,7 +16,7 @@ size_t day18_1(std::string dataFile) {
     VofV.insert(VofV.begin(), std::string(VofV.front().size(), 'B'));
     VofV.push_back(std::string(VofV.front().size(), 'B'));
 
-    AOC_commons::doubleBuffer buf(VofV);
+    incom::commons::doubleBuffer buf(VofV);
 
     std::vector<std::pair<int, int>> dirs{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
 
@@ -89,7 +89,7 @@ size_t day18_2(std::string dataFile) {
     // DATA PREP
     auto any_ctre = ctre::search<R"(.+)">;
 
-    auto VofV = AOC_commons::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto VofV = incom::commons::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
     for (auto &line : VofV) {
         line.insert(0, 1, 'B');
         line.push_back('B');
@@ -97,11 +97,11 @@ size_t day18_2(std::string dataFile) {
     VofV.insert(VofV.begin(), std::string(VofV.front().size(), 'B'));
     VofV.push_back(std::string(VofV.front().size(), 'B'));
 
-    AOC_commons::doubleBuffer buf(VofV);
+    incom::commons::doubleBuffer buf(VofV);
 
     std::vector<std::pair<int, int>> const dirs{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
     std::unordered_map<size_t, size_t>     theMap;
-    AOC_commons::XXH3Hasher                hasher;
+    incom::commons::XXH3Hasher                hasher;
     size_t                                 tempHash = hasher(buf.getCurrent());
     size_t                                 counter  = 0;
 
