@@ -669,10 +669,10 @@ struct ProgramQuasiAssembly_2018 {
                         lastRegOccupied = std::max(lastRegOccupied, std::stoi(line[1]));
                     }
                     if (refVal_instructions[1] == 0) {
-                        lastRegOccupied = std::max(lastRegOccupied, std::stoi(line[1]));
+                        lastRegOccupied = std::max(lastRegOccupied, std::stoi(line[2]));
                     }
                     if (refVal_instructions[2] == 0) {
-                        lastRegOccupied = std::max(lastRegOccupied, std::stoi(line[1]));
+                        lastRegOccupied = std::max(lastRegOccupied, std::stoi(line[3]));
                     }
                 },
                 mapped.at(line.front()));

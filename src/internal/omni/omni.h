@@ -3,21 +3,16 @@
 #include "incom_commons.h"
 
 #include <mdspan/mdspan.hpp>
-#include <more_concepts/more_concepts.hpp>
 #include <robin_hood.h>
-
-#include <concepts>
-#include <type_traits>
 
 
 namespace incom {
 namespace omni {
 
+/* 'MD_Vector' container type
 
-/* 'Omni Vector' container type
-
-Omni => The vector goes both ways ... that is you can index into 'Omni_Vector' with negative indices.
-Omni => Made to nativelly supports N dimensions aka: nesting (as in eg. 'vector<vector<int>>' is 2-dimensional)
+Omni => The vector goes both ways ... that is you can index into 'MD_Vector' with negative indices.
+MD => Made to nativelly supports N dimensions aka: nesting (as in eg. 'vector<vector<int>>' is 2-dimensional)
 
 By no means 'industrial grade'
 
@@ -62,7 +57,7 @@ C++ typesystem.
  */
 template <typename Data_T, size_t c_numOfDimensions = 1, Data_T c_defaultValue = Data_T(), size_t c_blockSize = 8>
 requires std::copy_constructible<Data_T> && std::is_default_constructible_v<Data_T>
-class Omni_Vector {
+class MD_Vector {
 
 private:
     template <typename T>
@@ -275,7 +270,7 @@ private:
     decltype(_getContainedType_sampleInst<c_numOfDimensions>()) m_data;
 
 public:
-    Omni_Vector() : m_data() {};
+    MD_Vector() : m_data() {};
 
     template <typename First_ID, typename... Other_IDs>
     requires(std::same_as<std::remove_cvref_t<std::remove_pointer_t<std::decay_t<First_ID>>>, long long>) &&
@@ -303,7 +298,7 @@ public:
  */
 template <typename Data_T, size_t c_numOfDimensions = 1, Data_T c_defaultValue = Data_T(), size_t c_blockSize = 4>
 requires std::is_trivially_copyable_v<Data_T> && incom::concepts::isPowerOf2<c_blockSize>
-class Omni_Store {
+class MD_ChunkVector {
 public:
     using Key_Type = typename std::array<long long, c_numOfDimensions>;
 
@@ -320,12 +315,12 @@ private:
     consteval static Key_Type _c_detail_get_cornerDefault(const std::integer_sequence<T, ints...>) {
         return Key_Type{ints...};
     }
-    consteval static auto _c_detail_mds_convArrayPair() {
+    consteval static auto _c_detail_mds_convArrayPair(auto const &&powerBase) {
         std::array<std::pair<long long, long long>, c_numOfDimensions> res;
         for (int i = 0; i < c_numOfDimensions; ++i) {
             res[i].first  = i;
             res[i].second = 1;
-            for (int j = 0; j < c_numOfDimensions - i - 1; ++j) { res[i].second *= c_blockSize; }
+            for (int j = 0; j < c_numOfDimensions - i - 1; ++j) { res[i].second *= powerBase; }
         }
         return res;
     }
@@ -348,13 +343,15 @@ private:
     static constexpr const auto c_X_repeat_LLONG_MIN =
         (typename incom::concepts::c_gen_X_repeat_sequence<c_numOfDimensions, LLONG_MIN>::type){};
 
+    static constexpr const long long c_blockSize_long = c_blockSize;
     static constexpr const size_t c_blockOfChunksCount = _c_detail_get_variadicPower(c_X_repeat_three);
-    static constexpr const auto   c_mds_convPairArray  = _c_detail_mds_convArrayPair();
+    static constexpr const auto   c_mds_chunkIdConvArray  = _c_detail_mds_convArrayPair(c_blockSize_long+0);
+    static constexpr const auto   c_mds_surrRefConvArray = _c_detail_mds_convArrayPair(3);
     static constexpr const size_t c_chunkItemCount     = _c_detail_get_variadicPower(c_X_repeat_blockSize);
 
     // TODO: Complex-ish compile time inferrence of suitable blocksize
     // TODO: (deducing from the _Chunk size which is itself based on Data_T size as laid out in memory)
-    static constexpr const long long c_blockSize_long = c_blockSize;
+
 
     // PRIVATE MEMBERS
 
@@ -366,7 +363,7 @@ private:
     Key_Type m_selChunk_negOrPos;
     Key_Type m_selChunk_offsetsForNeg;
 
-    std::array<std::pair<long long, long long>, c_numOfDimensions> pairs_fFSS = _c_detail_gen_pairs_fFSS();
+    std::array<std::pair<long long, long long>, c_numOfDimensions> m_pairs_fFSS = _c_detail_gen_pairs_fFSS();
 
     // Basically a reference to chunk you last accessed using the public interface of the class
     std::reference_wrapper<_Chunk> m_selChunk = fake_chunk;
@@ -414,9 +411,10 @@ private:
 
         Data_T &_get_dataItemBySizeT(size_t &id) { return m_data[id]; }
 
-        template <typename... PAIRS>
-        std::reference_wrapper<_Chunk> _get_surrChunk(PAIRS const &...pairs) {
-            return Kokkos::mdspan(m_refsToSurrChunks.data(), pairs.first...)[pairs.second...].get();
+        template <typename T, T... ints>
+        inline std::reference_wrapper<_Chunk> _get_surrChunk(Key_Type const &keyInSurr,
+                                                      const std::integer_sequence<T, ints...>&) {
+            return m_refsToSurrChunks[((keyInSurr[ints] * c_mds_surrRefConvArray[ints].second) + ...)];
         }
     };
 
@@ -424,25 +422,19 @@ private:
     // PRIVATE DETAIL INTERNAL
     // Get reference to one Data_T instance ... the 'goal'
     template <typename T, T... ints>
-    Data_T &_get_fromSelChunk(Key_Type key, const std::integer_sequence<T, ints...>) {
-
-        // Convert 'global' key into as-if indices into selChunk
-        ((key[ints] = ((key[ints] - m_selChunk_Corner[ints]))), ...);
-
-        // Convert indices into selChunk into simple Size_t accessor id
-        size_t id = ((key[ints] * c_mds_convPairArray[ints].second) + ...);
-
+    inline Data_T &_get_fromSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...>&) {
+        size_t id = (((key[ints] - m_selChunk_Corner[ints]) * c_mds_chunkIdConvArray[ints].second) + ...);
         return m_selChunk.get()._get_dataItemBySizeT(id);
     }
 
     template <typename T, T... ints>
-    constexpr Key_Type _get_chunkCornerFromKey(Key_Type const &key, const std::integer_sequence<T, ints...>) {
+    constexpr inline  Key_Type _get_chunkCornerFromKey(Key_Type const &key, const std::integer_sequence<T, ints...>&) {
         return Key_Type{(((key[ints] + std::signbit(key[ints])) / c_blockSize_long) * c_blockSize_long) +
                         (std::signbit(key[ints]) * (-c_blockSize_long))...};
     }
 
     template <typename T, T... ints>
-    constexpr void _update_selChunkMembers(Key_Type const &key, const std::integer_sequence<T, ints...>) {
+    constexpr inline void _update_selChunkMembers(Key_Type const &key, const std::integer_sequence<T, ints...>&) {
         // Seems comlicated, but it just sets the helper variables so that access to said chunk is fast later on.
         // Most of this is done in order to 'remap' negative indices the correct way
         // Should be calculated nearly instantenously on any modern CPU
@@ -452,14 +444,14 @@ private:
     }
 
     template <typename T, T... ints>
-    _Chunk &_get_chunkFromMapOrGenerate(Key_Type key, const std::integer_sequence<T, ints...>) {
+    inline _Chunk &_get_chunkFromMapOrGenerate(Key_Type key, const std::integer_sequence<T, ints...>&) {
         ((key[ints] = m_selChunk_Corner[ints] + (key[ints] * c_blockSize_long)), ...);
         auto iter = mp.insert({key, _Chunk(c_defaultValue, fake_chunk)});
         return iter.first->second;
     }
 
     template <typename T, T... ints>
-    void _gen_missingSurrChunks(const std::integer_sequence<T, ints...>) {
+    void _gen_missingSurrChunks(const std::integer_sequence<T, ints...>&) {
         Key_Type curIDs{(ints, -1)...};
         auto    &surrChunks_ref = m_selChunk.get().get_surrChunks();
 
@@ -478,7 +470,7 @@ private:
 
     // 'Hard' lookup ... direct reference unavailable must lookup in map
     template <typename T, T... ints>
-    void _hardLookup(Key_Type const &key, const std::integer_sequence<T, ints...>) {
+    void _hardLookup(Key_Type const &key, const std::integer_sequence<T, ints...>&) {
 
         _update_selChunkMembers(key, c_IDs_sequence);
 
@@ -495,16 +487,12 @@ private:
 
     // 'Soft' lookup ... direct reference available
     template <typename T, T... ints>
-    void _softLookup(Key_Type const &key, const std::integer_sequence<T, ints...>) {
+    void _softLookup(Key_Type const &key, const std::integer_sequence<T, ints...>&) {
         Key_Type oldCorner = m_selChunk_Corner;
         _update_selChunkMembers(key, c_IDs_sequence);
 
-        // This updates the pairs_fFSS with the right value for the 'second'.
-        // The 'second' is essentially an offset from m_selChunk_Corner of -1, 0 or 1 for each dimension.
-        ((pairs_fFSS[ints].second = (((m_selChunk_Corner[ints] - oldCorner[ints]) / c_blockSize_long) + 1LL)), ...);
-
-        // We lookup the new chunk inside the m_refsToSurrChunks using the pairs_fFSS we updated earlier.
-        m_selChunk = m_selChunk.get()._get_surrChunk(pairs_fFSS[ints]...);
+        Key_Type ids_forSurrChunk{(((m_selChunk_Corner[ints] - oldCorner[ints]) / c_blockSize_long) + 1LL)...};
+        m_selChunk = m_selChunk.get()._get_surrChunk(ids_forSurrChunk, c_IDs_sequence);
 
         if (not m_selChunk.get().is_refsToSurrAllValid()) {
             _gen_missingSurrChunks(c_IDs_sequence);
@@ -513,13 +501,13 @@ private:
     }
 
     template <typename T, T... ints>
-    inline bool _detail_is_inSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...>) const {
+    inline bool _detail_is_inSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...>&) const {
         return not (
             ((key[ints] < m_selChunk_Corner[ints]) || (key[ints] >= (m_selChunk_Corner[ints] + c_blockSize_long))) ||
             ...);
     }
     template <typename T, T... ints>
-    inline bool _detail_is_outsideSurrChunks(Key_Type const &key, const std::integer_sequence<T, ints...>) const {
+    inline bool _detail_is_outsideSurrChunks(Key_Type const &key, const std::integer_sequence<T, ints...>&) const {
         return (((key[ints] < (m_selChunk_Corner[ints] - c_blockSize_long)) ||
                  (key[ints] >= (m_selChunk_Corner[ints] + (2 * c_blockSize_long)))) ||
                 ...);
