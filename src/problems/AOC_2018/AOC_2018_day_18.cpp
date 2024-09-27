@@ -1,7 +1,8 @@
-#include <incom_commons.h>
 #include <bitlib/bitlib.hpp>
 #include <ctre.hpp>
 #include <flux.hpp>
+#include <incom_commons.h>
+
 
 namespace AOC2018 {
 
@@ -101,7 +102,7 @@ size_t day18_2(std::string dataFile) {
 
     std::vector<std::pair<int, int>> const dirs{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
     std::unordered_map<size_t, size_t>     theMap;
-    incom::commons::XXH3Hasher                hasher;
+    incom::commons::XXH3Hasher             hasher;
     size_t                                 tempHash = hasher(buf.getCurrent());
     size_t                                 counter  = 0;
 

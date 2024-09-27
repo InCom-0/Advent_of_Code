@@ -21,8 +21,8 @@ struct overloaded : Ts... {
 };
 
 namespace incom {
-    namespace concepts {
-        
+namespace concepts {
+
 namespace detail {
 template <typename T, template <typename...> typename Template>
 struct is_specialization_of : std::false_type {};
@@ -75,8 +75,8 @@ struct c_gen_X_repeat_sequence<0, S, Sx...> {
 };
 
 
-    }
-    namespace commons {
+} // namespace concepts
+namespace commons {
 
 // This tiny type is used to simplify dealing with parameter packs.
 // Usually used to invoke a closure (lambda) over each parameter in the pack.
@@ -431,10 +431,10 @@ template <typename... instrT>
 requires(std::derived_from<instrT, _instrBase> && ...)
 struct ProgramQuasiAssembly {
     std::unordered_map<char, std::reference_wrapper<long long>, incom::commons::XXH3Hasher> mapping;
-    unsigned long long                                                                   instructionID = 0;
-    long long                                                                            fakeRegister  = LLONG_MIN;
-    std::vector<long long>                                                               registers;
-    std::vector<std::variant<instrT...>>                                                 instrVect;
+    unsigned long long                                                                      instructionID = 0;
+    long long                                                                               fakeRegister  = LLONG_MIN;
+    std::vector<long long>                                                                  registers;
+    std::vector<std::variant<instrT...>>                                                    instrVect;
 
     // The one and only constructor of the 'prog' type
     ProgramQuasiAssembly(const std::vector<std::vector<std::string>> &input, const long long registersStartValue = 0) {
@@ -631,7 +631,7 @@ struct ProgramQuasiAssembly_2018 {
         }
 
         std::unordered_map<std::string, std::variant<instrT...>, incom::commons::XXH3Hasher> instrTypeMap;
-        long long                                                                         cntr = 0;
+        long long                                                                            cntr = 0;
 
         // Horrifying hack creating a dangling reference with the 'counter' being passed into Instr_T constructor
         (instrTypeMap.emplace(IDsMap.at(cntr++), std::variant<instrT...>{instrT{cntr, cntr, cntr}}), ...);
@@ -639,9 +639,10 @@ struct ProgramQuasiAssembly_2018 {
     };
 
     // The one and only constructor of the 'prog' type
-    ProgramQuasiAssembly_2018(const std::vector<std::vector<std::string>> &rawInstrInput,
-                              std::unordered_map<std::string, std::variant<instrT...>, incom::commons::XXH3Hasher> &mapped,
-                              const std::vector<long long> regStartVal = {0, 0, 0, 0}) {
+    ProgramQuasiAssembly_2018(
+        const std::vector<std::vector<std::string>>                                          &rawInstrInput,
+        std::unordered_map<std::string, std::variant<instrT...>, incom::commons::XXH3Hasher> &mapped,
+        const std::vector<long long> regStartVal = {0, 0, 0, 0}) {
 
         assert((void("Prog type instantiated with an empty input"), rawInstrInput.size() > 0));
         for (auto &line : rawInstrInput) {
@@ -714,5 +715,5 @@ struct ProgramQuasiAssembly_2018 {
     }
 };
 } // namespace PQA
-    }
-} // namespace AOC_commons
+} // namespace commons
+} // namespace incom

@@ -22,7 +22,7 @@ int main() {
 
     auto pth_1 = std::filesystem::path(DATAFOLDER_2018) / "2018_20_1.txt";
 
-    std::cout << AOC2018::day20_1(pth_1.generic_string()) << '\n';
+    std::cout << AOC2018::day20_1(pth_1.generic_string()).second << '\n';
     
 
     return 1;

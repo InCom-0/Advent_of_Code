@@ -512,28 +512,31 @@ private:
         }
     }
 
+    template <typename T, T... ints>
+    inline bool _detail_is_inSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...>) const {
+        return not (
+            ((key[ints] < m_selChunk_Corner[ints]) || (key[ints] >= (m_selChunk_Corner[ints] + c_blockSize_long))) ||
+            ...);
+    }
+    template <typename T, T... ints>
+    inline bool _detail_is_outsideSurrChunks(Key_Type const &key, const std::integer_sequence<T, ints...>) const {
+        return (((key[ints] < (m_selChunk_Corner[ints] - c_blockSize_long)) ||
+                 (key[ints] >= (m_selChunk_Corner[ints] + (2 * c_blockSize_long)))) ||
+                ...);
+    }
+
 public:
     // IS_ FUNCTIONS
-    bool is_inSelChunk(Key_Type const &key) const {
-        int invalidDims = 0;
-        for (int i = 0; (i < c_numOfDimensions && invalidDims == 0); ++i) {
-            invalidDims += (key[i] < m_selChunk_Corner[i]) || (key[i] >= (m_selChunk_Corner[i] + c_blockSize_long));
-        }
-        return not invalidDims;
-    }
-    bool is_outsideSurrChunks(Key_Type const &key) const {
-        int invalidDims = 0;
-        for (int i = 0; (i < c_numOfDimensions && invalidDims == 0); ++i) {
-            invalidDims += ((key[i] < (m_selChunk_Corner[i] - c_blockSize_long)) ||
-                            (key[i] >= (m_selChunk_Corner[i] + (2 * c_blockSize_long))));
-        }
-        return invalidDims;
+    inline bool is_inSelChunk(Key_Type const &key) const { return _detail_is_inSelChunk(key, c_IDs_sequence); }
+    inline bool is_outsideSurrChunks(Key_Type const &key) const {
+        return _detail_is_outsideSurrChunks(key, c_IDs_sequence);
     }
 
     // MAIN INTERFACE
     Data_T &get(Key_Type const &key) {
-        if (is_outsideSurrChunks(key)) { _hardLookup(key, c_IDs_sequence); }
-        else if (not is_inSelChunk(key)) { _softLookup(key, c_IDs_sequence); }
+        if (is_inSelChunk(key)) {}
+        else if (is_outsideSurrChunks(key)) { _hardLookup(key, c_IDs_sequence); }
+        else { _softLookup(key, c_IDs_sequence); }
         return _get_fromSelChunk(key, c_IDs_sequence);
     }
 };
