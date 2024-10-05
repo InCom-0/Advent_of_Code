@@ -1,8 +1,6 @@
 
 namespace incom {
-    namespace commons {
-
-}
+namespace commons {}
 
 
-}
+} // namespace incom

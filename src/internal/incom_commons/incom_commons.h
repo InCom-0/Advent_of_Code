@@ -90,8 +90,7 @@ struct argPackHLPR {
     };
 };
 
-/*
-Simple 'double buffer' class that can be useful when employing iterative algorithms that simply 'mutate' the input in
+/* Simple 'double buffer' class that can be useful when employing iterative algorithms that simply 'mutate' the input in
 each iteration. Particularly useful for non-trivial data structures ... for instance containers of containers.
 */
 template <typename T>
@@ -116,8 +115,7 @@ public:
     void swapBuffers() { std::swap(current, next); }
 };
 
-/*
-Matrix rotation of 'indexed' random access containers.
+/*Matrix rotation of 'indexed' random access containers.
 Uses 'swapping in circles' method ... should be pretty fast
 */
 template <typename T>
@@ -157,8 +155,7 @@ void matrixRotateRight(T &VofVlike) {
     return;
 }
 
-/*
-Hashes using XXH3_64bit 'state of the art' non-cryptographic hasher.
+/* Hashes using XXH3_64bit 'state of the art' non-cryptographic hasher.
 Can/should be used for hasing keys in maps, sets and the like.
 
 Hashes arithmetic types + std::vector, std::array and std::pair of the former.
