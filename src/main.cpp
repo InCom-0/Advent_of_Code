@@ -5,10 +5,11 @@
 #include <AOC_2016.h>
 #include <AOC_2017.h>
 #include <AOC_2018.h>
+#include <AOC_2019.h>
 #include <incom_commons.h>
 
 #define DATAFOLDER      "../data"
-#define DATAFOLDER_2018 "../data/AOC_2018"
+#define DATAFOLDER_2018 "../data/AOC_2019"
 
 
 /*
@@ -20,9 +21,9 @@ Note that this main is used while developing the solutions.
 
 int main() {
 
-    auto pth_1 = std::filesystem::path(DATAFOLDER_2018) / "2018_25_1.txt";
+    auto pth_1 = std::filesystem::path(DATAFOLDER_2018) / "2019_2_1.txt";
 
-    std::cout << AOC2018::day25_1(pth_1.generic_string()) << '\n';
+    std::cout << AOC2019::day2_2(pth_1.generic_string()) << '\n';
     
 
     return 1;
