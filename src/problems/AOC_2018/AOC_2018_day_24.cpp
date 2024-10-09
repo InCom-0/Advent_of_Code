@@ -105,11 +105,9 @@ struct Game {
 
         return res;
     }
-
     void cleanDeadGroups() {
         std::erase_if(m_groups, [&](auto &&gr) { return gr.m_units == 0; });
     }
-
     void exe_attacks(
         std::vector<std::pair<std::reference_wrapper<Group>, std::reference_wrapper<Group>>> &targettingVect) {
         std::ranges::sort(targettingVect,
@@ -118,20 +116,17 @@ struct Game {
         for (auto &combatPair : targettingVect) { combatPair.first.get().attackAnother(combatPair.second.get()); }
     }
 
-
     void exe_oneRound() {
         auto loc_targetting = calc_targetSelection();
         exe_attacks(loc_targetting);
 
         cleanDeadGroups();
     }
-
     size_t calc_numOfOriginalGroups() {
         std::unordered_set<size_t> tempSet;
         for (auto &grp : m_groups) { tempSet.insert(grp.side); }
         return tempSet.size();
     }
-
     size_t calc_numOfsidesAlive() {
         std::unordered_set<size_t> tempSet;
         for (auto &grp : m_groups) {
@@ -139,7 +134,6 @@ struct Game {
         }
         return tempSet.size();
     }
-
     long long calc_remainingUnits() {
         return std::ranges::fold_left(m_groups, 0LL, [&](auto &&accu, auto &&grp) { return accu + grp.m_units; });
     }
