@@ -2,8 +2,8 @@
 
 #include "incom_commons.h"
 
+#include <ankerl/unordered_dense.h>
 #include <mdspan/mdspan.hpp>
-#include <robin_hood.h>
 
 
 namespace incom {
@@ -369,7 +369,7 @@ private:
     std::reference_wrapper<_Chunk> m_selChunk = fake_chunk;
 
     // Map of all _Chunks keyed with 'bottom left corner' array of indices (Key_Type)
-    robin_hood::unordered_node_map<Key_Type, _Chunk, incom::commons::XXH3Hasher> mp;
+    ankerl::unordered_dense::segmented_map<Key_Type, _Chunk, incom::commons::XXH3Hasher> mp;
 
 
     // CHUNK NESTED TYPE DEFINITION

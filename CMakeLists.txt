@@ -17,4 +17,4 @@ add_executable(AOC)
 target_sources(AOC PUBLIC src/main.cpp
     PUBLIC FILE_SET HEADERS BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(AOC PRIVATE AOC_2015 AOC_2016 AOC_2017 AOC_2018)
+target_link_libraries(AOC PRIVATE AOC_2015 AOC_2016 AOC_2017 AOC_2018 AOC_2019)
