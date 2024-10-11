@@ -1,16 +1,12 @@
-#include <cassert>
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <incom_commons.h>
-#include <optional>
-#include <string>
 
 
 namespace AOC2019 {
 
-
 long long day3_1(std::string dataFile) {
-
+    // TYPE DEFINITIONS
     struct Point {
         long long x;
         long long y;
@@ -26,33 +22,32 @@ long long day3_1(std::string dataFile) {
         return (std::abs(firstPoint.x - secondPoint.x) + std::abs(firstPoint.y - secondPoint.y));
     };
 
-
     auto calc_intersection = [&](WireLine const &firstWire, WireLine const &secondWire,
                                  std::vector<Point> &candidates) {
         auto is_TD = [&](WireLine const &wire) { return wire.start.x == wire.end.x; };
 
         if (is_TD(firstWire) && not is_TD(secondWire)) {
-            if ((firstWire.start.x >= secondWire.start.x && firstWire.start.x <= secondWire.end.x) ||
-                (firstWire.start.x <= secondWire.start.x && firstWire.start.x >= secondWire.end.x)) {
-                if ((secondWire.start.y >= firstWire.start.y && secondWire.start.y <= firstWire.end.y) ||
-                    (secondWire.start.y <= firstWire.start.y && secondWire.start.y >= firstWire.end.y)) {
+            if ((std::abs(firstWire.start.x - secondWire.start.x) + std::abs(firstWire.start.x - secondWire.end.x)) ==
+                std::abs(secondWire.end.x - secondWire.start.x)) {
+                if ((std::abs(secondWire.start.y - firstWire.start.y) +
+                     std::abs(secondWire.start.y - firstWire.end.y)) == std::abs(firstWire.end.y - firstWire.start.y)) {
                     candidates.push_back(Point{firstWire.start.x, secondWire.start.y});
                 }
             }
         }
+        else if (not is_TD(firstWire) && is_TD(secondWire)) {
 
-        if (not is_TD(firstWire) && is_TD(secondWire)) {
-            if ((firstWire.start.y >= secondWire.start.y && firstWire.start.y <= secondWire.end.y) ||
-                (firstWire.start.y <= secondWire.start.y && firstWire.start.y >= secondWire.end.y)) {
-                if ((secondWire.start.x >= firstWire.start.x && secondWire.start.x <= firstWire.end.x) ||
-                    (secondWire.start.x <= firstWire.start.x && secondWire.start.x >= firstWire.end.x)) {
+            if ((std::abs(firstWire.start.y - secondWire.start.y) + std::abs(firstWire.start.y - secondWire.end.y)) ==
+                std::abs(secondWire.end.y - secondWire.start.y)) {
+                if ((std::abs(secondWire.start.x - firstWire.start.x) +
+                     std::abs(secondWire.start.x - firstWire.end.x)) == std::abs(firstWire.end.x - firstWire.start.x)) {
                     candidates.push_back(Point{secondWire.start.x, firstWire.start.y});
                 }
             }
         }
     };
 
-
+    // DATA PREP
     auto ctreNotComma = ctre::search<R"([^,]+)">;
     auto input        = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, ctreNotComma);
     std::vector<std::vector<WireLine>> vOfV_wireLines;
@@ -83,7 +78,7 @@ long long day3_1(std::string dataFile) {
 
     std::vector<Point> candidates;
 
-    // Super ugly
+    // MAIN LOGIC
     for (auto &wire : vOfV_wireLines) {
         for (auto &otherWire : vOfV_wireLines) {
             if (&otherWire == &wire) { continue; }
@@ -102,7 +97,7 @@ long long day3_1(std::string dataFile) {
 
 
 long long day3_2(std::string dataFile) {
-
+    // TYPE DEFINITIONS
     struct Point {
         long long x;
         long long y;
@@ -113,32 +108,41 @@ long long day3_2(std::string dataFile) {
         Point end;
     };
 
+    auto calc_distance = [](Point const &firstPoint, Point const &secondPoint) -> long long {
+        return (std::abs(firstPoint.x - secondPoint.x) + std::abs(firstPoint.y - secondPoint.y));
+    };
+
     auto calc_intersection = [&](WireLine const &firstWire, WireLine const &secondWire,
                                  std::vector<Point> &candidates) {
         auto is_TD = [&](WireLine const &wire) { return wire.start.x == wire.end.x; };
 
         if (is_TD(firstWire) && not is_TD(secondWire)) {
-            if ((firstWire.start.x >= secondWire.start.x && firstWire.start.x <= secondWire.end.x) ||
-                (firstWire.start.x <= secondWire.start.x && firstWire.start.x >= secondWire.end.x)) {
-                if ((secondWire.start.y >= firstWire.start.y && secondWire.start.y <= firstWire.end.y) ||
-                    (secondWire.start.y <= firstWire.start.y && secondWire.start.y >= firstWire.end.y)) {
+            if ((std::abs(firstWire.start.x - secondWire.start.x) + std::abs(firstWire.start.x - secondWire.end.x)) ==
+                std::abs(secondWire.end.x - secondWire.start.x)) {
+                if ((std::abs(secondWire.start.y - firstWire.start.y) +
+                     std::abs(secondWire.start.y - firstWire.end.y)) == std::abs(firstWire.end.y - firstWire.start.y)) {
                     candidates.push_back(Point{firstWire.start.x, secondWire.start.y});
                 }
             }
         }
+        else if (not is_TD(firstWire) && is_TD(secondWire)) {
 
-        if (not is_TD(firstWire) && is_TD(secondWire)) {
-            if ((firstWire.start.y >= secondWire.start.y && firstWire.start.y <= secondWire.end.y) ||
-                (firstWire.start.y <= secondWire.start.y && firstWire.start.y >= secondWire.end.y)) {
-                if ((secondWire.start.x >= firstWire.start.x && secondWire.start.x <= firstWire.end.x) ||
-                    (secondWire.start.x <= firstWire.start.x && secondWire.start.x >= firstWire.end.x)) {
+            if ((std::abs(firstWire.start.y - secondWire.start.y) + std::abs(firstWire.start.y - secondWire.end.y)) ==
+                std::abs(secondWire.end.y - secondWire.start.y)) {
+                if ((std::abs(secondWire.start.x - firstWire.start.x) +
+                     std::abs(secondWire.start.x - firstWire.end.x)) == std::abs(firstWire.end.x - firstWire.start.x)) {
                     candidates.push_back(Point{secondWire.start.x, firstWire.start.y});
                 }
             }
         }
     };
 
+    auto is_pointOnWireline = [](WireLine const &wl, Point const &pt) {
+        return (std::abs(pt.x - wl.start.x) + std::abs(pt.x - wl.end.x) == std::abs(wl.start.x - wl.end.x)) *
+               (std::abs(pt.y - wl.start.y) + std::abs(pt.y - wl.end.y) == std::abs(wl.start.y - wl.end.y));
+    };
 
+    // DATA PREP
     auto ctreNotComma = ctre::search<R"([^,]+)">;
     auto input        = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, ctreNotComma);
     std::vector<std::vector<WireLine>> vOfV_wireLines;
@@ -169,7 +173,7 @@ long long day3_2(std::string dataFile) {
 
     std::vector<Point> candidates;
 
-    // Super ugly
+    // Find the intersection points ...
     for (auto &wire : vOfV_wireLines) {
         for (auto &otherWire : vOfV_wireLines) {
             if (&otherWire == &wire) { continue; }
@@ -179,30 +183,17 @@ long long day3_2(std::string dataFile) {
         }
     }
 
+    // MAIN LOGIC
     std::vector<long long> stepToReachInterSecs(candidates.size(), 0);
 
     for (int cand = 0; cand < candidates.size(); ++cand) {
         for (auto &wire : vOfV_wireLines) {
             for (auto oneLine : wire) {
-                if (oneLine.end.x == oneLine.start.x) {
-                    if (candidates[cand].x == oneLine.start.x &&
-                        ((candidates[cand].y >= oneLine.start.y && candidates[cand].y <= oneLine.end.y) ||
-                         (candidates[cand].y <= oneLine.start.y && candidates[cand].y >= oneLine.end.y))) {
-                        stepToReachInterSecs[cand] += std::abs(candidates[cand].y - oneLine.start.y);
-                        break;
-                    }
-                    else { stepToReachInterSecs[cand] += std::abs(oneLine.end.y - oneLine.start.y); }
+                if (is_pointOnWireline(oneLine, candidates[cand])) {
+                    stepToReachInterSecs[cand] += calc_distance(oneLine.start, candidates[cand]);
+                    break;
                 }
-                else if (oneLine.end.y == oneLine.start.y) {
-                    if (candidates[cand].y == oneLine.start.y &&
-                        ((candidates[cand].x >= oneLine.start.x && candidates[cand].x <= oneLine.end.x) ||
-                         (candidates[cand].x <= oneLine.start.x && candidates[cand].x >= oneLine.end.x))) {
-                        stepToReachInterSecs[cand] += std::abs(candidates[cand].x - oneLine.start.x);
-                        break;
-                    }
-                    else { stepToReachInterSecs[cand] += std::abs(oneLine.end.x - oneLine.start.x); }
-                }
-                else { assert(false); }
+                else { stepToReachInterSecs[cand] += calc_distance(oneLine.start, oneLine.end); }
             }
         }
     }
@@ -210,7 +201,6 @@ long long day3_2(std::string dataFile) {
     auto ans = flux::ref(stepToReachInterSecs).filter([](auto &&a) { return a != 0; }).min([](auto &&aa, auto &&bb) {
         return aa < bb;
     });
-
 
     return ans.value();
 }
