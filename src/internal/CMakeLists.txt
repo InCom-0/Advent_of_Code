@@ -11,7 +11,8 @@ target_link_libraries(incom_commons PUBLIC
     unordered_dense::unordered_dense
     more_concepts::more_concepts
     hash-library::hash-library
-    std::mdspan)
+    std::mdspan
+    include)
 
 add_library(incom_omni ${CMAKE_SOURCE_DIR}/src/internal/omni/omni.h)
 target_include_directories(incom_omni PUBLIC ${CMAKE_SOURCE_DIR}/src/internal/omni)

@@ -42,6 +42,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(mdspan)
 
+FetchContent_Declare(
+    functional
+    GIT_REPOSITORY https://github.com/InCom-0/functional
+    GIT_TAG main
+)
+FetchContent_MakeAvailable(functional)
+
 
 # FetchContent_Declare(
 #     foonathan_memory
