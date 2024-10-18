@@ -11,7 +11,6 @@ namespace AOC2019 {
 
 struct IstrBase {
     std::vector<std::reference_wrapper<long long>> m_refs;
-
     virtual constexpr long long get_numOfParams() = 0;
 };
 
