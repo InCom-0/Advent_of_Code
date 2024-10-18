@@ -21,9 +21,9 @@ Note that this main is used while developing the solutions.
 
 int main() {
 
-    auto pth_1 = std::filesystem::path(DATAFOLDER_2019) / "2019_6_1.txt";
+    auto pth_1 = std::filesystem::path(DATAFOLDER_2019) / "2019_7_1.txt";
 
-    std::cout << AOC2019::day6_2(pth_1.generic_string()) << '\n';
+    std::cout << AOC2019::day7_2(pth_1.generic_string()) << '\n';
     
 
     return 1;

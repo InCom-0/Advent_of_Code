@@ -423,6 +423,10 @@ struct _instrBase_2018 {
     }
     virtual const std::vector<int> getRS() = 0;
 };
+struct _instrBase_INT {
+    std::vector<std::reference_wrapper<long long>> m_refs;
+    virtual constexpr long long get_numOfParams() = 0;
+};
 
 template <typename... instrT>
 requires(std::derived_from<instrT, _instrBase> && ...)
@@ -711,6 +715,89 @@ struct ProgramQuasiAssembly_2018 {
         for (int i = 0; auto &oneVal : regStartVal) { registers[i++] = oneVal; }
     }
 };
+
+template <typename... instrT>
+requires(std::derived_from<instrT, _instrBase_INT> && ...)
+class ProgramQuasiAssembly_INT {
+private:
+    std::unordered_map<long long, std::variant<instrT...>, incom::commons::XXH3Hasher> m_instrTypeMap;
+    static std::unordered_map<long long, std::variant<instrT...>, incom::commons::XXH3Hasher> instrTypeMapCreator(
+        std::vector<long long> const &instrCodes) {
+        assert(sizeof...(instrT) == instrCodes.size());
+        std::unordered_map<long long, std::variant<instrT...>, incom::commons::XXH3Hasher> res;
+
+        long long id = 0;
+
+        (res.insert({instrCodes[id++], instrT()}), ...);
+        return res;
+    }
+
+public:
+    long long              m_cursor = 0;
+    std::vector<long long> m_program;
+
+    // CONSTRUCTION
+    ProgramQuasiAssembly_INT() = default;
+    ProgramQuasiAssembly_INT(std::vector<long long> const &instrCodes, std::vector<long long> const &programCodes, long long cursor = 0)
+        : m_instrTypeMap(instrTypeMapCreator(instrCodes)), m_program(programCodes), m_cursor(cursor) {};
+
+    // IS FUNCTIONS
+    bool is_cursorValid() { return ((m_cursor >= 0) && (m_cursor < m_program.size())); }
+
+    // CONSTRUCTING VARIANTS
+    auto get_externalCursorInstr(long long const &progCursor) -> std::variant<instrT...> {
+        long long diviRes = (m_program[progCursor] / 100);
+        long long instrID = (m_program[progCursor] % 100);
+
+        std::vector<int> params;
+        while (diviRes != 0) {
+            params.push_back(diviRes % 10);
+            diviRes /= 10;
+        }
+
+        std::variant<instrT...> constructedVar(m_instrTypeMap.at(instrID));
+
+        int  paramIDx     = 1;
+        auto finishTheVar = overloaded{
+            [&](auto &a) -> void {
+                for (auto &param : params) {
+                    // Position mode
+                    if (param == 0) { a.m_refs.push_back(m_program[m_program[progCursor + paramIDx]]); }
+
+                    // Immediate mode
+                    else if (param == 1) { a.m_refs.push_back(m_program[progCursor + paramIDx]); }
+
+                    // Can't do undefined parameter ID
+                    else { assert(false); }
+                    paramIDx++;
+                }
+
+                for (; paramIDx < a.get_numOfParams() + 1; ++paramIDx) {
+                    // Position mode - defaulted because of missing explicit param
+                    a.m_refs.push_back(m_program[m_program[progCursor + paramIDx]]);
+                }
+            },
+        };
+
+        std::visit(finishTheVar, constructedVar);
+        return constructedVar;
+    }
+    auto get_pointedToInstr() -> std::variant<instrT...> { return get_externalCursorInstr(m_cursor); }
+
+    // EXECUTION OF INSTRUCTIONS
+    auto exe_externalPointedToInstr(long long &externalID, auto const &ol_set) -> long long {
+        auto instruction = get_externalCursorInstr(externalID);
+
+        auto ol_set_numOfParams = overloaded{[](auto &instr) { return instr.get_numOfParams() + 1; }};
+
+        std::visit(ol_set, instruction);
+        return externalID += std::visit(ol_set_numOfParams, instruction);
+    }
+    auto exe_pointedToInstr(auto const &ol_set) -> long long {
+        return exe_externalPointedToInstr(m_cursor, std::forward<decltype(ol_set)>(ol_set));
+    }
+};
+
 } // namespace PQA
 } // namespace commons
 } // namespace incom
