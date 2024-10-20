@@ -425,7 +425,7 @@ struct _instrBase_2018 {
 };
 struct _instrBase_INT {
     std::vector<std::reference_wrapper<long long>> m_refs;
-    virtual constexpr long long get_numOfParams() = 0;
+    virtual constexpr long long                    get_numOfParams() = 0;
 };
 
 template <typename... instrT>
@@ -720,7 +720,7 @@ template <typename... instrT>
 requires(std::derived_from<instrT, _instrBase_INT> && ...)
 class ProgramQuasiAssembly_INT {
 private:
-    std::unordered_map<long long, std::variant<instrT...>, incom::commons::XXH3Hasher> m_instrTypeMap;
+    std::unordered_map<long long, std::variant<instrT...>, incom::commons::XXH3Hasher>        m_instrTypeMap;
     static std::unordered_map<long long, std::variant<instrT...>, incom::commons::XXH3Hasher> instrTypeMapCreator(
         std::vector<long long> const &instrCodes) {
         assert(sizeof...(instrT) == instrCodes.size());
@@ -733,12 +733,14 @@ private:
     }
 
 public:
-    long long              m_cursor = 0;
+    long long              m_cursor             = 0;
+    long long              m_relativeBaseOffset = 0;
     std::vector<long long> m_program;
 
     // CONSTRUCTION
     ProgramQuasiAssembly_INT() = default;
-    ProgramQuasiAssembly_INT(std::vector<long long> const &instrCodes, std::vector<long long> const &programCodes, long long cursor = 0)
+    ProgramQuasiAssembly_INT(std::vector<long long> const &instrCodes, std::vector<long long> const &programCodes,
+                             long long cursor = 0)
         : m_instrTypeMap(instrTypeMapCreator(instrCodes)), m_program(programCodes), m_cursor(cursor) {};
 
     // IS FUNCTIONS
@@ -757,25 +759,38 @@ public:
 
         std::variant<instrT...> constructedVar(m_instrTypeMap.at(instrID));
 
-        int  paramIDx     = 1;
         auto finishTheVar = overloaded{
             [&](auto &a) -> void {
+                long long              paramIDx  = 1;
+                long long              maxCursor = 0;
+                std::vector<long long> cursors;
                 for (auto &param : params) {
+
                     // Position mode
-                    if (param == 0) { a.m_refs.push_back(m_program[m_program[progCursor + paramIDx]]); }
+                    if (param == 0) { cursors.push_back(m_program[progCursor + paramIDx]); }
 
                     // Immediate mode
-                    else if (param == 1) { a.m_refs.push_back(m_program[progCursor + paramIDx]); }
+                    else if (param == 1) { cursors.push_back(progCursor + paramIDx); }
+
+                    // Relative mode
+                    else if (param == 2) { cursors.push_back(m_relativeBaseOffset + m_program[progCursor + paramIDx]); }
 
                     // Can't do undefined parameter ID
                     else { assert(false); }
+
+                    maxCursor = std::max(maxCursor, cursors.back());
                     paramIDx++;
                 }
 
                 for (; paramIDx < a.get_numOfParams() + 1; ++paramIDx) {
                     // Position mode - defaulted because of missing explicit param
-                    a.m_refs.push_back(m_program[m_program[progCursor + paramIDx]]);
+                    cursors.push_back(m_program[progCursor + paramIDx]);
+                    maxCursor = std::max(maxCursor, cursors.back());
                 }
+                // Resize the program memory so that the cursors to all current parameters are valid
+                if (not (maxCursor < m_program.size())) { m_program.resize(maxCursor + 1, 0LL); }
+
+                for (auto &cur : cursors) { a.m_refs.push_back(m_program[cur]); }
             },
         };
 

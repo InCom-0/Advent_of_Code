@@ -54,7 +54,8 @@ long long day5_1(std::string dataFile, long long inputVal) {
         },
     };
 
-    while (pqa.is_cursorValid()) { pqa.exe_pointedToInstr(instructions); }
+    while (pqa.is_cursorValid()) {
+         pqa.exe_pointedToInstr(instructions); }
 
     return lastOutput;
 }
