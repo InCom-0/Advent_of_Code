@@ -1,7 +1,6 @@
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <incom_commons.h>
-#include <iostream>
 
 
 namespace AOC2019 {
