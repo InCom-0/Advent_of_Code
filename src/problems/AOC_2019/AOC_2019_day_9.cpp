@@ -1,6 +1,7 @@
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <incom_commons.h>
+#include <iostream>
 
 
 namespace AOC2019 {
@@ -68,8 +69,8 @@ long long day9_1(std::string dataFile, long long inputValue_1) {
         [&](arb &a) { pqa.m_relativeBaseOffset += a.m_refs[0].get(); },
     };
 
-    while (pqa.is_cursorValid()) { pqa.exe_pointedToInstr(instructions); }
 
+    while (pqa.is_cursorValid()) { pqa.exe_pointedToInstr(instructions); }
     return outValue;
 }
 

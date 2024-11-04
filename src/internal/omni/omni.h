@@ -1,9 +1,11 @@
 #pragma once
 
-#include "incom_commons.h"
+#include <functional>
+#include <incom_commons.h>
 
 #include <ankerl/unordered_dense.h>
 #include <mdspan/mdspan.hpp>
+#include <vector>
 
 
 namespace incom {
@@ -343,11 +345,11 @@ private:
     static constexpr const auto c_X_repeat_LLONG_MIN =
         (typename incom::concepts::c_gen_X_repeat_sequence<c_numOfDimensions, LLONG_MIN>::type){};
 
-    static constexpr const long long c_blockSize_long = c_blockSize;
-    static constexpr const size_t c_blockOfChunksCount = _c_detail_get_variadicPower(c_X_repeat_three);
-    static constexpr const auto   c_mds_chunkIdConvArray  = _c_detail_mds_convArrayPair(c_blockSize_long+0);
-    static constexpr const auto   c_mds_surrRefConvArray = _c_detail_mds_convArrayPair(3);
-    static constexpr const size_t c_chunkItemCount     = _c_detail_get_variadicPower(c_X_repeat_blockSize);
+    static constexpr const long long c_blockSize_long       = c_blockSize;
+    static constexpr const size_t    c_blockOfChunksCount   = _c_detail_get_variadicPower(c_X_repeat_three);
+    static constexpr const auto      c_mds_chunkIdConvArray = _c_detail_mds_convArrayPair(c_blockSize_long + 0);
+    static constexpr const auto      c_mds_surrRefConvArray = _c_detail_mds_convArrayPair(3);
+    static constexpr const size_t    c_chunkItemCount       = _c_detail_get_variadicPower(c_X_repeat_blockSize);
 
     // TODO: Complex-ish compile time inferrence of suitable blocksize
     // TODO: (deducing from the _Chunk size which is itself based on Data_T size as laid out in memory)
@@ -413,7 +415,7 @@ private:
 
         template <typename T, T... ints>
         inline std::reference_wrapper<_Chunk> _get_surrChunk(Key_Type const &keyInSurr,
-                                                      const std::integer_sequence<T, ints...>&) {
+                                                             const std::integer_sequence<T, ints...> &) {
             return m_refsToSurrChunks[((keyInSurr[ints] * c_mds_surrRefConvArray[ints].second) + ...)];
         }
     };
@@ -422,19 +424,19 @@ private:
     // PRIVATE DETAIL INTERNAL
     // Get reference to one Data_T instance ... the 'goal'
     template <typename T, T... ints>
-    inline Data_T &_get_fromSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...>&) {
+    inline Data_T &_get_fromSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
         size_t id = (((key[ints] - m_selChunk_Corner[ints]) * c_mds_chunkIdConvArray[ints].second) + ...);
         return m_selChunk.get()._get_dataItemBySizeT(id);
     }
 
     template <typename T, T... ints>
-    constexpr inline  Key_Type _get_chunkCornerFromKey(Key_Type const &key, const std::integer_sequence<T, ints...>&) {
+    constexpr inline Key_Type _get_chunkCornerFromKey(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
         return Key_Type{(((key[ints] + std::signbit(key[ints])) / c_blockSize_long) * c_blockSize_long) +
                         (std::signbit(key[ints]) * (-c_blockSize_long))...};
     }
 
     template <typename T, T... ints>
-    constexpr inline void _update_selChunkMembers(Key_Type const &key, const std::integer_sequence<T, ints...>&) {
+    constexpr inline void _update_selChunkMembers(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
         // Seems comlicated, but it just sets the helper variables so that access to said chunk is fast later on.
         // Most of this is done in order to 'remap' negative indices the correct way
         // Should be calculated nearly instantenously on any modern CPU
@@ -444,14 +446,14 @@ private:
     }
 
     template <typename T, T... ints>
-    inline _Chunk &_get_chunkFromMapOrGenerate(Key_Type key, const std::integer_sequence<T, ints...>&) {
+    inline _Chunk &_get_chunkFromMapOrGenerate(Key_Type key, const std::integer_sequence<T, ints...> &) {
         ((key[ints] = m_selChunk_Corner[ints] + (key[ints] * c_blockSize_long)), ...);
         auto iter = mp.insert({key, _Chunk(c_defaultValue, fake_chunk)});
         return iter.first->second;
     }
 
     template <typename T, T... ints>
-    void _gen_missingSurrChunks(const std::integer_sequence<T, ints...>&) {
+    void _gen_missingSurrChunks(const std::integer_sequence<T, ints...> &) {
         Key_Type curIDs{(ints, -1)...};
         auto    &surrChunks_ref = m_selChunk.get().get_surrChunks();
 
@@ -470,7 +472,7 @@ private:
 
     // 'Hard' lookup ... direct reference unavailable must lookup in map
     template <typename T, T... ints>
-    void _hardLookup(Key_Type const &key, const std::integer_sequence<T, ints...>&) {
+    void _hardLookup(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
 
         _update_selChunkMembers(key, c_IDs_sequence);
 
@@ -487,7 +489,7 @@ private:
 
     // 'Soft' lookup ... direct reference available
     template <typename T, T... ints>
-    void _softLookup(Key_Type const &key, const std::integer_sequence<T, ints...>&) {
+    void _softLookup(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
         Key_Type oldCorner = m_selChunk_Corner;
         _update_selChunkMembers(key, c_IDs_sequence);
 
@@ -501,13 +503,13 @@ private:
     }
 
     template <typename T, T... ints>
-    inline bool _detail_is_inSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...>&) const {
+    inline bool _detail_is_inSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...> &) const {
         return not (
             ((key[ints] < m_selChunk_Corner[ints]) || (key[ints] >= (m_selChunk_Corner[ints] + c_blockSize_long))) ||
             ...);
     }
     template <typename T, T... ints>
-    inline bool _detail_is_outsideSurrChunks(Key_Type const &key, const std::integer_sequence<T, ints...>&) const {
+    inline bool _detail_is_outsideSurrChunks(Key_Type const &key, const std::integer_sequence<T, ints...> &) const {
         return (((key[ints] < (m_selChunk_Corner[ints] - c_blockSize_long)) ||
                  (key[ints] >= (m_selChunk_Corner[ints] + (2 * c_blockSize_long)))) ||
                 ...);

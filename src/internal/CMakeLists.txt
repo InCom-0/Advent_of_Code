@@ -14,7 +14,7 @@ target_link_libraries(incom_commons PUBLIC
     std::mdspan
     include)
 
-add_library(incom_omni ${CMAKE_SOURCE_DIR}/src/internal/omni/omni.h)
+add_library(incom_omni ${CMAKE_SOURCE_DIR}/src/internal/omni/omni.h ${CMAKE_SOURCE_DIR}/src/internal/omni/omni.cpp)
 target_include_directories(incom_omni PUBLIC ${CMAKE_SOURCE_DIR}/src/internal/omni)
 
 target_link_libraries(incom_omni PUBLIC incom_commons)
