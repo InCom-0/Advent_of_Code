@@ -529,6 +529,7 @@ public:
         else { _softLookup(key, c_IDs_sequence); }
         return _get_fromSelChunk(key, c_IDs_sequence);
     }
+    auto &get_mp() const { return mp; }
 };
 
 } // namespace omni
