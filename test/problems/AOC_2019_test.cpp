@@ -109,4 +109,13 @@ TEST(A_2019_d13_2, A1) {
     auto pth = std::filesystem::path(DATAFOLDER_2018) / "2019_13_1.txt";
     EXPECT_EQ(21415, AOC2019::day13_2(pth.generic_string()));
 }
+TEST(A_2019_d14_1, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2018) / "2019_14_1.txt";
+    EXPECT_EQ(899155, AOC2019::day14_1(pth.generic_string()));
+}
+TEST(A_2019_d14_2, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2018) / "2019_14_1.txt";
+    EXPECT_EQ(2390226, AOC2019::day14_2(pth.generic_string()));
+}
+
 
