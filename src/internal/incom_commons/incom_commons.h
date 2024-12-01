@@ -211,6 +211,15 @@ struct XXH3Hasher {
         XXH3_64bits_update(state, input.data(),
                            sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
     }
+    template <typename T>
+    requires more_concepts::random_access_container<std::remove_cvref_t<T>> &&
+             incom::concepts::pair_t<typename T::value_type>
+    constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
+        for (auto const &item : input) {
+            this->_hashTypeX(item.first, state);
+            this->_hashTypeX(item.second, state);
+        }
+    }
 
     template <typename T>
     requires more_concepts::random_access_container<std::remove_cvref_t<T>> &&
