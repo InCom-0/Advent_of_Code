@@ -1,17 +1,16 @@
 #include <ankerl/unordered_dense.h>
-#include <array>
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <fmt/format.h>
-#include <incom_commons.h>
 #include <optional>
-#include <string>
-#include <utility>
+
+#include <incom_commons.h>
+#include <incom_seq.h>
 
 
 namespace AOC2019 {
 
-
+// Helper function to 'build the maze' which is non-trivial and reused for both parts
 std::vector<std::vector<char>> day17_0(std::string dataFile) {
     struct add : incom::commons::PQA::_instrBase_INT {
         constexpr long long get_numOfParams() override { return 3; }
@@ -110,7 +109,7 @@ long long day17_1(std::string dataFile) {
             if (chr > 46) { chr = '#'; }
         }
     }
-
+    // Simple 'lookaround' to find if '#' is on all 4 sides thereby indication a 'junction'
     size_t accu = 0;
     for (int row = 1; row < (height - 1); ++row) {
         for (int col = 1; col < (length - 1); ++col) {
@@ -120,15 +119,17 @@ long long day17_1(std::string dataFile) {
             }
         }
     }
-    for (auto &line : scafMap) { fmt::print("{}\n", fmt::join(line, "")); }
     return accu;
 }
 
+
 long long day17_2(std::string dataFile) {
 
-    auto                      scafMap = day17_0(dataFile);
-    std::pair<size_t, size_t> rovLoc;
+    // Get the map of the maze
+    auto scafMap = day17_0(dataFile);
 
+    // Find the rover location and its direction
+    std::pair<size_t, size_t> rovLoc;
     struct Dir {
         unsigned int dir : 2;
     } rovDir;
@@ -144,38 +145,38 @@ long long day17_2(std::string dataFile) {
         }
     }
 
-    std::array<std::array<int, 2>, 4> dirs{-1, 0, 0, 1, 1, 0, 0, -1};
-    std::array<char, 3>               dirMap{'L', '_', 'R'};
+    // Helper variables to deal with turning directions in other functions
+    constexpr std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};
+    constexpr std::array<char, 3> const               dirMap{'L', '_', 'R'};
 
-    // Get the instruction in one-piece
-    auto getTurnDir = [&]() -> int {
-        rovDir.dir--;
-        if (scafMap[rovLoc.first + dirs[rovDir.dir].front()][rovLoc.second + dirs[rovDir.dir].back()] == '#') {
-            rovDir.dir++;
-            return -1;
-        }
-        rovDir.dir += 2;
-        if (scafMap[rovLoc.first + dirs[rovDir.dir].front()][rovLoc.second + dirs[rovDir.dir].back()] == '#') {
-            rovDir.dir--;
-            return 1;
-        }
-        else { return 0; }
-    };
-
+    // Simple type for storing the instructions + its helper
     using Robo_Instr         = std::pair<char, int>;
     auto robo_instr_2_string = [&](Robo_Instr const &ri) {
         std::string res;
         res.push_back(ri.first);
         res.push_back(',');
-        for (auto &chr : std::to_string(ri.second)) {
-            res.push_back(chr);
-            res.push_back(',');
-        }
+        res.append(std::to_string(ri.second));
+        res.push_back(',');
         return res;
     };
-    std::vector<Robo_Instr> onePieceInstructions;
 
-    auto buildInstructions = [&]() -> bool {
+    // 'Explore' the maze and build the 'vector of instructions' along the way
+    std::vector<Robo_Instr> onePieceInstructions;
+    auto                    buildInstructions = [&]() -> bool {
+        // Find out whether to turn left or right (or end of maze)
+        auto getTurnDir = [&]() -> int {
+            rovDir.dir--;
+            if (scafMap[rovLoc.first + dirs[rovDir.dir].front()][rovLoc.second + dirs[rovDir.dir].back()] == '#') {
+                rovDir.dir++;
+                return -1;
+            }
+            rovDir.dir += 2;
+            if (scafMap[rovLoc.first + dirs[rovDir.dir].front()][rovLoc.second + dirs[rovDir.dir].back()] == '#') {
+                rovDir.dir--;
+                return 1;
+            }
+            else { return 0; }
+        };
         int newDir = getTurnDir();
         if (newDir == 0) { return false; }
         rovDir.dir += newDir;
@@ -192,95 +193,24 @@ long long day17_2(std::string dataFile) {
 
     while (buildInstructions()) {}
 
-    auto build_sequenceMap = [&](size_t const minSize2consider) -> auto {
-        std::vector dp(onePieceInstructions.size() + 1, std::vector(onePieceInstructions.size() + 1, 0));
-        ankerl::unordered_dense::map<std::vector<Robo_Instr>,
-                                     ankerl::unordered_dense::set<size_t, incom::commons::XXH3Hasher>,
-                                     incom::commons::XXH3Hasher>
-            mapToBuild;
-
-        for (int i = onePieceInstructions.size() - 1; i >= 0; --i) {
-            for (int j = onePieceInstructions.size() - 1; j > i; --j) {
-
-                if (onePieceInstructions[i] == onePieceInstructions[j]) {
-                    dp[i][j] = 1 + std::min(dp[i + 1][j + 1], j - i - 1);
-                    for (int add = dp[i][j]; add >= minSize2consider; --add) {
-                        std::vector<Robo_Instr> tmpVect(onePieceInstructions.begin() + i,
-                                                        onePieceInstructions.begin() + i + add);
-
-                        size_t tmpVectSZ = 0;
-                        for (auto const &pr : tmpVect) { tmpVectSZ += 4 + 2*(pr.second > 9); }
-
-                        if ((tmpVectSZ - 1) < 21) {
-                            mapToBuild[tmpVect].emplace(i);
-                            mapToBuild[tmpVect].emplace(j);
-                        }
-                    }
-                }
-            }
-        }
-        return mapToBuild;
-    };
-    auto mp_subseq_2_ids = build_sequenceMap(2);
-
-    auto solver = [](decltype(mp_subseq_2_ids) const &mp_subseq_2_ids, size_t onePieceLength,
-                     size_t maxNumOfUniqueSubseq) -> std::optional<std::vector<std::vector<Robo_Instr>>> {
-        ankerl::unordered_dense::map<size_t, std::vector<std::vector<Robo_Instr>>, incom::commons::XXH3Hasher>
-            mp_pos_2_subseq;
-
-        for (auto const &mpItem : mp_subseq_2_ids) {
-            for (auto const &posItem : mpItem.second) {
-                mp_pos_2_subseq.insert({posItem, std::vector<std::vector<Robo_Instr>>()});
-                mp_pos_2_subseq[posItem].push_back(mpItem.first);
-            }
-        }
-        size_t                                                                                    curHead = 0;
-        ankerl::unordered_dense::map<std::vector<Robo_Instr>, size_t, incom::commons::XXH3Hasher> selTracking;
-
-        // Recursive solver.
-        // Explores in a DFS manner all the possible arrangements of subsequences from the beginning
-        // Respects how many different subsequences can be used (therefore short circuits on most of the unsuitable
-        // parts of the tree)
-        auto __inside_solver = [&](this auto &self) -> std::optional<std::vector<std::vector<Robo_Instr>>> {
-            for (auto const &selOption : mp_pos_2_subseq[curHead]) {
-
-                if (selTracking.contains(selOption)) { selTracking.at(selOption)++; }
-                else if (selTracking.size() < maxNumOfUniqueSubseq) { selTracking.emplace(selOption, 1); }
-                else { continue; }
-
-                curHead += selOption.size();
-                if (curHead == onePieceLength) { return std::vector(1, selOption); }
-
-                // Recursive call
-                std::optional<std::vector<std::vector<Robo_Instr>>> res = self();
-                if (res != std::nullopt) {
-                    res.value().push_back(selOption);
-                    return res.value();
-                }
-
-                curHead -= selOption.size();
-
-                selTracking.at(selOption)--;
-                if (selTracking.at(selOption) == 0) { selTracking.erase(selOption); }
-            }
-            return std::nullopt;
-        };
-
-        auto res = __inside_solver();
-        return res.and_then([](auto &val) -> std::optional<std::vector<std::vector<Robo_Instr>>> {
-            std::ranges::reverse(val);
-            return val;
-        });
+    // Filter for subsequences that are unuseable (in this case of length more than 20 chars)
+    auto filter_forUnusableSubseq = [](auto const &subSeq) -> bool {
+        size_t accu = 0;
+        for (auto &instr : subSeq) { accu += (3 + std::to_string(instr.second).size()); }
+        return (accu - 1) < 21;
     };
 
-    auto solverRes = solver(mp_subseq_2_ids, onePieceInstructions.size(), 3).value();
+    // MAIN PART - Calling the dedicated but sufficiently generic solver
+    auto solverRes =
+        incom::seq::solve_seqFromRepUniqueSubseq(onePieceInstructions, 2, 3, filter_forUnusableSubseq).value();
 
+    // Create a map of identifiers ('A', 'B', 'C', ... etc.) for the selected subsequences
     ankerl::unordered_dense::map<std::vector<Robo_Instr>, char, incom::commons::XXH3Hasher> mp_subseq_2_charName;
     for (char seqChar = 'A'; auto &resLine : solverRes) {
         if (mp_subseq_2_charName.emplace(resLine, seqChar).second) { seqChar++; }
     }
 
-
+    // Build the character sequence for input
     std::string inputSequence;
     for (auto const &seq : solverRes) {
         inputSequence.push_back(mp_subseq_2_charName.at(seq));
@@ -292,7 +222,10 @@ long long day17_2(std::string dataFile) {
         for (auto const &ri : subseq.first) { inputSequence.append(robo_instr_2_string(ri)); }
         inputSequence.back() = '\n';
     }
+    inputSequence.push_back('n');
+    inputSequence.push_back('\n');
 
+    // TYPE DEFS
     struct add : incom::commons::PQA::_instrBase_INT {
         constexpr long long get_numOfParams() override { return 3; }
     };
@@ -343,11 +276,7 @@ long long day17_2(std::string dataFile) {
         [&](mul &a) { a.m_refs[2].get() = a.m_refs[0] * a.m_refs[1]; },
         [&](end &a) { pqa.m_cursor = LLONG_MIN; },
         [&](inp &a) { a.m_refs[0].get() = inputSequence.at(inpCursor++); },
-        [&](out &a) {
-            dustCollected = a.m_refs[0].get();
-            fmt::print("{}", static_cast<char>(a.m_refs[0].get()));
-            // std::cout << "out says: " << a.m_refs[0].get() << '\n';
-        },
+        [&](out &a) { dustCollected = a.m_refs[0].get(); },
         [&](jit &a) {
             if (a.m_refs[0] != 0) { pqa.m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
         },

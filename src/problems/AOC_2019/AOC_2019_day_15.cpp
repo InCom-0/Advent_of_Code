@@ -1,7 +1,7 @@
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <incom_commons.h>
-#include <omni.h>
+#include <incom_omni.h>
 #include <queue>
 #include <stack>
 

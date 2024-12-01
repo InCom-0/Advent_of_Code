@@ -11,7 +11,7 @@ target_link_libraries(AOC_2015 PUBLIC incom_commons)
 target_link_libraries(AOC_2016 PUBLIC incom_commons)
 target_link_libraries(AOC_2017 PUBLIC incom_commons)
 target_link_libraries(AOC_2018 PUBLIC incom_commons incom_omni)
-target_link_libraries(AOC_2019 PUBLIC incom_commons incom_omni)
+target_link_libraries(AOC_2019 PUBLIC incom_commons incom_omni incom_seq)
 
 set_target_properties(AOC_2015 PROPERTIES UNITY_BUILD ON)
 set_target_properties(AOC_2016 PROPERTIES UNITY_BUILD ON)
