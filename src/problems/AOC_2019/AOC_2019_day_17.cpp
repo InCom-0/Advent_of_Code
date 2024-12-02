@@ -1,11 +1,12 @@
 #include <ankerl/unordered_dense.h>
+#include <cstdint>
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <fmt/format.h>
-#include <optional>
 
 #include <incom_commons.h>
 #include <incom_seq.h>
+#include <windef.h>
 
 
 namespace AOC2019 {
@@ -202,7 +203,9 @@ long long day17_2(std::string dataFile) {
 
     // MAIN PART - Calling the dedicated but sufficiently generic solver
     auto solverRes =
-        incom::seq::solve_seqFromRepUniqueSubseq(onePieceInstructions, 2, 3, filter_forUnusableSubseq).value();
+        incom::seq::solvers::solve_seqFromRepUniqueSubseq(onePieceInstructions, filter_forUnusableSubseq, 3)
+            .value()
+            .front();
 
     // Create a map of identifiers ('A', 'B', 'C', ... etc.) for the selected subsequences
     ankerl::unordered_dense::map<std::vector<Robo_Instr>, char, incom::commons::XXH3Hasher> mp_subseq_2_charName;
