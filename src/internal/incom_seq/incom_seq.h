@@ -1,17 +1,10 @@
 #pragma once
 
-#include <algorithm>
 #include <ankerl/unordered_dense.h>
 #include <cassert>
-#include <climits>
-#include <cstddef>
-#include <cstdint>
 #include <incom_commons.h>
 #include <more_concepts/more_concepts.hpp>
 #include <optional>
-#include <vector>
-#include <windef.h>
-#include <winnt.h>
 
 
 namespace incom {

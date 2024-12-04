@@ -1,12 +1,10 @@
 #include <ankerl/unordered_dense.h>
-#include <cstdint>
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <fmt/format.h>
 
 #include <incom_commons.h>
 #include <incom_seq.h>
-#include <windef.h>
 
 
 namespace AOC2019 {

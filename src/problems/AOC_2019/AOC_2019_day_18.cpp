@@ -1,104 +1,266 @@
-#include <AOC_2019_day_17.h>
-#include <cstdint>
+#include <algorithm>
+#include <ankerl/unordered_dense.h>
+#include <bitset>
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <incom_commons.h>
-#include <incom_seq.h>
-#include <vector>
+#include <queue>
 
 
 namespace AOC2019 {
 long long day18_1(std::string dataFile) {
-    auto scafMap = day17_0(dataFile);
+    auto                line_ctre = ctre::search<R"(.+)">;
+    auto                input     = incom::commons::parseInputUsingCTRE::processFile(dataFile, line_ctre).front();
+    std::pair<int, int> startLoc;
 
-    // Find the rover location and its direction
-    std::pair<size_t, size_t> rovLoc;
-    struct Dir {
-        unsigned int dir : 2;
-    } rovDir;
+    std::vector<std::tuple<int, int, char>> keyLocations;
 
-    for (int row = 0; row < scafMap.size(); ++row) {
-        for (int col = 0; col < scafMap.at(row).size(); ++col) {
-            if (scafMap[row][col] == '<') { rovDir.dir = 3; }
-            else if (scafMap[row][col] == '>') { rovDir.dir = 1; }
-            else if (scafMap[row][col] == 'v') { rovDir.dir = 2; }
-            else if (scafMap[row][col] == '^') { rovDir.dir = 0; }
-            else { continue; }
-            rovLoc = std::make_pair(row, col);
+    // DATA PREP
+    for (int row = 0; row < input.size(); ++row) {
+        for (int col = 0; col < input.at(0).size(); ++col) {
+            if (input[row][col] > 96 && input[row][col] < 123) { keyLocations.push_back({row, col, input[row][col]}); }
+            else if (input[row][col] == '@') { startLoc = {row, col}; }
+        }
+    }
+    std::ranges::sort(keyLocations, [](auto &a, auto &b) { return std::get<2>(a) < std::get<2>(b); });
+    keyLocations.push_back({startLoc.first, startLoc.second, std::get<2>(keyLocations.back()) + 1});
+    input[startLoc.first][startLoc.second] = std::get<2>(keyLocations.back());
+
+    // 1:All source destinations, 2: All target destinations (incl the source), 3: pair of distance, bitset of
+    // 'doors' (door on route == bit0)
+    std::vector shortestDistances(keyLocations.size(),
+                                  std::vector(keyLocations.size(), std::make_pair(INT_MAX, std::bitset<32>())));
+    for (int i = 0; i < shortestDistances.size(); ++i) {
+        shortestDistances[i][i].first = 0;
+        shortestDistances[i][i].second.set();
+    }
+
+
+    // Find all 'shortest' paths from each key to each other key
+    for (int srcID = 0; srcID < keyLocations.size(); ++srcID) {
+        auto                                                                            map2Explore = input;
+        incom::commons::doubleBuffer<std::queue<std::tuple<int, int, std::bitset<32>>>> buf_queues;
+
+        // Push source location to queue
+        buf_queues.getNext().push({std::get<0>(keyLocations[srcID]), std::get<1>(keyLocations[srcID]),
+                                   shortestDistances[srcID][srcID].second});
+        // Mark source location as 'visited'
+        map2Explore.at(std::get<0>(keyLocations[srcID])).at(std::get<1>(keyLocations[srcID])) = '/';
+
+        int  stepsCount = 0;
+        auto explore    = [&]() -> void {
+            constexpr std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};
+            auto const                                       &pos = buf_queues.getCurrent().front();
+
+            for (auto const &di : dirs) {
+                std::tuple<int, int, std::bitset<32>> newPos{std::get<0>(pos) + di.front(),
+                                                             std::get<1>(pos) + di.back(), std::get<2>(pos)};
+                // Wall or explored previously, do nothing, continue
+                if (map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] == '#' ||
+                    map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] == '/') {
+                    continue;
+                }
+
+                // Empty position on route, put in next queue
+                else if (map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] == '.') {}
+
+                // Door hit, mark in bitset, put in next queue
+                else if (map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] >= 'A' &&
+                         map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] <= 'Z') {
+                    // Set the right door in bitset of 'doors' to false (meaning that door is on the route considered)
+                    std::get<2>(newPos)[map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] - 'A'] = false;
+                }
+
+                // Key hit, one of targets reached, put in next queue
+                else if (map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] >= 'a' &&
+                         map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] <= '{') {
+                    shortestDistances[srcID][map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] - 'a'] = {
+                        stepsCount, std::get<2>(newPos)};
+                }
+
+                else { assert((void("Impossible character in map being explored"), false)); }
+                buf_queues.getNext().push({newPos});
+                map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] = '/';
+            }
+        };
+
+        while (not buf_queues.getNext().empty()) {
+            buf_queues.swapBuffers();
+            stepsCount++;
+            while (not buf_queues.getCurrent().empty()) {
+                explore();
+                buf_queues.getCurrent().pop();
+            }
         }
     }
 
-    // Helper variables to deal with turning directions in other functions
-    constexpr std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};
-    constexpr std::array<char, 3> const               dirMap{'L', '_', 'R'};
+    incom::commons::doubleBuffer<
+        ankerl::unordered_dense::map<std::pair<size_t, unsigned long>, size_t, incom::commons::XXH3Hasher>>
+        buf_maps;
 
-    // Simple type for storing the instructions + its helper
-    using Robo_Instr         = std::pair<char, int>;
-    auto robo_instr_2_string = [&](Robo_Instr const &ri) {
-        std::string res;
-        res.push_back(ri.first);
-        res.push_back(',');
-        res.append(std::to_string(ri.second));
-        res.push_back(',');
-        return res;
-    };
+    std::bitset<32> thisBS;
+    thisBS.set(keyLocations.size() - 1, true);
+    buf_maps.getNext().insert({{keyLocations.size() - 1, thisBS.to_ulong()}, 0});
 
-    // 'Explore' the maze and build the 'vector of instructions' along the way
-    std::vector<Robo_Instr> onePieceInstructions;
-    auto                    buildInstructions = [&]() -> bool {
-        // Find out whether to turn left or right (or end of maze)
-        auto getTurnDir = [&]() -> int {
-            rovDir.dir--;
-            if (scafMap[rovLoc.first + dirs[rovDir.dir].front()][rovLoc.second + dirs[rovDir.dir].back()] == '#') {
-                rovDir.dir++;
-                return -1;
+    // MAIN LOGIC
+    while (not buf_maps.getNext().empty()) {
+        buf_maps.swapBuffers();
+        buf_maps.getNext().clear();
+
+        for (auto &srcLoc : buf_maps.getCurrent()) {
+            auto possibilities =
+                std::views::enumerate(shortestDistances.at(srcLoc.first.first)) | std::views::filter([&](auto &&item) {
+                    auto z = std::bitset<32>(srcLoc.first.second) | (std::get<1>(item).second);
+                    return z.all() && (not std::bitset<32>(srcLoc.first.second).test(std::get<0>(item)));
+                });
+            for (auto const &poss : possibilities) {
+                thisBS = std::bitset<32>(srcLoc.first.second);
+                thisBS.set(std::get<0>(poss), true);
+                auto insIter = buf_maps.getNext().insert(
+                    {{std::get<0>(poss), thisBS.to_ulong()}, srcLoc.second + std::get<1>(poss).first});
+
+                if (insIter.first->second > srcLoc.second + std::get<1>(poss).first) {
+                    insIter.first->second = srcLoc.second + std::get<1>(poss).first;
+                }
             }
-            rovDir.dir += 2;
-            if (scafMap[rovLoc.first + dirs[rovDir.dir].front()][rovLoc.second + dirs[rovDir.dir].back()] == '#') {
-                rovDir.dir--;
-                return 1;
-            }
-            else { return 0; }
-        };
-        int newDir = getTurnDir();
-        if (newDir == 0) { return false; }
-        rovDir.dir += newDir;
-
-        int steps = 0;
-        while (scafMap[rovLoc.first + dirs[rovDir.dir].front()][rovLoc.second + dirs[rovDir.dir].back()] == '#') {
-            rovLoc.first  += dirs[rovDir.dir].front();
-            rovLoc.second += dirs[rovDir.dir].back();
-            steps++;
         }
-        onePieceInstructions.push_back({dirMap.at(newDir + 1), steps});
-        return true;
-    };
-
-    while (buildInstructions()) {}
-
-    // auto map_OfSubseq = incom::seq::build_map_uniqueSubSeq2startPos(onePieceInstructions, 2);
-
-    auto filter_forUnusableSubseq = [](auto const &subSeq) -> bool {
-        size_t accu = 0;
-        for (auto &instr : subSeq) { accu += (3 + std::to_string(instr.second).size()); }
-        return (accu - 1) < 21;
-    };
-
-    std::vector testVec1{2, 3, 4, 5, 1, 2, 3, 2, 3, 4, 5, 1};
-
-    // auto res = incom::seq::solvers::solve_seqFromRepUniqueSubseq<decltype(onePieceInstructions),
-    //                                                              decltype(filter_forUnusableSubseq), 2>(
-    //     onePieceInstructions, filter_forUnusableSubseq, 1, SIZE_MAX, 1, 3);
-
-    auto res2 =
-        incom::seq::solvers::solve_seqFromRepUniqueSubseq<decltype(testVec1), SIZE_MAX>(testVec1, 3, 1, 1, 3, 2);
-
-    return -999;
+    }
+    return std::ranges::min_element(buf_maps.getCurrent(), [](auto &&a, auto &&b) { return a.second < b.second; })
+        ->second;
 }
 
 long long day18_2(std::string dataFile) {
+    auto                line_ctre = ctre::search<R"(.+)">;
+    auto                input     = incom::commons::parseInputUsingCTRE::processFile(dataFile, line_ctre).front();
+    std::pair<int, int> startLoc;
+
+    std::vector<std::tuple<int, int, char>> keyLocations;
+
+    // DATA PREP
+    for (int row = 0; row < input.size(); ++row) {
+        for (int col = 0; col < input.at(0).size(); ++col) {
+            if (input[row][col] > 96 && input[row][col] < 123) { keyLocations.push_back({row, col, input[row][col]}); }
+            else if (input[row][col] == '@') { startLoc = {row, col}; }
+        }
+    }
+
+    std::array<std::array<char, 3>, 3> changes{'@', '#', '@', '#', '#', '#', '@', '#', '@'};
+    for (int r = startLoc.first - 1; r < startLoc.first + 2; ++r) {
+        for (int c = startLoc.second - 1; c < startLoc.second + 2; ++c) {
+            input[r][c] = changes[r - (startLoc.first - 1)][c - (startLoc.second - 1)];
+        }
+    }
+
+    std::array<std::array<int, 2>, 4> startLocs{startLoc.first - 1,  startLoc.second - 1, startLoc.first - 1,
+                                                startLoc.second + 1, startLoc.first + 1,  startLoc.second - 1,
+                                                startLoc.first + 1,  startLoc.second + 1};
+
+    std::ranges::sort(keyLocations, [](auto &a, auto &b) { return std::get<2>(a) < std::get<2>(b); });
+    for (auto const &oneStart : startLocs) {
+        input[oneStart.front()][oneStart.back()] = std::get<2>(keyLocations.back()) + 1;
+        keyLocations.push_back({oneStart.front(), oneStart.back(), std::get<2>(keyLocations.back()) + 1});
+    }
+
+    // 1:All source destinations, 2: All target destinations (incl the source), 3: pair of distance, bitset of
+    // 'doors' (door on route == bit0)
+    std::vector shortestDistances(keyLocations.size(),
+                                  std::vector(keyLocations.size(), std::make_pair(INT_MAX, std::bitset<32>())));
+    for (int i = 0; i < shortestDistances.size(); ++i) {
+        shortestDistances[i][i].first = 0;
+        shortestDistances[i][i].second.set();
+    }
 
 
-    return -999;
+    // Find all 'shortest' paths from each key to each other key
+    for (int srcID = 0; srcID < keyLocations.size(); ++srcID) {
+        auto                                                                            map2Explore = input;
+        incom::commons::doubleBuffer<std::queue<std::tuple<int, int, std::bitset<32>>>> buf_queues;
+
+        // Push source location to queue
+        buf_queues.getNext().push({std::get<0>(keyLocations[srcID]), std::get<1>(keyLocations[srcID]),
+                                   shortestDistances[srcID][srcID].second});
+        // Mark source location as 'visited'
+        map2Explore.at(std::get<0>(keyLocations[srcID])).at(std::get<1>(keyLocations[srcID])) = '/';
+
+        int  stepsCount = 0;
+        auto explore    = [&]() -> void {
+            constexpr std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};
+            auto const                                       &pos = buf_queues.getCurrent().front();
+
+            for (auto const &di : dirs) {
+                std::tuple<int, int, std::bitset<32>> newPos{std::get<0>(pos) + di.front(),
+                                                             std::get<1>(pos) + di.back(), std::get<2>(pos)};
+                // Wall or explored previously, do nothing, continue
+                if (map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] == '#' ||
+                    map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] == '/') {
+                    continue;
+                }
+
+                // Empty position on route, put in next queue
+                else if (map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] == '.') {}
+
+                // Door hit, mark in bitset, put in next queue
+                else if (map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] >= 'A' &&
+                         map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] <= 'Z') {
+                    // Set the right door in bitset of 'doors' to false (meaning that door is on the route considered)
+                    std::get<2>(newPos)[map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] - 'A'] = false;
+                }
+
+                // Key hit, one of targets reached, put in next queue
+                else if (map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] >= 'a' &&
+                         map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] <= '~') {
+                    shortestDistances[srcID][map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] - 'a'] = {
+                        stepsCount, std::get<2>(newPos)};
+                }
+
+                else { assert((void("Impossible character in map being explored"), false)); }
+                buf_queues.getNext().push({newPos});
+                map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] = '/';
+            }
+        };
+
+        while (not buf_queues.getNext().empty()) {
+            buf_queues.swapBuffers();
+            stepsCount++;
+            while (not buf_queues.getCurrent().empty()) {
+                explore();
+                buf_queues.getCurrent().pop();
+            }
+        }
+    }
+
+    incom::commons::doubleBuffer<
+        ankerl::unordered_dense::map<std::pair<size_t, unsigned long>, size_t, incom::commons::XXH3Hasher>>
+        buf_maps;
+
+    std::bitset<32> thisBS;
+    thisBS.set(keyLocations.size() - 1, true);
+    buf_maps.getNext().insert({{keyLocations.size() - 1, thisBS.to_ulong()}, 0});
+
+    // MAIN LOGIC
+    while (not buf_maps.getNext().empty()) {
+        buf_maps.swapBuffers();
+        buf_maps.getNext().clear();
+
+        for (auto &srcLoc : buf_maps.getCurrent()) {
+            auto possibilities =
+                std::views::enumerate(shortestDistances.at(srcLoc.first.first)) | std::views::filter([&](auto &&item) {
+                    auto z = std::bitset<32>(srcLoc.first.second) | (std::get<1>(item).second);
+                    return z.all() && (not std::bitset<32>(srcLoc.first.second).test(std::get<0>(item)));
+                });
+            for (auto const &poss : possibilities) {
+                thisBS = std::bitset<32>(srcLoc.first.second);
+                thisBS.set(std::get<0>(poss), true);
+                auto insIter = buf_maps.getNext().insert(
+                    {{std::get<0>(poss), thisBS.to_ulong()}, srcLoc.second + std::get<1>(poss).first});
+
+                if (insIter.first->second > srcLoc.second + std::get<1>(poss).first) {
+                    insIter.first->second = srcLoc.second + std::get<1>(poss).first;
+                }
+            }
+        }
+    }
+    return std::ranges::min_element(buf_maps.getCurrent(), [](auto &&a, auto &&b) { return a.second < b.second; })
+        ->second;
 }
 } // namespace AOC2019
