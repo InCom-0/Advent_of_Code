@@ -214,7 +214,10 @@ long long day18_2(std::string dataFile) {
                 }
 
                 else { assert((void("Impossible character in map being explored"), false)); }
+
+                // Push 'newPos' into the next queue
                 buf_queues.getNext().push({newPos});
+                // Mark the 'newPos' as visited with '/' character
                 map2Explore[std::get<0>(newPos)][std::get<1>(newPos)] = '/';
             }
         };
@@ -229,13 +232,16 @@ long long day18_2(std::string dataFile) {
         }
     }
 
-    incom::commons::doubleBuffer<
-        ankerl::unordered_dense::map<std::pair<size_t, unsigned long>, size_t, incom::commons::XXH3Hasher>>
+    incom::commons::doubleBuffer<ankerl::unordered_dense::map<std::pair<std::array<size_t, 4>, unsigned long>, size_t,
+                                                              incom::commons::XXH3Hasher>>
         buf_maps;
 
     std::bitset<32> thisBS;
-    thisBS.set(keyLocations.size() - 1, true);
-    buf_maps.getNext().insert({{keyLocations.size() - 1, thisBS.to_ulong()}, 0});
+    for (int i = 1; i < 5; ++i) { thisBS.set(keyLocations.size() - i, true); }
+    buf_maps.getNext().insert(
+        {{{keyLocations.size() - 4, keyLocations.size() - 3, keyLocations.size() - 2, keyLocations.size() - 1},
+          thisBS.to_ulong()},
+         0});
 
     // MAIN LOGIC
     while (not buf_maps.getNext().empty()) {
@@ -243,23 +249,33 @@ long long day18_2(std::string dataFile) {
         buf_maps.getNext().clear();
 
         for (auto &srcLoc : buf_maps.getCurrent()) {
-            auto possibilities =
-                std::views::enumerate(shortestDistances.at(srcLoc.first.first)) | std::views::filter([&](auto &&item) {
-                    auto z = std::bitset<32>(srcLoc.first.second) | (std::get<1>(item).second);
-                    return z.all() && (not std::bitset<32>(srcLoc.first.second).test(std::get<0>(item)));
-                });
-            for (auto const &poss : possibilities) {
-                thisBS = std::bitset<32>(srcLoc.first.second);
-                thisBS.set(std::get<0>(poss), true);
-                auto insIter = buf_maps.getNext().insert(
-                    {{std::get<0>(poss), thisBS.to_ulong()}, srcLoc.second + std::get<1>(poss).first});
+            for (int srcID = 0; srcID < 4; ++srcID) {
+                for (int tarID = 0; auto const &poss : shortestDistances[srcLoc.first.first[srcID]]) {
+                    thisBS = std::bitset<32>(srcLoc.first.second);
+                    // Evaluate 1: no door on the route or have the key, 2: is it even reachable at all (not INT_MAX
+                    // distance), 3: tarID is not for a key we already have
+                    if ((poss.second | thisBS).all() && poss.first != INT_MAX && not thisBS.test(tarID)) {
+                        thisBS.set(tarID, true);
+                        auto nextLoc                = srcLoc;
+                        nextLoc.first.first[srcID]  = tarID; // Change the location of the right robot to tarID
+                        nextLoc.first.second        = thisBS.to_ulong(); // Assign updated bitset of keys
+                        nextLoc.second             += poss.first;        // Add the distance of route just taken
 
-                if (insIter.first->second > srcLoc.second + std::get<1>(poss).first) {
-                    insIter.first->second = srcLoc.second + std::get<1>(poss).first;
+                        // Attempt to insert into UOMap
+                        auto insIter = buf_maps.getNext().insert(nextLoc);
+                        // If this arrangement of robots and keys obtained was in the map already, we need to check if
+                        // this new attempt has lower 'distance taken' ... if so update the entry in the UOmap with the
+                        // new distance
+                        if (insIter.first->second > srcLoc.second + poss.first) {
+                            insIter.first->second = srcLoc.second + poss.first;
+                        }
+                    }
+                    tarID++;
                 }
             }
         }
     }
+
     return std::ranges::min_element(buf_maps.getCurrent(), [](auto &&a, auto &&b) { return a.second < b.second; })
         ->second;
 }
