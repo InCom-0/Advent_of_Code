@@ -24,8 +24,6 @@ long long day1_1(std::string dataFile) {
 
     auto zt  = std::views::zip_transform([](auto &a, auto &b) { return std::abs(a - b); }, listA, listB);
     auto res = std::ranges::fold_left_first(zt, std::plus());
-
-
     return res.value_or(LLONG_MIN);
 }
 
@@ -43,15 +41,16 @@ long long day1_2(std::string dataFile) {
 
     ankerl::unordered_dense::map<long long, std::pair<long long, long long>, incom::commons::XXH3Hasher> mp;
     for (auto const &numA : listA) {
-        if (mp.contains(numA)) { mp.at(numA).first++; }
-        else { mp.insert({numA, {1, 0}}); }
+        auto pr = mp.insert({numA, {0, 0}});
+        pr.first->second.first++;
     }
     for (auto const &numB : listB) {
         if (mp.contains(numB)) { mp.at(numB).second++; }
     }
 
-    auto res = std::ranges::fold_left(
-        mp, 0ll, [](auto &&ini, auto &&item) { return ini + (item.first * item.second.first * item.second.second); });
+    auto res = std::ranges::fold_left(mp, 0ll, [](auto &&ini, auto const &item) {
+        return ini + (item.first * item.second.first * item.second.second);
+    });
 
     return res;
 }
