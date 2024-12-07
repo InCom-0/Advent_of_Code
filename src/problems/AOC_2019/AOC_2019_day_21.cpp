@@ -84,6 +84,7 @@ long long day21_1(std::string dataFile) {
     };
 
     while (pqa.is_cursorValid()) { pqa.exe_pointedToInstr(instructions); }
+    fmt::print("{}", "\n");
     return hullDamage;
 }
 
