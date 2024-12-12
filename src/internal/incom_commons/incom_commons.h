@@ -3,6 +3,7 @@
 #include <cassert>
 #include <concepts>
 #include <fstream>
+#include <functional>
 #include <source_location>
 #include <vector>
 
@@ -41,6 +42,11 @@ concept isPowerOf2 = ((N != 0) && ! (N & (N - 1)));
 // Note: SpecializationOf does not support non-type template parameteres (at all) ... beware
 template <typename T, template <typename...> typename Template>
 concept SpecializationOf = detail::is_specialization_of<T, Template>::value;
+
+template <typename T>
+concept has_to_ullong = requires(T a) {
+    { a.to_ullong() } -> std::same_as<unsigned long long>;
+};
 
 // Generating a tuple with of N times the supplied type
 // Usage: pass the N parameter and the T type only, leave the ...Ts pack empty
@@ -178,6 +184,12 @@ struct XXH3Hasher {
     constexpr size_t operator()(T &&input) const {
         return XXH3_64bits(input.data(),
                            sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
+    }
+    // OTHER DIRECTLY HASHABLE
+    template <typename T>
+    requires incom::concepts::has_to_ullong<T>
+    constexpr size_t operator()(T const &&input) const {
+        return (*this)(input.to_ullong());
     }
 
     // REQUIRES GRADUAL BUILDUP OF XXH3_STATE OUT OF DIS-CONTIGUOUS DATA INSIDE THE INPUT TYPE
