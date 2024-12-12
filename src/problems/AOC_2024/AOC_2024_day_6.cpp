@@ -96,8 +96,6 @@ long long day6_2(std::string dataFile) {
                                      curLoc_loc.back() + dirs[od_loc.one].back())) {
                 return false;
             }
-
-
             else if (input[curLoc_loc.front() + dirs[od_loc.one].front()]
                           [curLoc_loc.back() + dirs[od_loc.one].back()] == '#') {
                 visited_loc.emplace(curLoc_loc, od_loc.one + 0);
