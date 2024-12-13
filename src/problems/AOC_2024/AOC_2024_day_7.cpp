@@ -28,10 +28,10 @@ long long day7_1(std::string dataFile) {
         size_t currSecID = 1;
         size_t curVal    = a.second[0];
 
-        auto rec_solver = [&](this auto &self) -> bool {
+        auto rec_solver = [&](this auto const &self) -> bool {
+            size_t lastVal = curVal;
             if (currSecID < lastSecID) {
-                size_t lastVal  = curVal;
-                curVal         += a.second[currSecID++];
+                curVal += a.second[currSecID++];
                 if (self()) { return true; };
 
                 curVal  = lastVal;
@@ -42,8 +42,7 @@ long long day7_1(std::string dataFile) {
                 return false;
             }
             else {
-                size_t lastVal  = curVal;
-                curVal         += a.second[currSecID++];
+                curVal += a.second[currSecID++];
                 if (curVal == a.first) { return true; };
 
                 curVal  = lastVal;
@@ -70,6 +69,7 @@ long long day7_2(std::string dataFile) {
 
     using LINE_t = std::pair<size_t, std::vector<size_t>>;
 
+    // DATA PREP
     std::vector<LINE_t> parsed;
     for (auto const &strLine : input) {
         parsed.push_back(LINE_t(std::stoull(strLine.front()), std::vector<size_t>()));
@@ -78,35 +78,36 @@ long long day7_2(std::string dataFile) {
         }
     }
 
-
+    // MAIN LOGIC
     auto flt = std::views::filter(parsed, [](auto const &a) {
         size_t lastSecID = a.second.size() - 1;
         size_t currSecID = 1;
         size_t curVal    = a.second[0];
 
-        auto rec_solver = [&](this auto &self) -> bool {
+        // Recursive lambda - shortcircuits on first 'true' on the bottom level
+        auto rec_solver = [&](this auto const &self) -> bool {
+            size_t lastVal = curVal;
             if (currSecID < lastSecID) {
-                size_t lastVal  = curVal;
-                curVal         *= std::pow(10, std::trunc(log10(a.second[currSecID])) + 1);
-                curVal         += a.second[currSecID++];
 
-                if (self()) { return true; };
+                curVal *= std::pow(10, std::trunc(log10(a.second[currSecID])) + 1);
+                curVal += a.second[currSecID++];
+
+                if (self()) { return true; };   // recurse here
 
                 curVal  = lastVal;
                 curVal += a.second[currSecID - 1];
-                if (self()) { return true; };
+                if (self()) { return true; };   // recurse here
 
                 curVal  = lastVal;
                 curVal *= a.second[currSecID - 1];
-                if (self()) { return true; };
+                if (self()) { return true; };   // recurse here
                 curVal = lastVal;
                 currSecID--;
                 return false;
             }
             else {
-                size_t lastVal  = curVal;
-                curVal         *= std::pow(10, std::trunc(log10(a.second[currSecID])) + 1);
-                curVal         += a.second[currSecID++];
+                curVal *= std::pow(10, std::trunc(log10(a.second[currSecID])) + 1);
+                curVal += a.second[currSecID++];
 
                 if (curVal == a.first) { return true; };
 
