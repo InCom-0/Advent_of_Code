@@ -1,10 +1,12 @@
 #pragma once
 
 #include <cassert>
+#include <cmath>
 #include <concepts>
 #include <fstream>
 #include <functional>
 #include <source_location>
+#include <type_traits>
 #include <vector>
 
 
@@ -83,6 +85,15 @@ struct c_gen_X_repeat_sequence<0, S, Sx...> {
 
 } // namespace concepts
 namespace commons {
+namespace numeric {
+template <typename T>
+requires std::is_integral_v<T>
+int get_numOfDigits(T const &integralNumber) {
+    if constexpr (std::is_unsigned_v<T>) { return integralNumber == 0 ? 1 : std::trunc(log10(integralNumber)) + 1; }
+    else { return integralNumber == 0 ? 1 : std::trunc(log10(std::abs(integralNumber))) + 1; }
+}
+
+} // namespace numeric
 
 // This tiny type is used to simplify dealing with parameter packs.
 // Usually used to invoke a closure (lambda) over each parameter in the pack.
