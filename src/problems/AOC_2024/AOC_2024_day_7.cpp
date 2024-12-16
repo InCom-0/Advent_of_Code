@@ -92,15 +92,15 @@ long long day7_2(std::string dataFile) {
                 curVal *= std::pow(10, std::trunc(log10(a.second[currSecID])) + 1);
                 curVal += a.second[currSecID++];
 
-                if (self()) { return true; };   // recurse here
+                if (self()) { return true; }; // recurse here
 
                 curVal  = lastVal;
                 curVal += a.second[currSecID - 1];
-                if (self()) { return true; };   // recurse here
+                if (self()) { return true; }; // recurse here
 
                 curVal  = lastVal;
                 curVal *= a.second[currSecID - 1];
-                if (self()) { return true; };   // recurse here
+                if (self()) { return true; }; // recurse here
                 curVal = lastVal;
                 currSecID--;
                 return false;
