@@ -1,4 +1,4 @@
-# Advent of Code 2015 2016 2017 2018 2019 #
+# Advent of Code 2015 2016 2017 2018 2019 2024 #
 
 My solutions to Advent of Code (<https://adventofcode.com>) puzzles.
 

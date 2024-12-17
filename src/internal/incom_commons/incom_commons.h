@@ -120,11 +120,8 @@ private:
     T *next    = &__dataB;
 
 public:
-    doubleBuffer() {};
-    doubleBuffer(T initial_data) {
-        __dataA = initial_data;
-        __dataB = initial_data;
-    };
+    doubleBuffer() : __dataA(T()), __dataB(T()), current(&__dataA), next(&__dataB) {};
+    doubleBuffer(T initial_data) : __dataA(initial_data), __dataB((initial_data)), current(&__dataA), next(&__dataB) {};
 
     T &getCurrent() const { return (*current); };
     T &getNext() const { return (*next); }
