@@ -1,10 +1,11 @@
 #include <cassert>
 #include <iostream>
 
-#include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
+#include <incom_commons.h>
 #include <vector>
+
 
 namespace AOC2017 {
 int day23_1(std::string dataFile) {
@@ -75,7 +76,7 @@ int day23_2(std::string dataFile) {
     unsigned long long counter = 0;
 
     for (long long i = startNum; i <= endNum; i += skip) {
-        for (int j = 2; j <= endNum/2; j++) {
+        for (int j = 2; j <= endNum / 2; j++) {
             if ((i % j) == 0) {
                 counter++;
                 break;
