@@ -7,6 +7,7 @@
 
 #define DATAFOLDER      "../../data"
 #define DATAFOLDER_2024 "../../data/AOC_2024"
+using namespace std::literals;
 
 
 TEST(A_2024_d1_1, A1) {
@@ -140,4 +141,20 @@ TEST(A_2024_d16_1, A1) {
 TEST(A_2024_d16_2, A1) {
     auto pth = std::filesystem::path(DATAFOLDER_2024) / "2024_16_1.txt";
     EXPECT_EQ(481, AOC2024::day16_2(pth.generic_string()));
+}
+TEST(A_2024_d17_1, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2024) / "2024_17_1.txt";
+    EXPECT_EQ("1,0,2,0,5,7,2,1,3"sv, AOC2024::day17_1(pth.generic_string()));
+}
+TEST(A_2024_d17_2, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2024) / "2024_17_1.txt";
+    EXPECT_EQ(265652340990875, AOC2024::day17_2(pth.generic_string()));
+}
+TEST(A_2024_d18_1, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2024) / "2024_18_1.txt";
+    EXPECT_EQ(268, AOC2024::day18_1(pth.generic_string()));
+}
+TEST(A_2024_d18_2, A1) {
+    auto pth = std::filesystem::path(DATAFOLDER_2024) / "2024_18_1.txt";
+    EXPECT_EQ("64,11"sv, AOC2024::day18_2(pth.generic_string()));
 }
