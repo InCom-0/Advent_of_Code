@@ -225,6 +225,12 @@ struct XXH3Hasher {
     }
 
     template <typename T>
+    requires std::is_same_v<std::remove_cvref_t<T>, std::string_view>
+    constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
+        XXH3_64bits_update(state, input.data(),
+                           sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
+    }
+    template <typename T>
     requires more_concepts::random_access_container<std::remove_cvref_t<T>> &&
              std::is_arithmetic_v<typename T::value_type>
     constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
