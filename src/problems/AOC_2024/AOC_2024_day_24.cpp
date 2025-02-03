@@ -9,6 +9,7 @@ namespace AOC2024 {
 size_t day24_1(std::string dataFile) {
 
 
+
     return 999;
 }
 
