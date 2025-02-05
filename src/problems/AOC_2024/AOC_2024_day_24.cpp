@@ -171,8 +171,9 @@ std::string day24_2(std::string dataFile) {
     auto [firstIT, endIT] = std::ranges::unique(incorrect_gates);
     incorrect_gates.erase(firstIT, endIT);
 
-    std::string ret2 = fmt::format("{}", fmt::join(incorrect_gates, ","));
-
-    return ret2;
+    std::string ans = "";
+    for (auto const &item : incorrect_gates) { ans += (item + ','); }
+    ans.pop_back();
+    return ans;
 }
 } // namespace AOC2024
