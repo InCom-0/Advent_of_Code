@@ -415,12 +415,7 @@ public:
             sink.data.push_back(std::vector<std::string>());
             auto bg  = oneStr.begin();
             auto end = oneStr.end();
-            while (true) {
-                for (int i = 0; i < searchForNumOfItems; ++i) {
-                    (sink << ... << findNextWithinLine(perItemInLine, bg, end));
-                }
-                if (sink.somethingNotFoundAt != -1) { break; }
-            }
+            while (sink.somethingNotFoundAt == -1) { (sink << ... << findNextWithinLine(perItemInLine, bg, end)); }
             sink.somethingNotFoundAt = -1;
         }
         return std::move(sink.data);
