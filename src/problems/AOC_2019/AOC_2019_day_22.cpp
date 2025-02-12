@@ -65,13 +65,7 @@ long long day22_0(std::string dataFile, int128_t numOfCards, size_t cardToTrack,
             std::visit(OL_set, seq_techniques.at(cursor));
         };
 
-        ankerl::unordered_dense::set<int128_t, incc::XXH3Hasher> st;
-        st.insert(cardCurPos);
-        for (size_t rep = 0; rep < shuffleReps; ++rep) {
-            for (size_t curs = 0; curs < seq_techniques.size(); ++curs) { exe_technique_rev(curs); }
-            if (not st.insert(cardCurPos).second) {
-                 return -888; }
-        }
+        return -999;
     }
 
     else {
