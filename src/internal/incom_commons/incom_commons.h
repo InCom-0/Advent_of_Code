@@ -757,7 +757,6 @@ private:
         std::unordered_map<long long, std::variant<instrT...>, incom::commons::XXH3Hasher> res;
 
         long long id = 0;
-
         (res.insert({instrCodes[id++], instrT()}), ...);
         return res;
     }
