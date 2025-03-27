@@ -1,12 +1,9 @@
 #include <ankerl/unordered_dense.h>
-#include <bits/ranges_algo.h>
-#include <cassert>
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <functional>
 #include <incom_commons.h>
 #include <optional>
-#include <vector>
 
 
 namespace AOC2019 {

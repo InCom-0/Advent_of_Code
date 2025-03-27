@@ -1,15 +1,11 @@
 #include <ankerl/unordered_dense.h>
-#include <climits>
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <functional/functional.hpp>
 #include <incom_commons.h>
 #include <iostream>
-#include <queue>
 #include <string>
-#include <unordered_set>
+#include <queue>
 #include <utility>
-#include <vector>
 
 
 namespace AOC2019 {

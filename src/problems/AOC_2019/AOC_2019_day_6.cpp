@@ -1,14 +1,12 @@
 
 #include <ankerl/unordered_dense.h>
-#include <bits/ranges_algo.h>
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <functional/functional.hpp>
 #include <functional/optional.hpp>
-#include <functional>
 #include <incom_commons.h>
+#include <optional>
 #include <queue>
-#include <utility>
+
 
 
 namespace AOC2019 {
@@ -71,7 +69,7 @@ long long day6_2(std::string dataFile) {
     std::queue<std::tuple<std::reference_wrapper<SpaceObj>, int, std::reference_wrapper<SpaceObj>>> qu;
     qu.push({you, 0, you});
 
-    int res = 0;
+    int  res = 0;
     auto exe = [&]() {
         while (not qu.empty()) {
             if (&(std::get<0>(qu.front()).get()) == (&san)) { return std::get<1>(qu.front()) - 2; }

@@ -4,7 +4,7 @@
   "dependencies": [
     {
       "name": "fmt",
-      "version>=": "10.2.1#1"
+      "version>=": "11.0.2#1"
     },
     {
       "name": "vcpkg-cmake-config",
@@ -15,16 +15,20 @@
       "version>=": "2023-05-04"
     },
     {
-      "name": "glaze"
+      "name": "glaze",
+      "version>=": "4.4.1#0"
     },
     {
-      "name": "ctre"
+      "name": "ctre",
+      "version>=": "3.9.0#0"
     },
     {
-      "name": "xxhash"
+      "name": "xxhash",
+      "version>=": "0.8.2#0"
     },
     {
-      "name": "unordered-dense"
+      "name": "unordered-dense",
+      "version>=": "4.5.0#0"
     }
   ]
 }
