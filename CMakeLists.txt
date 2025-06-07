@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.30...4.0)
 
 set(VCPKG_TARGET_TRIPLET x64-mingw-dynamic)
 set(VCPKG_HOST_TRIPLET x64-mingw-dynamic)

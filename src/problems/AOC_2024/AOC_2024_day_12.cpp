@@ -1,5 +1,4 @@
 #include <ankerl/unordered_dense.h>
-#include <bits/ranges_algo.h>
 #include <bitset>
 #include <cstddef>
 #include <ctre.hpp>
