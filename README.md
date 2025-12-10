@@ -15,7 +15,7 @@ My solutions to Advent of Code (<https://adventofcode.com>) puzzles.
 
 * Written in C++ and requires C++23 capable compiler (eg. GCC 14.2+)
 * Uses CMake v3.30+. Not recommended to build the solutions without CMake as its linking various external libraries.
-* Uses vcpkg as well as CMake's FetchContent. Therefore, one has to pass the location of 'vcpkg.cmake' to CMake in CMAKE_TOOLCHAIN_FILE unless vcpkg is automatically integrated by your IDE.
+* Uses [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake) for package management
 * Intended to be built on Windows in MSYS2 MinGW environment. Might not build 'as-is' on other platforms. However, minor appropriate CMakeLists adjustment should be enough to compile on Linux.
 * Uses gtest and one can verify the correctness of the provided 'puzzle solutions' by running one of the respective gtest targets.
 
