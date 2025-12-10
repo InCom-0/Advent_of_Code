@@ -2,11 +2,9 @@
 #include <ankerl/unordered_dense.h>
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <functional/optional.hpp>
 #include <incom_commons.h>
 #include <optional>
 #include <queue>
-
 
 
 namespace AOC2019 {
@@ -15,10 +13,10 @@ long long day6_1(std::string dataFile) {
     struct SpaceObj {
         std::string                                   name;
         std::vector<std::reference_wrapper<SpaceObj>> previous;
-        fn::optional<long long>                       indirOrbits = std::nullopt;
+        std::optional<long long>                      indirOrbits = std::nullopt;
 
         long long get_myOrbits() {
-            indirOrbits = indirOrbits.or_else([&]() -> fn::optional<long long> {
+            indirOrbits = indirOrbits.or_else([&]() -> std::optional<long long> {
                 return std::ranges::fold_left(previous, 0,
                                               [](auto &&init, auto &&a) { return init + a.get().get_myOrbits(); });
             });
