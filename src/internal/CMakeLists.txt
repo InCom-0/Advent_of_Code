@@ -6,10 +6,8 @@ target_link_libraries(incom_commons PUBLIC
     glaze::glaze
     flux::flux
     ctre::ctre
-    xxHash::xxhash
+    incstd::incstd
     bitlib::bitlib
-    unordered_dense::unordered_dense
-    more_concepts::more_concepts
     hash-library::hash-library
     mdspan::mdspan)
 

@@ -224,7 +224,6 @@ list(TRANSFORM AOC_2018_SRC PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2018/)
 add_library(AOC_2018 ${AOC_2018_SRC})
 target_include_directories(AOC_2018 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2018)
 
-
 set(AOC_2019_SRC
     AOC_2019_day_1.cpp
     AOC_2019_day_1.h
@@ -281,8 +280,6 @@ list(TRANSFORM AOC_2019_SRC PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2019/)
 add_library(AOC_2019 ${AOC_2019_SRC})
 target_include_directories(AOC_2019 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2019)
 
-
-
 set(AOC_2024_SRC
     AOC_2024_day_1.cpp
     AOC_2024_day_1.h
@@ -338,3 +335,35 @@ set(AOC_2024_SRC
 list(TRANSFORM AOC_2024_SRC PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2024/)
 add_library(AOC_2024 ${AOC_2024_SRC})
 target_include_directories(AOC_2024 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2024)
+
+
+
+set(AOC_2025_SRC
+    AOC_2025_day_1.cpp
+    AOC_2025_day_1.h
+    AOC_2025_day_10.cpp
+    AOC_2025_day_10.h
+    AOC_2025_day_11.cpp
+    AOC_2025_day_11.h
+    AOC_2025_day_12.cpp
+    AOC_2025_day_12.h
+    AOC_2025_day_2.cpp
+    AOC_2025_day_2.h
+    AOC_2025_day_3.cpp
+    AOC_2025_day_3.h
+    AOC_2025_day_4.cpp
+    AOC_2025_day_4.h
+    AOC_2025_day_5.cpp
+    AOC_2025_day_5.h
+    AOC_2025_day_6.cpp
+    AOC_2025_day_6.h
+    AOC_2025_day_7.cpp
+    AOC_2025_day_7.h
+    AOC_2025_day_8.cpp
+    AOC_2025_day_8.h
+    AOC_2025_day_9.cpp
+    AOC_2025_day_9.h)
+
+list(TRANSFORM AOC_2025_SRC PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2025/)
+add_library(AOC_2025 ${AOC_2025_SRC})
+target_include_directories(AOC_2025 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2025)
