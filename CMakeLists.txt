@@ -48,12 +48,13 @@ add_subdirectory(src)
 
 add_executable(AOC_InCom)
 target_sources(AOC_InCom PUBLIC src/main.cpp)
-
-target_compile_features(AOC_InCom PRIVATE cxx_std_23)
 target_link_libraries(AOC_InCom PRIVATE AOC_2015 AOC_2016 AOC_2017 AOC_2018 AOC_2019 AOC_2024 AOC_2025)
+target_compile_features(AOC_InCom PRIVATE cxx_std_23)
+
 if(USING_LIBSTDCXX)
     target_link_libraries(AOC_InCom PRIVATE "-lstdc++exp")
 endif()
+
 
 if(AOC_InCom_BUILD_TESTS)
     add_subdirectory(test)

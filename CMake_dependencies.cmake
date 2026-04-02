@@ -19,7 +19,11 @@ CPMAddPackage(
 
 CPMAddPackage("gh:bkille/bitlib@0.3.1")
 CPMAddPackage("gh:tcbrindle/flux@0.4.0")
-CPMAddPackage("gh:InCom-0/hash-library#master")
+CPMAddPackage(
+    URI "gh:InCom-0/hash-library#master"
+    OPTIONS
+    "hash-library_BUILD_SHARED_LIB OFF"
+)
 CPMAddPackage("gh:InCom-0/mdspan#stable")
 
 CPMAddPackage("gh:InCom-0/incstd#main")

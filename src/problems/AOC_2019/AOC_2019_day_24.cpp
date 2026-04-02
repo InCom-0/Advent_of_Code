@@ -4,6 +4,7 @@
 #include <functional>
 #include <incom_commons.h>
 #include <optional>
+#include <utility>
 
 
 namespace AOC2019 {
@@ -84,6 +85,7 @@ long long day24_2(std::string dataFile, size_t const iterations = 200) {
                 return std::ranges::count_if(bugMap, [](auto &&a) { return a.front() == '#'; });
             }
             else { assert(false); }
+            std::unreachable();
         }
         unsigned int get_reqFromTopLvl(KT const &key) {
             return (bugMap[bugMap.size() / 2 + key.first][bugMap.front().size() / 2 + key.second] == '#');

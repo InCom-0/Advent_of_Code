@@ -8,42 +8,74 @@
 #include <incom_commons.h>
 #include <optional>
 #include <queue>
+#include <utility>
 #include <vector>
 
 
 namespace AOC2019 {
 namespace incc = incom::commons;
-long long day23_1(std::string dataFile) {
+long long
+day23_1(std::string dataFile) {
     // TYPE DEFS
     struct add : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct mul : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct end : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 0; }
+        constexpr long long
+        get_numOfParams() override {
+            return 0;
+        }
     };
     struct inp : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
     struct out : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
     struct jit : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 2; }
+        constexpr long long
+        get_numOfParams() override {
+            return 2;
+        }
     };
     struct jif : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 2; }
+        constexpr long long
+        get_numOfParams() override {
+            return 2;
+        }
     };
     struct lth : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct eql : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct arb : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
 
     auto                   d_ctre = ctre::search<R"(-?\d+)">;
@@ -66,7 +98,8 @@ long long day23_1(std::string dataFile) {
 
         bool booted = false;
 
-        void constructPacket(std::vector<ProgramState> &pStates, long long const &outputValue) {
+        void
+        constructPacket(std::vector<ProgramState> &pStates, long long const &outputValue) {
             if (outCycle == 0) { outPacket.first = outputValue; }
             else if (outCycle == 1) { outPacket.second.front() = outputValue; }
             else if (outCycle == 2) {
@@ -76,7 +109,8 @@ long long day23_1(std::string dataFile) {
             outCycle = (++outCycle) % 3;
         }
 
-        void inputPacket(long long &storageRegister) {
+        void
+        inputPacket(long long &storageRegister) {
             if (inpQueue.empty()) {
                 storageRegister = -1;
                 return;
@@ -128,37 +162,68 @@ long long day23_1(std::string dataFile) {
     return progStates.at(255).inpQueue.front().back();
 }
 
-long long day23_2(std::string dataFile) {
+long long
+day23_2(std::string dataFile) {
     // TYPE DEFS
     struct add : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct mul : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct end : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 0; }
+        constexpr long long
+        get_numOfParams() override {
+            return 0;
+        }
     };
     struct inp : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
     struct out : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
     struct jit : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 2; }
+        constexpr long long
+        get_numOfParams() override {
+            return 2;
+        }
     };
     struct jif : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 2; }
+        constexpr long long
+        get_numOfParams() override {
+            return 2;
+        }
     };
     struct lth : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct eql : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct arb : incom::commons::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
 
     auto                   d_ctre = ctre::search<R"(-?\d+)">;
@@ -185,7 +250,8 @@ long long day23_2(std::string dataFile) {
 
         bool booted = false;
 
-        bool constructPacket(std::vector<ProgramState> &pStates, long long const &outputValue) {
+        bool
+        constructPacket(std::vector<ProgramState> &pStates, long long const &outputValue) {
             if (outCycle == 0) { outPacket.first = outputValue; }
             else if (outCycle == 1) { outPacket.second.front() = outputValue; }
             else if (outCycle == 2) {
@@ -201,7 +267,8 @@ long long day23_2(std::string dataFile) {
             return false;
         }
 
-        bool inputPacket(long long &storageRegister) {
+        bool
+        inputPacket(long long &storageRegister) {
             if (inpQueue.empty()) {
                 storageRegister = -1;
                 return false;
@@ -218,6 +285,7 @@ long long day23_2(std::string dataFile) {
                 return true;
             }
             else { assert(false); }
+            std::unreachable();
         }
     };
 
@@ -225,7 +293,7 @@ long long day23_2(std::string dataFile) {
     size_t      nextAddress = 0;
 
     long long lastYDeliveredByNAT = LLONG_MIN;
-    size_t emptyQueues = std::ranges::count_if(progStates, [](auto &&a) { return a.inpQueue.empty(); });
+    size_t    emptyQueues         = std::ranges::count_if(progStates, [](auto &&a) { return a.inpQueue.empty(); });
 
     while (true) {
         for (size_t curProg = 0; curProg < programs.size(); ++curProg) {
@@ -242,9 +310,7 @@ long long day23_2(std::string dataFile) {
                         progStates[curProg].booted = true;
                     }
                 },
-                [&](out &a) {
-                    emptyQueues -= progStates.at(curProg).constructPacket(progStates, a.m_refs[0].get());
-                },
+                [&](out &a) { emptyQueues -= progStates.at(curProg).constructPacket(progStates, a.m_refs[0].get()); },
                 [&](jit &a) {
                     if (a.m_refs[0] != 0) { programs[curProg].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
                 },

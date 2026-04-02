@@ -53,6 +53,7 @@ set(AOC_2015_SRC
 list(TRANSFORM AOC_2015_SRC PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2015/)
 add_library(AOC_2015 ${AOC_2015_SRC})
 target_include_directories(AOC_2015 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2015)
+target_compile_features(AOC_2015 PRIVATE cxx_std_23)
 
 set(AOC_2016_SRC
     AOC_2016_day_1.cpp
@@ -109,6 +110,7 @@ set(AOC_2016_SRC
 list(TRANSFORM AOC_2016_SRC PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2016/)
 add_library(AOC_2016 ${AOC_2016_SRC})
 target_include_directories(AOC_2016 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2016)
+target_compile_features(AOC_2016 PRIVATE cxx_std_23)
 
 set(AOC_2017_SRC
     AOC_2017_day_1.cpp
@@ -165,6 +167,7 @@ set(AOC_2017_SRC
 list(TRANSFORM AOC_2017_SRC PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2017/)
 add_library(AOC_2017 ${AOC_2017_SRC})
 target_include_directories(AOC_2017 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2017)
+target_compile_features(AOC_2017 PRIVATE cxx_std_23)
 
 set(AOC_2018_SRC
     AOC_2018_TEMP.cpp
@@ -223,6 +226,7 @@ set(AOC_2018_SRC
 list(TRANSFORM AOC_2018_SRC PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2018/)
 add_library(AOC_2018 ${AOC_2018_SRC})
 target_include_directories(AOC_2018 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2018)
+target_compile_features(AOC_2018 PRIVATE cxx_std_23)
 
 set(AOC_2019_SRC
     AOC_2019_day_1.cpp
@@ -279,6 +283,7 @@ set(AOC_2019_SRC
 list(TRANSFORM AOC_2019_SRC PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2019/)
 add_library(AOC_2019 ${AOC_2019_SRC})
 target_include_directories(AOC_2019 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2019)
+target_compile_features(AOC_2019 PRIVATE cxx_std_23)
 
 set(AOC_2024_SRC
     AOC_2024_day_1.cpp
@@ -335,8 +340,7 @@ set(AOC_2024_SRC
 list(TRANSFORM AOC_2024_SRC PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2024/)
 add_library(AOC_2024 ${AOC_2024_SRC})
 target_include_directories(AOC_2024 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2024)
-
-
+target_compile_features(AOC_2024 PRIVATE cxx_std_23)
 
 set(AOC_2025_SRC
     AOC_2025_day_1.cpp
@@ -367,3 +371,4 @@ set(AOC_2025_SRC
 list(TRANSFORM AOC_2025_SRC PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2025/)
 add_library(AOC_2025 ${AOC_2025_SRC})
 target_include_directories(AOC_2025 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2025)
+target_compile_features(AOC_2025 PRIVATE cxx_std_23)

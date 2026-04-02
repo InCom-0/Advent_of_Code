@@ -1,7 +1,8 @@
 #include <incom_commons.h>
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <md5.h>
+#include <hash-library/md5.h>
+
 namespace AOC2016 {
 
 std::string day5_1(const std::string &&doorID) {
