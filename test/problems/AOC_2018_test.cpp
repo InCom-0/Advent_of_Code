@@ -5,8 +5,8 @@
 #include <AOC_2018.h>
 #include <incom_commons.h>
 
-#define DATAFOLDER      "../../data"
-#define DATAFOLDER_2018 "../../data/AOC_2018"
+#define DATAFOLDER      "../../../data"
+#define DATAFOLDER_2018 "../../../data/AOC_2018"
 
 TEST(A_2018_d1_1, A1) {
     auto pth = std::filesystem::path(DATAFOLDER_2018) / "2018_1_1.txt";

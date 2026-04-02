@@ -1,8 +1,4 @@
-include(cmake/CPM.cmake)
-
-if(NOT CPM_USE_LOCAL_PACKAGES)
-    set(CPM_USE_LOCAL_PACKAGES ON)
-endif()
+include(cmake/CPM_0.42.1.cmake)
 
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -10,7 +6,7 @@ CPMAddPackage("gh:google/googletest@1.17.0")
 
 CPMAddPackage("gh:hanickadot/compile-time-regular-expressions@3.10.0")
 CPMAddPackage(
-    URI "gh:stephenberry/glaze@7.0.1"
+    URI "gh:stephenberry/glaze@7.2.2"
     NAME glaze
 )
 

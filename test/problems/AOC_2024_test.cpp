@@ -5,8 +5,8 @@
 #include <AOC_2024.h>
 #include <incom_commons.h>
 
-#define DATAFOLDER      "../../data"
-#define DATAFOLDER_2024 "../../data/AOC_2024"
+#define DATAFOLDER      "../../../data"
+#define DATAFOLDER_2024 "../../../data/AOC_2024"
 using namespace std::literals;
 
 

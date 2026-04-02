@@ -9,10 +9,10 @@
 #include <AOC_2024.h>
 #include <incom_commons.h>
 
-#define DATAFOLDER      "../data"
-#define DATAFOLDER_2019 "../data/AOC_2019"
+#define DATAFOLDER      "../../../data"
+#define DATAFOLDER_2019 "../../../data/AOC_2019"
 
-#define DATAFOLDER_2024 "../data/AOC_2024"
+#define DATAFOLDER_2024 "../../../data/AOC_2024"
 
 
 /*

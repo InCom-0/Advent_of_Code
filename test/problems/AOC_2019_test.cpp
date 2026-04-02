@@ -5,8 +5,8 @@
 #include <AOC_2019.h>
 #include <incom_commons.h>
 
-#define DATAFOLDER      "../../data"
-#define DATAFOLDER_2018 "../../data/AOC_2019"
+#define DATAFOLDER      "../../../data"
+#define DATAFOLDER_2018 "../../../data/AOC_2019"
 
 
 TEST(A_2019_d1_1, A1) {

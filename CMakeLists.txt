@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.30...4.2)
+cmake_minimum_required(VERSION 3.30...4.3)
 
-project(AOC-InCom
+project(AOC_InCom
     HOMEPAGE_URL "https://github.com/InCom-0/Advent_of_Code"
     DESCRIPTION
     "Advent of Code 2015 2016 2017 2018 2019 2024 2025"
@@ -9,13 +9,16 @@ project(AOC-InCom
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 set(CMAKE_CXX_STANDARD 23)
 
+option(CPM_USE_LOCAL_PACKAGES "Use local (usually system installed) packages for dependencies." ON)
+option(CPM_LOCAL_PACKAGES_ONLY "Forbid the build system from downloading missing dependencies." OFF)
+
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-option(AOC-InCom_BUILD_SHARED_LIB "Build a shared version of AOC-InCom" ${BUILD_SHARED_LIBS})
-option(AOC-InCom-lib_STAGE_OUTPUTS "Stage build output artifacts into proper directory structure" ON)
+option(AOC_InCom_BUILD_SHARED_LIB "Build a shared version of AOC-InCom" ${BUILD_SHARED_LIBS})
+option(AOC_InCom_STAGE_OUTPUTS "Stage build output artifacts into proper directory structure" ON)
 
-option(AOC-InCom-lib_BUILD_TESTS "Build test executables for incplot-lib" ${PROJECT_IS_TOP_LEVEL})
+option(AOC_InCom_BUILD_TESTS "Build test executables for incplot-lib" ${PROJECT_IS_TOP_LEVEL})
 
-include(cmake/stdlibQuery.cmake)
+include(cmake/incom/StdlibQuery.cmake)
 
 
 #####################################################################
@@ -30,8 +33,8 @@ endif()
 #####################################################################
 ### Staging ###
 #####################################################################
-include(cmake/StageOutputs.cmake)
-if(AOC-InCom_STAGE_OUTPUTS)
+include(cmake/incom/StageOutputs.cmake)
+if(AOC_InCom_STAGE_OUTPUTS)
     stageOutputDirsFor(AOC-InCom)
 endif()
 
@@ -43,15 +46,15 @@ include(CMake_dependencies.cmake) ### Loads and declares the required external l
 
 add_subdirectory(src)
 
-add_executable(AOC-InCom)
-target_sources(AOC-InCom PUBLIC src/main.cpp)
+add_executable(AOC_InCom)
+target_sources(AOC_InCom PUBLIC src/main.cpp)
 
-target_compile_features(AOC-InCom PRIVATE cxx_std_23)
-target_link_libraries(AOC-InCom PRIVATE AOC_2015 AOC_2016 AOC_2017 AOC_2018 AOC_2019 AOC_2024 AOC_2025)
+target_compile_features(AOC_InCom PRIVATE cxx_std_23)
+target_link_libraries(AOC_InCom PRIVATE AOC_2015 AOC_2016 AOC_2017 AOC_2018 AOC_2019 AOC_2024 AOC_2025)
 if(USING_LIBSTDCXX)
-    target_link_libraries(AOC-InCom PRIVATE "-lstdc++exp")
+    target_link_libraries(AOC_InCom PRIVATE "-lstdc++exp")
 endif()
 
-if(AOC-InCom-lib_BUILD_TESTS)
+if(AOC_InCom_BUILD_TESTS)
     add_subdirectory(test)
 endif()

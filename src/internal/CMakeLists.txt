@@ -13,7 +13,6 @@ target_link_libraries(incom_commons PUBLIC
 
 # target_link_options(incom_commons PUBLIC -static-libgcc -static-libstdc++ "LINKER:-Bstatic,--whole-archive" -lwinpthread "LINKER:-Bdynamic,--no-whole-archive")
 
-include(../../cmake/stdlibQuery.cmake)
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         message(STATUS "GCC Compiler")
