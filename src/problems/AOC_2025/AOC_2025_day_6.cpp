@@ -4,9 +4,6 @@
 #include <flux.hpp>
 #include <functional>
 #include <incom_commons.h>
-#include <numeric>
-#include <string>
-#include <string_view>
 
 
 namespace AOC2025 {
