@@ -28,9 +28,9 @@ int main() {
 
     // auto pth_1    = std::filesystem::path(DATAFOLDER_2019) / "2019_25_1.txt";
     // auto pth_2024 = std::filesystem::path(DATAFOLDER_2024) / "2024_25_1.txt";
-    auto pth_2025 = std::filesystem::path(DATAFOLDER_2025) / "2025_4_1.txt";
+    auto pth_2025 = std::filesystem::path(DATAFOLDER_2025) / "2025_5_1.txt";
 
-    std::cout << AOC2025::day4_2(pth_2025.generic_string()) << '\n';
+    std::cout << AOC2025::day5_2(pth_2025.generic_string()) << '\n';
 
 
     return 1;
