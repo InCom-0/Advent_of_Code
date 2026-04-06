@@ -50,5 +50,4 @@ day1_2(std::string dataFile) {
 
     return resCount;
 }
-
 } // namespace AOC2025
