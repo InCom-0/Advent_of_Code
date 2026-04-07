@@ -6,8 +6,6 @@
 #include <ctre.hpp>
 #include <flux.hpp>
 
-#include "AOC_2016_day_10.h"
-
 
 namespace AOC2016 {
 

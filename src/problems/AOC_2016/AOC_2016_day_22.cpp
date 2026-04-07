@@ -3,7 +3,7 @@
 #include <flux.hpp>
 #include <hash-library/md5.h>
 
-#include "AOC_2016_day_22.h"
+#include <AOC_2016.h>
 
 namespace AOC2016 {
 

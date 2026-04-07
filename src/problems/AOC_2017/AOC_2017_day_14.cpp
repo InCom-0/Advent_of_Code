@@ -1,4 +1,3 @@
-#include <AOC_2017_day_10.h>
 #include <bitset>
 #include <fstream>
 #include <queue>

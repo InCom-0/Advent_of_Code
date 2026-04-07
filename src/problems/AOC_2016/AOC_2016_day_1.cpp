@@ -3,8 +3,6 @@
 #include <flux.hpp>
 #include <glaze/glaze.hpp>
 
-#include "AOC_2016_day_1.h"
-
 
 namespace AOC2016 {
 int day1_1(std::string dataFile) {
