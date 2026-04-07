@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <ankerl/unordered_dense.h>
-#include <bits/ranges_algo.h>
 #include <charconv>
 #include <climits>
 #include <cstdint>

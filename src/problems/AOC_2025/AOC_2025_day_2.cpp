@@ -3,6 +3,7 @@
 #include <flux.hpp>
 #include <incom_commons.h>
 #include <ranges>
+#include <string>
 
 
 namespace AOC2025 {
@@ -12,8 +13,7 @@ namespace {
 size_t
 pow10(size_t exp) {
     size_t value = 1;
-    while (exp-- > 0) { value *= 10;
-    }
+    while (exp-- > 0) { value *= 10; }
     return value;
 }
 
@@ -38,11 +38,10 @@ day2_1(std::string dataFile) {
         size_t r;
         size_t len;
 
-        Cur(std::string_view sv) : len(sv.size()) {
-            std::from_chars(sv.begin(), sv.end(), num);
-            std::from_chars(sv.begin(), sv.begin() + len / 2, l);
-            std::from_chars(sv.begin() + len / 2, sv.end(), r);
-        }
+        Cur(std::string const &str)
+            : num(std::stoull(str)), len(str.size()),
+              l(std::stoull(std::string(str.begin(), str.begin() + str.size() / 2))),
+              r(std::stoull(std::string(str.begin() + str.size() / 2, str.end()))) {}
         void
         next() {
             len++;
@@ -95,11 +94,7 @@ day2_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
     auto input  = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre, d_ctre);
 
-    auto parseNum = [](std::string_view sv) {
-        size_t value{};
-        std::from_chars(sv.begin(), sv.end(), value);
-        return value;
-    };
+    auto parseNum = [](std::string const &str) { return std::stoull(str); };
 
     auto repeatValue = [](size_t block, size_t blockLen, size_t repeatCount) {
         size_t const mult = pow10(blockLen);
@@ -127,11 +122,11 @@ day2_2(std::string dataFile) {
             for (size_t repeatCount = 2; repeatCount <= len; ++repeatCount) {
                 if ((len % repeatCount) != 0) { continue; }
 
-                size_t const blockLen  = len / repeatCount;
-                size_t const blockMin  = pow10(blockLen - 1);
-                size_t const blockMax  = pow10(blockLen) - 1;
-                size_t const shift     = pow10(blockLen);
-                size_t       coeff     = 0;
+                size_t const blockLen = len / repeatCount;
+                size_t const blockMin = pow10(blockLen - 1);
+                size_t const blockMax = pow10(blockLen) - 1;
+                size_t const shift    = pow10(blockLen);
+                size_t       coeff    = 0;
                 for (size_t i = 0; i < repeatCount; ++i) { coeff = (coeff * shift) + 1; }
 
                 size_t const from = std::max(blockMin, ceilDiv(lo, coeff));

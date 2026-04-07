@@ -51,6 +51,6 @@ size_t day25_1(std::string dataFile) {
         return cmp == 5;
     });
 
-    return res;
+    return static_cast<size_t>(res);
 }
 } // namespace AOC2024
