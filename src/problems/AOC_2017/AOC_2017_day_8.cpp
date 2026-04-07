@@ -8,7 +8,7 @@ int day8_1(std::string dataFile) {
     auto w_ctre     = ctre::search<R"([^ ]+(?=[[:blank:]]))">;
     auto w_ctre_end = ctre::search<R"((?<= )-?.*)">;
 
-    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre, w_ctre, w_ctre, w_ctre, w_ctre,
+    auto VofV = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre, w_ctre, w_ctre, w_ctre, w_ctre,
                                                                  w_ctre, w_ctre_end);
 
     // DATA PREP
@@ -83,13 +83,13 @@ int day8_1(std::string dataFile) {
 
     // MAIN LOGIC
     int  curInstrID      = 0;
-    auto actInstrVisitor = overloaded{
+    auto actInstrVisitor = incstd::variant_utils::Overloads{
         [&](const inc &a) { (*a.target) += a.valInput_2; },
         [&](const dec &a) { (*a.target) -= a.valInput_2; },
     };
 
     while (curInstrID < instructions.size()) {
-        std::visit(overloaded{
+        std::visit(incstd::variant_utils::Overloads{
                        [&](const ifEQ &a) {
                            if ((*a.source) == a.valInput_2) {
                                std::visit(actInstrVisitor, instructions[curInstrID].first);
@@ -136,7 +136,7 @@ int day8_2(std::string dataFile) {
     auto w_ctre     = ctre::search<R"([^ ]+(?=[[:blank:]]))">;
     auto w_ctre_end = ctre::search<R"((?<= )-?.*)">;
 
-    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre, w_ctre, w_ctre, w_ctre, w_ctre,
+    auto VofV = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre, w_ctre, w_ctre, w_ctre, w_ctre,
                                                                  w_ctre, w_ctre_end);
 
     // DATA PREP
@@ -214,7 +214,7 @@ int day8_2(std::string dataFile) {
     auto updateCurMax = [&](const int &changedReg) { maxSoFar = std::max(maxSoFar, changedReg); };
 
     int  curInstrID      = 0;
-    auto actInstrVisitor = overloaded{
+    auto actInstrVisitor = incstd::variant_utils::Overloads{
         [&](const inc &a) {
             (*a.target) += a.valInput_2;
             updateCurMax(*a.target);
@@ -226,7 +226,7 @@ int day8_2(std::string dataFile) {
     };
 
     while (curInstrID < instructions.size()) {
-        std::visit(overloaded{
+        std::visit(incstd::variant_utils::Overloads{
                        [&](const ifEQ &a) {
                            if ((*a.source) == a.valInput_2) {
                                std::visit(actInstrVisitor, instructions[curInstrID].first);

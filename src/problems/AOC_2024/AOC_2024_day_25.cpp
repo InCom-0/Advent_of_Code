@@ -6,11 +6,11 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 
 size_t day25_1(std::string dataFile) {
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     std::vector<std::array<int, 5>> locks;
     std::vector<std::array<int, 5>> keys;

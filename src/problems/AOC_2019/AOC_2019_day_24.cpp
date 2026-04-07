@@ -8,11 +8,11 @@
 
 
 namespace AOC2019 {
-namespace incc = incom::commons;
+
 long long day24_1(std::string dataFile) {
 
     auto d_ctre = ctre::search<R"(.+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
+    auto input  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
 
     decltype(input) inputBordered;
     inputBordered.push_back(std::string(input.front().size() + 2, '.'));
@@ -25,8 +25,8 @@ long long day24_1(std::string dataFile) {
 
     std::vector<std::pair<int, int>> dirs{{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
 
-    ankerl::unordered_dense::set<decltype(inputBordered), incc::XXH3Hasher> setOfPast;
-    incc::doubleBuffer<decltype(inputBordered)>                             buf(inputBordered);
+    ankerl::unordered_dense::set<decltype(inputBordered), incstd::hashing::XXH3Hasher> setOfPast;
+    incstd::buffers::doubleBuffer<decltype(inputBordered)>                             buf(inputBordered);
 
     auto oneInteration = [&]() {
         for (int r = 1; r < buf.getCurrent().size() - 1; ++r) {
@@ -63,7 +63,7 @@ long long day24_1(std::string dataFile) {
 long long day24_2(std::string dataFile, size_t const iterations = 200) {
 
     auto d_ctre = ctre::search<R"(.+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
+    auto input  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
 
     using KT = std::pair<int, int>;
     std::vector<KT> dirs{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
@@ -120,7 +120,7 @@ long long day24_2(std::string dataFile, size_t const iterations = 200) {
     // PREP
     std::vector emptyBugMap(input.size(), std::string(input.front().size(), '.'));
     Maze        startMaze{OneLevel{input}, {OneLevel(), OneLevel{emptyBugMap}}, {OneLevel(), OneLevel{emptyBugMap}}};
-    incc::doubleBuffer<Maze> buf(startMaze);
+    incstd::buffers::doubleBuffer<Maze> buf(startMaze);
 
     int const midRow = input.size() / 2;
     int const midCol = input[midRow].size() / 2;

@@ -5,14 +5,14 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 
 long long day8_1(std::string dataFile) {
     using namespace std::literals;
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
-    ankerl::unordered_dense::map<char, std::vector<std::pair<int, int>>, incc::XXH3Hasher> antMap;
+    ankerl::unordered_dense::map<char, std::vector<std::pair<int, int>>, incstd::hashing::XXH3Hasher> antMap;
 
     for (int row = 0; row < input.size(); ++row) {
         for (int col = 0; col < input[row].size(); ++col) {
@@ -28,7 +28,7 @@ long long day8_1(std::string dataFile) {
                 toTest.second < input[toTest.first].size());
     };
 
-    ankerl::unordered_dense::set<std::pair<int, int>, incc::XXH3Hasher> antiNodes_loc;
+    ankerl::unordered_dense::set<std::pair<int, int>, incstd::hashing::XXH3Hasher> antiNodes_loc;
 
     std::ranges::for_each(antMap, [&](auto &antLocations) {
         if (antLocations.second.size() < 2) { return 0uz; }
@@ -55,9 +55,9 @@ long long day8_1(std::string dataFile) {
 long long day8_2(std::string dataFile) {
     using namespace std::literals;
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
-    ankerl::unordered_dense::map<char, std::vector<std::pair<int, int>>, incc::XXH3Hasher> antMap;
+    ankerl::unordered_dense::map<char, std::vector<std::pair<int, int>>, incstd::hashing::XXH3Hasher> antMap;
     for (int row = 0; row < input.size(); ++row) {
         for (int col = 0; col < input[row].size(); ++col) {
             if (input[row][col] != '.') {
@@ -72,7 +72,7 @@ long long day8_2(std::string dataFile) {
                 toTest.second < input[toTest.first].size());
     };
 
-    ankerl::unordered_dense::set<std::pair<int, int>, incc::XXH3Hasher> antiNodes_loc;
+    ankerl::unordered_dense::set<std::pair<int, int>, incstd::hashing::XXH3Hasher> antiNodes_loc;
 
     std::ranges::for_each(antMap, [&](auto &antLocations) {
         if (antLocations.second.size() < 2) { return; }

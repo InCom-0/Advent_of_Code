@@ -60,24 +60,3 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
         message(WARNING "You are using an unexpected compiler (ie. neither GCC, Clang, AppleClang, MSVC). All bets are off.")
     endif()
 endif()
-
-
-add_library(incom_omni INTERFACE)
-target_sources(incom_omni
-    INTERFACE
-    FILE_SET omni_pub_headers
-    TYPE HEADERS
-    BASE_DIRS
-    incom_omni/
-)
-target_link_libraries(incom_omni INTERFACE incom_commons)
-
-add_library(incom_seq INTERFACE)
-target_sources(incom_seq
-    INTERFACE
-    FILE_SET seq_pub_headers
-    TYPE HEADERS
-    BASE_DIRS
-    incom_seq/
-)
-target_link_libraries(incom_seq INTERFACE incom_commons)

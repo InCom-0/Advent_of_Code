@@ -11,7 +11,7 @@ long long day8_1(std::string dataFile, std::pair<size_t, size_t> imgSizeWH) {
     };
     auto d_ctre = ctre::search<R"(\d+)">;
 
-    auto             inputStr = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front();
+    auto             inputStr = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front();
     std::vector<int> intInput;
     for (auto &chr : inputStr) { intInput.push_back(chr - 48); }
 
@@ -54,7 +54,7 @@ std::string day8_2(std::string dataFile, std::pair<size_t, size_t> imgSizeWH) {
     };
     auto d_ctre = ctre::search<R"(\d+)">;
 
-    auto             inputStr = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front();
+    auto             inputStr = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front();
     std::vector<int> intInput;
     for (auto &chr : inputStr) { intInput.push_back(chr - 48); }
 

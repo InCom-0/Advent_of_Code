@@ -15,11 +15,11 @@ long long day14_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
     auto w_ctre = ctre::search<R"(\w+)">;
 
-    auto input = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre, w_ctre);
+    auto input = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre, w_ctre);
 
-    ankerl::unordered_dense::map<std::string, long long, incom::commons::XXH3Hasher> storedInExcess;
+    ankerl::unordered_dense::map<std::string, long long, incstd::hashing::XXH3Hasher> storedInExcess;
     ankerl::unordered_dense::map<std::string, std::pair<long long, std::vector<std::pair<int, std::string>>>,
-                                 incom::commons::XXH3Hasher>
+                                 incstd::hashing::XXH3Hasher>
         recipes;
     for (auto &inpLine : input) { storedInExcess.insert({inpLine.back(), 0ll}); };
 
@@ -67,15 +67,15 @@ long long day14_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
     auto w_ctre = ctre::search<R"(\w+)">;
 
-    auto input = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre, w_ctre);
+    auto input = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre, w_ctre);
 
     // DATA PREP
-    ankerl::unordered_dense::set<std::string, incom::commons::XXH3Hasher> hlpr_namesToIDs;
+    ankerl::unordered_dense::set<std::string, incstd::hashing::XXH3Hasher> hlpr_namesToIDs;
     for (auto &line : input) {
         for (auto iter = line.begin(); iter < line.end(); iter += 2) { hlpr_namesToIDs.insert(*(iter + 1)); }
     }
 
-    ankerl::unordered_dense::map<std::string, long long, incom::commons::XXH3Hasher> namesToIDs;
+    ankerl::unordered_dense::map<std::string, long long, incstd::hashing::XXH3Hasher> namesToIDs;
     for (long long id = 0; auto &item : hlpr_namesToIDs) { namesToIDs.insert(std::make_pair(item, id++)); }
 
     std::vector<long long> storedInExcess(namesToIDs.size(), 0);

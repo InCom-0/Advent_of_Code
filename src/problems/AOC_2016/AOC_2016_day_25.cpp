@@ -138,7 +138,7 @@ int day25_1(std::string dataFile) {
         // MAIN LOOP OF INSTRUCTIONS
         while (curInstrID < instrVect.size()) {
             std::visit(
-                overloaded{
+                incstd::variant_utils::Overloads{
                     [&](const cpy &a) {
                         *a.target = *a.source;
                         curInstrID++;

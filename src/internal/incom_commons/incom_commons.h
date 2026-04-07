@@ -1,12 +1,10 @@
 #pragma once
 
 #include <cassert>
-#include <cmath>
 #include <concepts>
 #include <fstream>
 #include <functional>
 #include <source_location>
-#include <type_traits>
 #include <vector>
 
 
@@ -15,245 +13,10 @@
 #include <more_concepts/more_concepts.hpp>
 #include <xxhash.h>
 
-
-// A lambda operator() overload 'trick' type.
-// Mostly used for 'inline' creation of logic for std::visit of std::variant
-template <class... Ts>
-struct overloaded : Ts... {
-    using Ts::operator()...;
-};
+#include <incstd/incstd_all.hpp>
 
 namespace incom {
-namespace concepts {
-
-namespace detail {
-template <typename T, template <typename...> typename Template>
-struct is_specialization_of : std::false_type {};
-template <template <typename...> typename Template, typename... Args>
-struct is_specialization_of<Template<Args...>, Template> : std::true_type {};
-} // namespace detail
-
-template <typename T>
-concept pair_t = requires(std::remove_cvref_t<T> pair) {
-    { pair.first } -> std::same_as<typename T::first_type &>;
-    { pair.second } -> std::same_as<typename T::second_type &>;
-};
-template <size_t N>
-concept isPowerOf2 = ((N != 0) && ! (N & (N - 1)));
-
-// Note: SpecializationOf does not support non-type template parameteres (at all) ... beware
-template <typename T, template <typename...> typename Template>
-concept SpecializationOf = detail::is_specialization_of<T, Template>::value;
-
-template <typename T>
-concept has_to_ullong = requires(T a) {
-    { a.to_ullong() } -> std::same_as<unsigned long long>;
-};
-
-// Generating a tuple with of N times the supplied type
-// Usage: pass the N parameter and the T type only, leave the ...Ts pack empty
-// Note: If you don't adhere to the above the output tuple will have more 'member types' than you want. Beware.
-// Note: Uses recursive template instantiation.
-// Note: T and Ts all must be the same types.
-template <size_t N, typename T, typename... Ts>
-requires(std::same_as<T, Ts> && ...)
-struct _c_generateTuple {
-    using type = typename _c_generateTuple<N - 1, T, T, Ts...>::type;
-};
-template <typename T, typename... Ts>
-requires(std::same_as<T, Ts> && ...)
-struct _c_generateTuple<0, T, Ts...> {
-    using type = std::tuple<Ts...>;
-};
-
-// Generating an 'integer_sequence' of N identical size_t integers of value S.
-// Usage: pass the N parameter and the S integer only, leave the ...Sx pack empty
-// Note: If you don't adhere to the above the output integer_sequence will be longer than you (probably) want. Beware.
-// Note: Uses recursive template instantiation.
-// Note: S and Sx must all be the same value.
-template <size_t N, long long S, long long... Sx>
-requires((S == Sx) && ...)
-struct c_gen_X_repeat_sequence {
-    using type = typename c_gen_X_repeat_sequence<N - 1, S, S, Sx...>::type;
-};
-template <long long S, long long... Sx>
-requires((S == Sx) && ...)
-struct c_gen_X_repeat_sequence<0, S, Sx...> {
-    using type = std::integer_sequence<long long, Sx...>;
-};
-
-
-} // namespace concepts
-namespace commons {
-namespace numeric {
-template <typename T>
-requires std::is_integral_v<T>
-int get_numOfDigits(T const &integralNumber) {
-    if constexpr (std::is_unsigned_v<T>) { return integralNumber == 0 ? 1 : std::trunc(log10(integralNumber)) + 1; }
-    else { return integralNumber == 0 ? 1 : std::trunc(log10(std::abs(integralNumber))) + 1; }
-}
-
-} // namespace numeric
-
-// This tiny type is used to simplify dealing with parameter packs.
-// Usually used to invoke a closure (lambda) over each parameter in the pack.
-// The closure is successivelly passed an in-place constructed instance of each type in the pack (the constructors are
-// passed the 'ttptc' as an initializer)
-template <typename... T>
-struct argPackHLPR {
-    template <typename... TypesToPassToConstructors>
-    static void invokeOverConstructedPack(auto &&func, TypesToPassToConstructors &...ttptc) {
-        (func(T{ttptc...}), ...);
-    };
-};
-
-/* Simple 'double buffer' class that can be useful when employing iterative algorithms that simply 'mutate' the input in
-each iteration. Particularly useful for non-trivial data structures ... for instance containers of containers.
-*/
-template <typename T>
-class doubleBuffer {
-private:
-    T __dataA;
-    T __dataB;
-
-    T *current = &__dataA;
-    T *next    = &__dataB;
-
-public:
-    doubleBuffer() : __dataA(T()), __dataB(T()), current(&__dataA), next(&__dataB) {};
-    doubleBuffer(T initial_data) : __dataA(initial_data), __dataB((initial_data)), current(&__dataA), next(&__dataB) {};
-
-    T &getCurrent() const { return (*current); };
-    T &getNext() const { return (*next); }
-
-    void swapBuffers() { std::swap(current, next); }
-};
-
-/*Matrix rotation of 'indexed' random access containers.
-Uses 'swapping in circles' method ... should be pretty fast
-*/
-template <typename T>
-requires more_concepts::random_access_container<T> && more_concepts::random_access_container<typename T::value_type> &&
-         std::swappable<typename T::value_type::value_type>
-void matrixRotateLeft(T &VofVlike) {
-    int sideLength = VofVlike.size() - 1;
-    if (sideLength < 1) { return; }
-    if (flux::ref(VofVlike).any([&](auto &&line) { return line.size() != VofVlike.size(); })) { return; }
-
-    int circles = (sideLength + 2) / 2;
-    for (int cir = 0; cir < circles; cir++) {
-        for (int i = 0; i < sideLength - (2 * cir); ++i) {
-            std::swap(VofVlike[cir][cir + i], VofVlike[cir + i][sideLength - cir]);
-            std::swap(VofVlike[cir + i][sideLength - cir], VofVlike[sideLength - cir][sideLength - cir - i]);
-            std::swap(VofVlike[sideLength - cir][sideLength - cir - i], VofVlike[sideLength - cir - i][cir]);
-        }
-    }
-    return;
-}
-template <typename T>
-requires more_concepts::random_access_container<T> && more_concepts::random_access_container<typename T::value_type> &&
-         std::swappable<typename T::value_type::value_type>
-void matrixRotateRight(T &VofVlike) {
-    int sideLength = VofVlike.size() - 1;
-    if (sideLength < 1) { return; }
-    if (flux::ref(VofVlike).any([&](auto &&line) { return line.size() != VofVlike.size(); })) { return; }
-
-    int circles = (sideLength + 2) / 2;
-    for (int cir = 0; cir < circles; cir++) {
-        for (int i = 0; i < sideLength - (2 * cir); ++i) {
-            std::swap(VofVlike[cir][cir + i], VofVlike[sideLength - cir - i][cir]);
-            std::swap(VofVlike[sideLength - cir - i][cir], VofVlike[sideLength - cir][sideLength - cir - i]);
-            std::swap(VofVlike[sideLength - cir][sideLength - cir - i], VofVlike[cir + i][sideLength - cir]);
-        }
-    }
-    return;
-}
-
-/* Hashes using XXH3_64bit 'state of the art' non-cryptographic hasher.
-Can/should be used for hasing keys in maps, sets and the like.
-
-Hashes arithmetic types + std::vector, std::array and std::pair of the former.
-The std::pair can nest all of the above containers + recursive nesting is possible.
-
-TODO: Extend this so that it can hash mostly everything.
-TODO: Make it so that when used with a constant size array the size is used as compile time constant.
-_
-*/
-struct XXH3Hasher {
-    // DIRECTLY HASHABLE BECAUSE OF CONTIGUOUS DATA
-    template <typename T>
-    requires std::is_arithmetic_v<std::decay_t<T>>
-    constexpr size_t operator()(T &&input) const {
-        return XXH3_64bits(&input, sizeof(T));
-    }
-    template <typename T>
-    requires more_concepts::random_access_container<std::remove_cvref_t<T>> &&
-             std::is_arithmetic_v<typename T::value_type>
-    constexpr size_t operator()(T &&input) const {
-        return XXH3_64bits(input.data(),
-                           sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
-    }
-    // OTHER DIRECTLY HASHABLE
-    template <typename T>
-    requires incom::concepts::has_to_ullong<T>
-    constexpr size_t operator()(T const &&input) const {
-        return (*this)(input.to_ullong());
-    }
-
-    // REQUIRES GRADUAL BUILDUP OF XXH3_STATE OUT OF DIS-CONTIGUOUS DATA INSIDE THE INPUT TYPE
-    template <typename T>
-    constexpr size_t operator()(T &&input) const {
-        XXH3_state_t *state = XXH3_createState();
-        XXH3_64bits_reset(state);
-        this->_hashTypeX(input, state);
-
-        XXH64_hash_t result = XXH3_64bits_digest(state);
-        XXH3_freeState(state);
-        return result;
-    }
-
-    template <typename T>
-    requires std::is_arithmetic_v<std::decay_t<T>>
-    constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
-        XXH3_64bits_update(state, &input, sizeof(T));
-    }
-
-    template <incom::concepts::pair_t T>
-    constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
-        this->_hashTypeX(input.first, state);
-        this->_hashTypeX(input.second, state);
-    }
-
-    template <typename T>
-    requires std::is_same_v<std::remove_cvref_t<T>, std::string_view>
-    constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
-        XXH3_64bits_update(state, input.data(),
-                           sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
-    }
-    template <typename T>
-    requires more_concepts::random_access_container<std::remove_cvref_t<T>> &&
-             std::is_arithmetic_v<typename T::value_type>
-    constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
-        XXH3_64bits_update(state, input.data(),
-                           sizeof(typename std::remove_cvref_t<decltype(input)>::value_type) * input.size());
-    }
-    template <typename T>
-    requires more_concepts::random_access_container<std::remove_cvref_t<T>> &&
-             incom::concepts::pair_t<typename T::value_type>
-    constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
-        for (auto const &item : input) {
-            this->_hashTypeX(item.first, state);
-            this->_hashTypeX(item.second, state);
-        }
-    }
-
-    template <typename T>
-    requires more_concepts::random_access_container<std::remove_cvref_t<T>> &&
-             more_concepts::random_access_container<std::remove_cvref_t<typename T::value_type>>
-    constexpr void _hashTypeX(T &input, XXH3_state_t *state) const {
-        for (auto &VinV : input) { this->_hashTypeX(VinV, state); }
-    }
-};
+namespace aoc {
 
 class parseInputUsingCTRE {
 private:
@@ -262,7 +25,8 @@ private:
         size_t                   cursor              = 0;
         int                      somethingNotFoundAt = -1;
 
-        oneLineProcessedHolder &operator<<(auto &&toInsert) {
+        oneLineProcessedHolder &
+        operator<<(auto &&toInsert) {
             if (toInsert) { insideVofS.push_back(toInsert.to_string()); }
             else { somethingNotFoundAt = cursor; }
             cursor++;
@@ -285,27 +49,33 @@ private:
         size_t cursor              = 0;
         int    somethingNotFoundAt = -1;
 
-        fileProcessedHolder &operator<<(auto &&toInsert) {
+        fileProcessedHolder &
+        operator<<(auto &&toInsert) {
             if (toInsert) { data[cursor++].push_back(toInsert.to_string()); }
             else { somethingNotFoundAt = cursor++; }
             return *this;
         }
 
-        void resetCursor() { cursor = 0; }
+        void
+        resetCursor() {
+            cursor = 0;
+        }
     };
 
     struct fileProcessedHolder_2 {
         std::vector<std::vector<std::string>> data                = std::vector<std::vector<std::string>>();
         int                                   somethingNotFoundAt = -1;
 
-        fileProcessedHolder_2 &operator<<(auto &&toInsert) {
+        fileProcessedHolder_2 &
+        operator<<(auto &&toInsert) {
             if (toInsert) { data.back().push_back(toInsert.to_string()); }
             else { somethingNotFoundAt = data.size(); }
             return *this;
         }
     };
 
-    static auto findNextWithinLine(auto &ctreSrchObj, std::string::iterator &begin, const std::string::iterator &end) {
+    static auto
+    findNextWithinLine(auto &ctreSrchObj, std::string::iterator &begin, const std::string::iterator &end) {
         auto result = ctreSrchObj(begin, end);
         if (result) { begin = result.get_end_position(); }
         return result;
@@ -321,7 +91,8 @@ public:
     */
 
     template <typename... ctreSrch>
-    static std::vector<std::string> processOneLine(std::string &line, ctreSrch &&...perItemInLine) {
+    static std::vector<std::string>
+    processOneLine(std::string &line, ctreSrch &&...perItemInLine) {
         auto                   bg  = line.begin();
         auto                   end = line.end();
         oneLineProcessedHolder sink;
@@ -330,7 +101,8 @@ public:
     }
 
     template <typename... ctreSrch>
-    static std::vector<std::string> processOneLineRPToneVect(std::string &line, ctreSrch &&...perItemInLine) {
+    static std::vector<std::string>
+    processOneLineRPToneVect(std::string &line, ctreSrch &&...perItemInLine) {
         oneLineProcessedHolder sink;
 
         auto bg  = line.begin();
@@ -344,7 +116,8 @@ public:
     }
 
     template <typename... ctreSrch>
-    static std::vector<std::vector<std::string>> processOneLineRPT(std::string &line, ctreSrch &&...perItemInLine) {
+    static std::vector<std::vector<std::string>>
+    processOneLineRPT(std::string &line, ctreSrch &&...perItemInLine) {
         constexpr size_t                              searchForNumOfItems = sizeof...(perItemInLine);
         fileProcessedHolder<sizeof...(perItemInLine)> sink;
 
@@ -362,8 +135,8 @@ public:
     }
 
     template <typename... ctreSrch>
-    static std::vector<std::vector<std::string>> processOneLineRPTinFile(std::string &dataFile,
-                                                                         ctreSrch &&...perItemInLine) {
+    static std::vector<std::vector<std::string>>
+    processOneLineRPTinFile(std::string &dataFile, ctreSrch &&...perItemInLine) {
         std::ifstream iStream;
         iStream.clear();
         iStream.open(dataFile);
@@ -378,7 +151,8 @@ public:
     }
 
     template <typename... ctreSrch>
-    static std::vector<std::vector<std::string>> processFile(std::string &dataFile, ctreSrch &&...perItemInLine) {
+    static std::vector<std::vector<std::string>>
+    processFile(std::string &dataFile, ctreSrch &&...perItemInLine) {
         std::ifstream iStream;
         iStream.clear();
         iStream.open(dataFile);
@@ -399,7 +173,8 @@ public:
         return sink.data;
     }
     template <typename... ctreSrch>
-    static std::vector<std::vector<std::string>> processFileRPT(std::string &dataFile, ctreSrch &&...perItemInLine) {
+    static std::vector<std::vector<std::string>>
+    processFileRPT(std::string &dataFile, ctreSrch &&...perItemInLine) {
         std::ifstream iStream;
         iStream.clear();
         iStream.open(dataFile);
@@ -428,7 +203,8 @@ namespace PQA {
 Quasi compile time reflection for typenames
 */
 template <typename T>
-consteval auto TypeToString() {
+consteval auto
+TypeToString() {
     auto EmbeddingSignature = std::string_view{std::source_location::current().function_name()};
     auto firstPos           = EmbeddingSignature.rfind("::") + 2;
     return EmbeddingSignature.substr(firstPos, EmbeddingSignature.size() - firstPos - 1);
@@ -444,24 +220,27 @@ struct _instrBase_2018 {
 
     _instrBase_2018(long long &aRef, long long &bRef, long long &cRef) : A{aRef}, B{bRef}, C{cRef} {};
 
-    std::reference_wrapper<std::reference_wrapper<long long>> getMappedRef(const int &id) {
+    std::reference_wrapper<std::reference_wrapper<long long>>
+    getMappedRef(const int &id) {
         if (id == 1) { return std::reference_wrapper<std::reference_wrapper<long long>>(A); }
         else if (id == 2) { return std::reference_wrapper<std::reference_wrapper<long long>>(B); }
         else if (id == 3) { return std::reference_wrapper<std::reference_wrapper<long long>>(C); }
         else { assert((void("ERROR"), false)); };
         std::unreachable();
     }
-    virtual const std::vector<int> getRS() = 0;
+    virtual const std::vector<int>
+    getRS() = 0;
 };
 struct _instrBase_INT {
     std::vector<std::reference_wrapper<long long>> m_refs;
-    virtual constexpr long long                    get_numOfParams() = 0;
+    virtual constexpr long long
+    get_numOfParams() = 0;
 };
 
 template <typename... instrT>
 requires(std::derived_from<instrT, _instrBase> && ...)
 struct ProgramQuasiAssembly {
-    std::unordered_map<char, std::reference_wrapper<long long>, incom::commons::XXH3Hasher> mapping;
+    std::unordered_map<char, std::reference_wrapper<long long>, incstd::hashing::XXH3Hasher> mapping;
     unsigned long long                                                                      instructionID = 0;
     long long                                                                               fakeRegister  = LLONG_MIN;
     std::vector<long long>                                                                  registers;
@@ -480,7 +259,7 @@ struct ProgramQuasiAssembly {
         // Mapping a type 'by string' to the same type inside a std::variant instance;
         // TypeToString uses a very crude form of 'reflection'.
         // ENTIRELY POSSIBLE THAT THIS HACK IS NOT REALLY PORTABLE ... BEWARE.
-        std::unordered_map<std::string, std::variant<instrT...>, incom::commons::XXH3Hasher> instrTypeMap;
+        std::unordered_map<std::string, std::variant<instrT...>, incstd::hashing::XXH3Hasher> instrTypeMap;
         (instrTypeMap.emplace(TypeToString<instrT>(), std::variant<instrT...>{instrT{fakeRegister, fakeRegister}}),
          ...);
 
@@ -538,28 +317,40 @@ struct ProgramQuasiAssembly {
     }
 
     // Other convenience member functions
-    inline bool                     test_isInstructionIDvalid() { return instructionID < instrVect.size(); }
-    inline std::variant<instrT...> &getCurrentAndIncrement() { return instrVect[instructionID++]; }
+    inline bool
+    test_isInstructionIDvalid() {
+        return instructionID < instrVect.size();
+    }
+    inline std::variant<instrT...> &
+    getCurrentAndIncrement() {
+        return instrVect[instructionID++];
+    }
 };
 
 template <typename... instrT>
 requires(std::derived_from<instrT, _instrBase_2018> && ...)
 struct ProgramQuasiAssembly_2018 {
-    // std::unordered_map<char, std::reference_wrapper<long long>, incom::commons::XXH3Hasher> mapping;
+    // std::unordered_map<char, std::reference_wrapper<long long>, incstd::hashing::XXH3Hasher> mapping;
     unsigned long long                   instructionID = 0;
     std::vector<long long>               registers;
     std::vector<std::variant<instrT...>> instrVect;
 
     // Other convenience member functions
-    inline bool                     test_isInstructionIDvalid() { return instructionID < instrVect.size(); }
-    inline std::variant<instrT...> &getCurrentAndIncrement() { return instrVect[instructionID++]; }
+    inline bool
+    test_isInstructionIDvalid() {
+        return instructionID < instrVect.size();
+    }
+    inline std::variant<instrT...> &
+    getCurrentAndIncrement() {
+        return instrVect[instructionID++];
+    }
 
     // In order to dynamically use the 'right' type for each instruction, one has to generate a map that maps the string
     // name representation (as found in the instructions) to the instantiation of std::variant<instrT...> with the
     // correct type
-    static std::unordered_map<std::string, std::variant<instrT...>, incom::commons::XXH3Hasher> instrTypeMapCreator(
-        const std::vector<std::vector<std::string>> &rawExampleInput, auto &overloadSet, const int registersCount = 4,
-        const std::vector<long long> regStartVal = {0, 0, 0, 0}) {
+    static std::unordered_map<std::string, std::variant<instrT...>, incstd::hashing::XXH3Hasher>
+    instrTypeMapCreator(const std::vector<std::vector<std::string>> &rawExampleInput, auto &overloadSet,
+                        const int registersCount = 4, const std::vector<long long> regStartVal = {0, 0, 0, 0}) {
 
         std::vector<long long> registers_local(registersCount, 0); // Registers
         std::vector<long long> fakeRegisters(4, LLONG_MIN);        // Fake registers
@@ -638,7 +429,7 @@ struct ProgramQuasiAssembly_2018 {
 
         // There can only be one 'real' matching 'instrID' per rawID and must match for all (ie. the size of
         // the vector). Depending on input might be necessary to gradually eliminate multiple matches.
-        std::unordered_map<int, std::string, incom::commons::XXH3Hasher> IDsMap;
+        std::unordered_map<int, std::string, incstd::hashing::XXH3Hasher> IDsMap;
 
         while (IDsMap.size() < counter.size()) {
             for (int j = 0; auto &counterRangePerID : counter) {
@@ -661,7 +452,7 @@ struct ProgramQuasiAssembly_2018 {
             }
         }
 
-        std::unordered_map<std::string, std::variant<instrT...>, incom::commons::XXH3Hasher> instrTypeMap;
+        std::unordered_map<std::string, std::variant<instrT...>, incstd::hashing::XXH3Hasher> instrTypeMap;
         long long                                                                            cntr = 0;
 
         // Horrifying hack creating a dangling reference with the 'counter' being passed into Instr_T constructor
@@ -672,7 +463,7 @@ struct ProgramQuasiAssembly_2018 {
     // The one and only constructor of the 'prog' type
     ProgramQuasiAssembly_2018(
         const std::vector<std::vector<std::string>>                                          &rawInstrInput,
-        std::unordered_map<std::string, std::variant<instrT...>, incom::commons::XXH3Hasher> &mapped,
+        std::unordered_map<std::string, std::variant<instrT...>, incstd::hashing::XXH3Hasher> &mapped,
         const std::vector<long long> regStartVal = {0, 0, 0, 0}) {
 
         assert((void("Prog type instantiated with an empty input"), rawInstrInput.size() > 0));
@@ -750,11 +541,11 @@ template <typename... instrT>
 requires(std::derived_from<instrT, _instrBase_INT> && ...)
 class ProgramQuasiAssembly_INT {
 private:
-    std::unordered_map<long long, std::variant<instrT...>, incom::commons::XXH3Hasher>        m_instrTypeMap;
-    static std::unordered_map<long long, std::variant<instrT...>, incom::commons::XXH3Hasher> instrTypeMapCreator(
-        std::vector<long long> const &instrCodes) {
+    std::unordered_map<long long, std::variant<instrT...>, incstd::hashing::XXH3Hasher> m_instrTypeMap;
+    static std::unordered_map<long long, std::variant<instrT...>, incstd::hashing::XXH3Hasher>
+    instrTypeMapCreator(std::vector<long long> const &instrCodes) {
         assert(sizeof...(instrT) == instrCodes.size());
-        std::unordered_map<long long, std::variant<instrT...>, incom::commons::XXH3Hasher> res;
+        std::unordered_map<long long, std::variant<instrT...>, incstd::hashing::XXH3Hasher> res;
 
         long long id = 0;
         (res.insert({instrCodes[id++], instrT()}), ...);
@@ -773,10 +564,14 @@ public:
         : m_instrTypeMap(instrTypeMapCreator(instrCodes)), m_program(programCodes), m_cursor(cursor) {};
 
     // IS FUNCTIONS
-    bool is_cursorValid() { return ((m_cursor >= 0) && (m_cursor < m_program.size())); }
+    bool
+    is_cursorValid() {
+        return ((m_cursor >= 0) && (m_cursor < m_program.size()));
+    }
 
     // CONSTRUCTING VARIANTS
-    auto get_externalCursorInstr(long long const &progCursor) -> std::variant<instrT...> {
+    auto
+    get_externalCursorInstr(long long const &progCursor) -> std::variant<instrT...> {
         long long diviRes = (m_program[progCursor] / 100);
         long long instrID = (m_program[progCursor] % 100);
 
@@ -788,7 +583,7 @@ public:
 
         std::variant<instrT...> constructedVar(m_instrTypeMap.at(instrID));
 
-        auto finishTheVar = overloaded{
+        auto finishTheVar = incstd::variant_utils::Overloads{
             [&](auto &a) -> void {
                 long long              paramIDx  = 1;
                 long long              maxCursor = 0;
@@ -817,7 +612,7 @@ public:
                     maxCursor = std::max(maxCursor, cursors.back());
                 }
                 // Resize the program memory so that the cursors to all current parameters are valid
-                if (not (maxCursor < m_program.size())) { m_program.resize(maxCursor + 1, 0LL); }
+                if (not(maxCursor < m_program.size())) { m_program.resize(maxCursor + 1, 0LL); }
 
                 for (auto &cur : cursors) { a.m_refs.push_back(m_program[cur]); }
             },
@@ -826,18 +621,23 @@ public:
         std::visit(finishTheVar, constructedVar);
         return constructedVar;
     }
-    auto get_pointedToInstr() -> std::variant<instrT...> { return get_externalCursorInstr(m_cursor); }
+    auto
+    get_pointedToInstr() -> std::variant<instrT...> {
+        return get_externalCursorInstr(m_cursor);
+    }
 
     // EXECUTION OF INSTRUCTIONS
-    auto exe_externalPointedToInstr(long long &externalID, auto const &ol_set) -> long long {
+    auto
+    exe_externalPointedToInstr(long long &externalID, auto const &ol_set) -> long long {
         auto instruction = get_externalCursorInstr(externalID);
 
-        auto ol_set_numOfParams = overloaded{[](auto &instr) { return instr.get_numOfParams() + 1; }};
+        auto ol_set_numOfParams = incstd::variant_utils::Overloads{[](auto &instr) { return instr.get_numOfParams() + 1; }};
 
         std::visit(ol_set, instruction);
         return externalID += std::visit(ol_set_numOfParams, instruction);
     }
-    auto exe_pointedToInstr(auto const &ol_set) -> long long {
+    auto
+    exe_pointedToInstr(auto const &ol_set) -> long long {
         return exe_externalPointedToInstr(m_cursor, std::forward<decltype(ol_set)>(ol_set));
     }
 };

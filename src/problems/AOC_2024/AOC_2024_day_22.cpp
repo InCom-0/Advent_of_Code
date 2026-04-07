@@ -11,10 +11,10 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 long long day22_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incc::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
+    auto input  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
 
     std::vector<size_t> data;
     for (auto const &item : input) { data.push_back(std::stoull(item)); }
@@ -48,7 +48,7 @@ long long day22_1(std::string dataFile) {
 
 long long day22_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incc::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
+    auto input  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
 
     std::vector<size_t> data;
     for (auto const &item : input) { data.push_back(std::stoull(item)); }
@@ -83,10 +83,10 @@ long long day22_2(std::string dataFile) {
         }
     }
 
-    ankerl::unordered_dense::map<std::array<long long, 4>, size_t, incc::XXH3Hasher> resMap;
+    ankerl::unordered_dense::map<std::array<long long, 4>, size_t, incstd::hashing::XXH3Hasher> resMap;
 
     for (auto const &oneMonkeyPrices : prices) {
-        ankerl::unordered_dense::map<std::array<long long, 4>, size_t, incc::XXH3Hasher> oneMap;
+        ankerl::unordered_dense::map<std::array<long long, 4>, size_t, incstd::hashing::XXH3Hasher> oneMap;
 
         auto priceChangesVec =
             std::views::adjacent_transform<2>(oneMonkeyPrices, [](auto &&a, auto &&b) { return b - a; }) |

@@ -51,7 +51,7 @@ std::string day21_1(std::string dataFile, std::string &&input) {
     }
 
     for (auto &oneAction : actionsToTake) {
-        std::visit(overloaded{
+        std::visit(incstd::variant_utils::Overloads{
                        [&](const SwapPoss &a) -> void { std::swap(input[a.pos_1], input[a.pos_2]); },
                        [&](const SwapLetter &a) -> void {
                            std::swap(input[input.find(a.letter_1)], input[input.find(a.letter_2)]);
@@ -137,7 +137,7 @@ std::string day21_2(std::string dataFile, std::string &&input) {
     RoTBOP action was immensly annoying as it has 4 distinct cases based on odd vs. even && >3 vs. not >3.
     */
     for (auto &oneAction : std::views::reverse(actionsToTake)) {
-        std::visit(overloaded{
+        std::visit(incstd::variant_utils::Overloads{
                        [&](const SwapPoss &a) -> void { std::swap(input[a.pos_1], input[a.pos_2]); },
                        [&](const SwapLetter &a) -> void {
                            std::swap(input[input.find(a.letter_1)], input[input.find(a.letter_2)]);

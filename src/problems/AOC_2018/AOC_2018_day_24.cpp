@@ -155,10 +155,10 @@ long long day24_1(std::string dataFile) {
 
     // DATA PREP
     auto mainParsed =
-        incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre, d_ctre, d_ctre, w_ctre, d_ctre);
+        incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre, d_ctre, d_ctre, w_ctre, d_ctre);
 
-    auto weakParsed   = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, weakTo_ctre);
-    auto immuneParsed = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, immuneTo_ctre);
+    auto weakParsed   = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, weakTo_ctre);
+    auto immuneParsed = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, immuneTo_ctre);
 
     Game theGame;
 
@@ -177,13 +177,13 @@ long long day24_1(std::string dataFile) {
 
         if (immuneParsed[i].size() != 0) {
             for (auto &oneImun :
-                 incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(immuneParsed[i].front(), w_ctre)) {
+                 incom::aoc::parseInputUsingCTRE::processOneLineRPToneVect(immuneParsed[i].front(), w_ctre)) {
                 theGame.m_groups.back().m_immunities.push_back(Group::Dmg_T{nameMap.at(oneImun)});
             }
         }
         if (weakParsed[i].size() != 0) {
             for (auto &oneWeakness :
-                 incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(weakParsed[i].front(), w_ctre)) {
+                 incom::aoc::parseInputUsingCTRE::processOneLineRPToneVect(weakParsed[i].front(), w_ctre)) {
                 theGame.m_groups.back().m_weaknesses.push_back(Group::Dmg_T{nameMap.at(oneWeakness)});
             }
         }
@@ -195,13 +195,13 @@ long long day24_1(std::string dataFile) {
                                     Group::Dmg_T{nameMap.at(mainParsed[i][3])}});
         if (immuneParsed[i].size() != 0) {
             for (auto &oneImun :
-                 incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(immuneParsed[i].front(), w_ctre)) {
+                 incom::aoc::parseInputUsingCTRE::processOneLineRPToneVect(immuneParsed[i].front(), w_ctre)) {
                 theGame.m_groups.back().m_immunities.push_back(Group::Dmg_T{nameMap.at(oneImun)});
             }
         }
         if (weakParsed[i].size() != 0) {
             for (auto &oneWeakness :
-                 incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(weakParsed[i].front(), w_ctre)) {
+                 incom::aoc::parseInputUsingCTRE::processOneLineRPToneVect(weakParsed[i].front(), w_ctre)) {
                 theGame.m_groups.back().m_weaknesses.push_back(Group::Dmg_T{nameMap.at(oneWeakness)});
             }
         }
@@ -229,10 +229,10 @@ long long day24_2(std::string dataFile) {
 
     // DATA PREP
     auto mainParsed =
-        incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre, d_ctre, d_ctre, w_ctre, d_ctre);
+        incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre, d_ctre, d_ctre, w_ctre, d_ctre);
 
-    auto weakParsed   = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, weakTo_ctre);
-    auto immuneParsed = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, immuneTo_ctre);
+    auto weakParsed   = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, weakTo_ctre);
+    auto immuneParsed = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, immuneTo_ctre);
 
     Game theGame;
 
@@ -251,13 +251,13 @@ long long day24_2(std::string dataFile) {
 
         if (immuneParsed[i].size() != 0) {
             for (auto &oneImun :
-                 incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(immuneParsed[i].front(), w_ctre)) {
+                 incom::aoc::parseInputUsingCTRE::processOneLineRPToneVect(immuneParsed[i].front(), w_ctre)) {
                 theGame.m_groups.back().m_immunities.push_back(Group::Dmg_T{nameMap.at(oneImun)});
             }
         }
         if (weakParsed[i].size() != 0) {
             for (auto &oneWeakness :
-                 incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(weakParsed[i].front(), w_ctre)) {
+                 incom::aoc::parseInputUsingCTRE::processOneLineRPToneVect(weakParsed[i].front(), w_ctre)) {
                 theGame.m_groups.back().m_weaknesses.push_back(Group::Dmg_T{nameMap.at(oneWeakness)});
             }
         }
@@ -269,13 +269,13 @@ long long day24_2(std::string dataFile) {
                                     Group::Dmg_T{nameMap.at(mainParsed[i][3])}});
         if (immuneParsed[i].size() != 0) {
             for (auto &oneImun :
-                 incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(immuneParsed[i].front(), w_ctre)) {
+                 incom::aoc::parseInputUsingCTRE::processOneLineRPToneVect(immuneParsed[i].front(), w_ctre)) {
                 theGame.m_groups.back().m_immunities.push_back(Group::Dmg_T{nameMap.at(oneImun)});
             }
         }
         if (weakParsed[i].size() != 0) {
             for (auto &oneWeakness :
-                 incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(weakParsed[i].front(), w_ctre)) {
+                 incom::aoc::parseInputUsingCTRE::processOneLineRPToneVect(weakParsed[i].front(), w_ctre)) {
                 theGame.m_groups.back().m_weaknesses.push_back(Group::Dmg_T{nameMap.at(oneWeakness)});
             }
         }

@@ -8,18 +8,18 @@ std::string day7_1(std::string dataFile) {
     auto weight_ctre    = ctre::search<R"((?<=\()\d+)">;
     auto discOnTop_ctre = ctre::search<R"((?<=-> ).+)">;
 
-    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, wrd_ctre, weight_ctre, discOnTop_ctre);
+    auto VofV = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, wrd_ctre, weight_ctre, discOnTop_ctre);
     std::vector<std::vector<std::string>> VVVVV;
 
     for (auto &line : VofV) {
         if (line.size() == 3) {
-            auto const VofS = incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(line.back(), wrd_ctre);
+            auto const VofS = incom::aoc::parseInputUsingCTRE::processOneLineRPToneVect(line.back(), wrd_ctre);
             line.pop_back();
             for (auto &itemOnTop : VofS) { line.push_back(itemOnTop); }
         }
     }
 
-    std::unordered_map<std::string, int, incom::commons::XXH3Hasher> UOmap;
+    std::unordered_map<std::string, int, incstd::hashing::XXH3Hasher> UOmap;
     for (auto &line : VofV) {
         for (int i = 2; i < line.size(); ++i) { UOmap[line[i]]++; }
         UOmap[line[0]]++;
@@ -45,11 +45,11 @@ int day7_2(std::string dataFile) {
     auto discOnTop_ctre = ctre::search<R"((?<=-> ).+)">;
 
     // INPUT PROCESSING
-    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, wrd_ctre, weight_ctre, discOnTop_ctre);
+    auto VofV = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, wrd_ctre, weight_ctre, discOnTop_ctre);
 
     for (auto &line : VofV) {
         if (line.size() == 3) {
-            auto const VofS = incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(line.back(), wrd_ctre);
+            auto const VofS = incom::aoc::parseInputUsingCTRE::processOneLineRPToneVect(line.back(), wrd_ctre);
             line.pop_back();
             for (auto &itemOnTop : VofS) { line.push_back(itemOnTop); }
         }
@@ -63,7 +63,7 @@ int day7_2(std::string dataFile) {
     };
 
     std::vector<prog>                                                                                      progStorage;
-    std::unordered_map<std::string, std::pair<std::reference_wrapper<prog>, int>, incom::commons::XXH3Hasher> mp;
+    std::unordered_map<std::string, std::pair<std::reference_wrapper<prog>, int>, incstd::hashing::XXH3Hasher> mp;
     progStorage.reserve(VofV.size()); // To ensure no reallocations are ever made.
 
     // CLOSURE DEFINITIONS

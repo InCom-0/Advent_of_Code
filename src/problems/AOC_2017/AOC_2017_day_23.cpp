@@ -10,20 +10,20 @@
 namespace AOC2017 {
 int day23_1(std::string dataFile) {
     // CUSTOM LOCAL TYPES
-    struct set : incom::commons::PQA::_instrBase {};
-    struct sub : incom::commons::PQA::_instrBase {};
-    struct mul : incom::commons::PQA::_instrBase {};
-    struct jnz : incom::commons::PQA::_instrBase {};
+    struct set : incom::aoc::PQA::_instrBase {};
+    struct sub : incom::aoc::PQA::_instrBase {};
+    struct mul : incom::aoc::PQA::_instrBase {};
+    struct jnz : incom::aoc::PQA::_instrBase {};
 
 
     auto getWord_ctre = ctre::search<R"([[:^blank:]]+)">;
-    auto VofV         = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
+    auto VofV         = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
 
-    incom::commons::PQA::ProgramQuasiAssembly<set, sub, mul, jnz> theProgram(VofV);
+    incom::aoc::PQA::ProgramQuasiAssembly<set, sub, mul, jnz> theProgram(VofV);
 
     // DATA AND LAMBDA PREP
     unsigned long long mulInvocations = 0;
-    auto               overload_obj   = overloaded{
+    auto               overload_obj   = incstd::variant_utils::Overloads{
         [&](const set &a) { a.source.get() = a.target; },
         [&](const sub &a) { a.source -= a.target; },
         [&](const mul &a) {
@@ -45,19 +45,19 @@ int day23_1(std::string dataFile) {
 // Essentially finding the number of composite (that is non-prime) numbers between 2 integers.
 int day23_2(std::string dataFile) {
     // CUSTOM LOCAL TYPES
-    struct set : incom::commons::PQA::_instrBase {};
-    struct sub : incom::commons::PQA::_instrBase {};
-    struct mul : incom::commons::PQA::_instrBase {};
-    struct jnz : incom::commons::PQA::_instrBase {};
+    struct set : incom::aoc::PQA::_instrBase {};
+    struct sub : incom::aoc::PQA::_instrBase {};
+    struct mul : incom::aoc::PQA::_instrBase {};
+    struct jnz : incom::aoc::PQA::_instrBase {};
 
     auto getWord_ctre = ctre::search<R"([[:^blank:]]+)">;
-    auto VofV         = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
+    auto VofV         = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
 
-    incom::commons::PQA::ProgramQuasiAssembly<set, sub, mul, jnz> theProgram(VofV);
+    incom::aoc::PQA::ProgramQuasiAssembly<set, sub, mul, jnz> theProgram(VofV);
     theProgram.mapping.at('a').get() = 1;
 
     // DATA AND LAMBDA PREP
-    auto overload_obj = overloaded{
+    auto overload_obj = incstd::variant_utils::Overloads{
         [&](const set &a) { a.source.get() = a.target; },
         [&](const sub &a) { a.source -= a.target; },
         [&](const mul &a) { a.source *= a.target; },

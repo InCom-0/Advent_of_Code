@@ -11,7 +11,7 @@ namespace AOC2025 {
 size_t
 day5_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFile(dataFile, d_ctre, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_ctre, d_ctre);
 
     std::vector<std::pair<size_t, size_t>> rngs;
     for (auto const &[a, b] : std::views::zip(input.at(0), input.at(1))) {
@@ -36,7 +36,7 @@ day5_1(std::string dataFile) {
 size_t
 day5_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFile(dataFile, d_ctre, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_ctre, d_ctre);
 
 
     std::vector<std::optional<std::pair<size_t, size_t>>> rngs;

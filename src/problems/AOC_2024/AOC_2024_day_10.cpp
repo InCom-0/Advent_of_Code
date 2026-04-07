@@ -5,11 +5,11 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 long long day10_1(std::string dataFile) {
     using namespace std::literals;
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     std::vector data(input.size(), std::vector(input.front().size(), INT_MIN));
 
@@ -18,7 +18,7 @@ long long day10_1(std::string dataFile) {
             std::from_chars(input[i].data() + j, input[i].data() + j + 1, data[i][j]);
         }
     }
-    using setOfPeaks = ankerl::unordered_dense::set<std::array<int, 2>, incc::XXH3Hasher>;
+    using setOfPeaks = ankerl::unordered_dense::set<std::array<int, 2>, incstd::hashing::XXH3Hasher>;
     std::vector resStorage(data.size(), std::vector(data.front().size(), std::optional<setOfPeaks>()));
 
     std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};
@@ -72,7 +72,7 @@ long long day10_1(std::string dataFile) {
 long long day10_2(std::string dataFile) {
     using namespace std::literals;
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     std::vector data(input.size(), std::vector(input.front().size(), INT_MIN));
 
@@ -81,7 +81,7 @@ long long day10_2(std::string dataFile) {
             std::from_chars(input[i].data() + j, input[i].data() + j + 1, data[i][j]);
         }
     }
-    // using setNumOfPeaks = ankerl::unordered_dense::set<int, incc::XXH3Hasher>;
+    // using setNumOfPeaks = ankerl::unordered_dense::set<int, incstd::hashing::XXH3Hasher>;
     std::vector resStorage(data.size(), std::vector(data.front().size(), std::optional<int>()));
 
     std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};

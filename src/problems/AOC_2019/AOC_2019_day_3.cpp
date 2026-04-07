@@ -49,7 +49,7 @@ long long day3_1(std::string dataFile) {
 
     // DATA PREP
     auto ctreNotComma = ctre::search<R"([^,]+)">;
-    auto input        = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, ctreNotComma);
+    auto input        = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, ctreNotComma);
     std::vector<std::vector<WireLine>> vOfV_wireLines;
 
     for (auto &oneWireInput : input) {
@@ -144,7 +144,7 @@ long long day3_2(std::string dataFile) {
 
     // DATA PREP
     auto ctreNotComma = ctre::search<R"([^,]+)">;
-    auto input        = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, ctreNotComma);
+    auto input        = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, ctreNotComma);
     std::vector<std::vector<WireLine>> vOfV_wireLines;
 
     for (auto &oneWireInput : input) {

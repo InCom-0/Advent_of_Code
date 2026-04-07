@@ -13,12 +13,12 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 long long day21_1(std::string dataFile) {
     auto any_ctre       = ctre::search<R"(.+)">;
     auto d_nonzero_ctre = ctre::search<R"([1-9]\d*)">;
-    auto input          = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
-    auto onlyDigits     = incc::parseInputUsingCTRE::processFile(dataFile, d_nonzero_ctre).front();
+    auto input          = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto onlyDigits     = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_nonzero_ctre).front();
 
     std::vector<long long> numericParts;
     for (auto const &od_line : onlyDigits) { numericParts.push_back(std::stoll(od_line)); }
@@ -146,8 +146,8 @@ long long day21_1(std::string dataFile) {
 long long day21_2(std::string dataFile) {
     auto any_ctre       = ctre::search<R"(.+)">;
     auto d_nonzero_ctre = ctre::search<R"([1-9]\d*)">;
-    auto input          = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
-    auto onlyDigits     = incc::parseInputUsingCTRE::processFile(dataFile, d_nonzero_ctre).front();
+    auto input          = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto onlyDigits     = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_nonzero_ctre).front();
 
     std::vector<long long> numericParts;
     for (auto const &od_line : onlyDigits) { numericParts.push_back(std::stoll(od_line)); }

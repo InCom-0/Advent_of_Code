@@ -6,7 +6,7 @@
 namespace AOC2015 {
 int day20_1(std::string dataFile) {
     int numberInput = std::stoi(
-        incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">).front().front());
+        incom::aoc::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">).front().front());
 
     int  n   = 1;
     auto lam = [](auto &input) {
@@ -27,7 +27,7 @@ int day20_1(std::string dataFile) {
 }
 int day20_2(std::string dataFile) {
     int numberInput = std::stoi(
-        incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">).front().front());
+        incom::aoc::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, ctre::search<R"(\d+)">).front().front());
 
     int  n   = 1;
     auto lam = [](auto &input) {

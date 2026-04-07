@@ -12,7 +12,7 @@ namespace AOC2019 {
 std::pair<std::pair<long long, long long>, long long> day10_0(std::string dataFile) {
 
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incom::commons::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     long long maxMapDimension = std::max(input.size(), input.front().size());
 
@@ -77,7 +77,7 @@ long long day10_2(std::string dataFile) {
     auto const laserLoc = day10_0(dataFile);
 
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incom::commons::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     long long maxMapDimension = std::max(input.size(), input.front().size());
 

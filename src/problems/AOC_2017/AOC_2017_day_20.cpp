@@ -19,7 +19,7 @@ unsigned long long day20_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(-?\d+)">;
 
     // DATA PREP
-    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto VofV = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<std::vector<coord>> data;
     for (auto &inputLine : VofV) {
@@ -50,7 +50,7 @@ unsigned long long day20_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(-?\d+)">;
 
     // DATA PREP
-    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto VofV = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<std::vector<coord>> data;
     for (auto &inputLine : VofV) {

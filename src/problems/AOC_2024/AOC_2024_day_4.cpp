@@ -7,14 +7,14 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 
 long long day4_1(std::string dataFile) {
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
     auto inpVert  = input;
 
-    incc::matrixRotateRight(inpVert);
+    incstd::matrix::matrixRotateRight(inpVert);
 
     auto createDiagonalRngs = [](std::vector<std::string> const &inp) {
         std::vector<std::string> res;
@@ -79,7 +79,7 @@ long long day4_1(std::string dataFile) {
 long long day4_2(std::string dataFile) {
 
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     for (auto &line : input) {
         line.push_back('_');
@@ -114,7 +114,7 @@ long long day4_2(std::string dataFile) {
 long long day4_3(std::string dataFile) {
 
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     auto sld = std::views::adjacent_transform<3>(input, [](auto const &a, auto const &b, auto const &c) {
         return std::views::zip(std::views::slide(a, 3), std::views::slide(b, 3), std::views::slide(c, 3));

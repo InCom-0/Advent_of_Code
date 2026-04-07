@@ -10,7 +10,7 @@
 
 
 namespace AOC2019 {
-namespace incc = incom::commons;
+
 
 struct DIS {};
 struct Cut {
@@ -27,7 +27,7 @@ long long day22_0(std::string dataFile, int128_t numOfCards, size_t cardToTrack,
                   bool reverseInstr = false) {
 
     auto d_ctre = ctre::search<R"(-?\w+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<Vari> seq_techniques;
 
@@ -48,7 +48,7 @@ long long day22_0(std::string dataFile, int128_t numOfCards, size_t cardToTrack,
         std::ranges::reverse(seq_techniques);
 
         auto exe_technique_rev = [&](size_t const &cursor) {
-            auto const OL_set = overloaded{[&](DIS const &a) { cardCurPos = (numOfCards - cardCurPos - 1); },
+            auto const OL_set = incstd::variant_utils::Overloads{[&](DIS const &a) { cardCurPos = (numOfCards - cardCurPos - 1); },
                                            [&](Cut const &a) {
                                                size_t loc_offset =
                                                    a.m_offset >= 0 ? a.m_offset : (numOfCards + a.m_offset);
@@ -70,7 +70,7 @@ long long day22_0(std::string dataFile, int128_t numOfCards, size_t cardToTrack,
 
     else {
         auto exe_technique = [&](size_t const &cursor) {
-            auto const OL_set = overloaded{[&](DIS const &a) { cardCurPos = (numOfCards - cardCurPos - 1); },
+            auto const OL_set = incstd::variant_utils::Overloads{[&](DIS const &a) { cardCurPos = (numOfCards - cardCurPos - 1); },
                                            [&](Cut const &a) {
                                                size_t loc_offset =
                                                    a.m_offset >= 0 ? a.m_offset : (numOfCards + a.m_offset);

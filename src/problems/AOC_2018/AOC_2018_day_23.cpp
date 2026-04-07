@@ -12,7 +12,7 @@ namespace AOC2018 {
 long long day23_1(std::string dataFile) {
 
     auto d_ctre = ctre::search<R"(-?\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<std::array<long long, 4>> data;
     for (auto &inpLine : input) {
@@ -47,7 +47,7 @@ long long day23_2(std::string dataFile) {
 
     // DATA PREP
     auto d_ctre = ctre::search<R"(-?\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<Bot> bots;
     for (auto &inpLine : input) {
@@ -108,7 +108,7 @@ long long day23_2(std::string dataFile) {
             edgeSz[i][1] = (box.tr_corner[i] - box.bl_corner[i]) - edgeSz[i][0];
         }
 
-        ankerl::unordered_dense::set<std::array<long long, 3>, incom::commons::XXH3Hasher> tempSet;
+        ankerl::unordered_dense::set<std::array<long long, 3>, incstd::hashing::XXH3Hasher> tempSet;
         int splitID = 0;
         
         for (int x = 0; x < 2; ++x) {

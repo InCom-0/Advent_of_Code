@@ -6,7 +6,7 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 
 size_t day24_1(std::string dataFile) {
 
@@ -41,9 +41,9 @@ size_t day24_1(std::string dataFile) {
     };
 
     auto w_ctre = ctre::search<R"(\w+)">;
-    auto input  = incc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
 
-    ankerl::unordered_dense::segmented_map<std::string, Gate, incc::XXH3Hasher> mapOfGates;
+    ankerl::unordered_dense::segmented_map<std::string, Gate, incstd::hashing::XXH3Hasher> mapOfGates;
 
     for (auto const &line : input) {
         if (line.size() == 2) {
@@ -96,10 +96,10 @@ std::string day24_2(std::string dataFile) {
     };
 
     auto w_ctre = ctre::search<R"(\w+)">;
-    auto input  = incc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
 
     // Map with stable references
-    ankerl::unordered_dense::segmented_map<std::string, Gate, incc::XXH3Hasher> mapOfGates;
+    ankerl::unordered_dense::segmented_map<std::string, Gate, incstd::hashing::XXH3Hasher> mapOfGates;
 
     // Put all the gates in the map
     for (auto const &line : input) {

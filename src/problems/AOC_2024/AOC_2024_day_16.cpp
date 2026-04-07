@@ -8,10 +8,10 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 long long day16_1(std::string dataFile) {
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     constexpr std::array<std::array<int, 2>, 4> dirs{-1, 0, 0, 1, 1, 0, 0, -1};
     std::pair<int, int>                         end;
@@ -23,8 +23,8 @@ long long day16_1(std::string dataFile) {
         unsigned int dir : 2 = 0;
     };
 
-    incc::doubleBuffer<std::vector<RoutePoint>> frontierBuf;
-    incc::doubleBuffer<std::vector<RoutePoint>> frontierBufAfterRot;
+    incstd::buffers::doubleBuffer<std::vector<RoutePoint>> frontierBuf;
+    incstd::buffers::doubleBuffer<std::vector<RoutePoint>> frontierBufAfterRot;
     for (size_t i = 0; i < input.size(); ++i) {
         for (size_t j = 0; j < input[i].size(); ++j) {
             if (input[i][j] == 'S') { frontierBuf.getCurrent().push_back({i, j, 0, 1}); }
@@ -82,7 +82,7 @@ long long day16_1(std::string dataFile) {
 
 long long day16_2(std::string dataFile) {
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     constexpr std::array<std::array<int, 2>, 4> dirs{-1, 0, 0, 1, 1, 0, 0, -1};
     std::pair<int, int>                         end;
@@ -94,8 +94,8 @@ long long day16_2(std::string dataFile) {
         unsigned int dir : 2 = 0;
     };
 
-    incc::doubleBuffer<std::vector<std::vector<RoutePoint>>> frontierBuf;
-    incc::doubleBuffer<std::vector<std::vector<RoutePoint>>> frontierBufAfterRot;
+    incstd::buffers::doubleBuffer<std::vector<std::vector<RoutePoint>>> frontierBuf;
+    incstd::buffers::doubleBuffer<std::vector<std::vector<RoutePoint>>> frontierBufAfterRot;
     std::vector<std::vector<RoutePoint>>                     potentialRes;
 
     for (size_t i = 0; i < input.size(); ++i) {
@@ -164,7 +164,7 @@ long long day16_2(std::string dataFile) {
         frontierBufAfterRot.swapBuffers();
     }
 
-    ankerl::unordered_dense::set<std::pair<size_t, size_t>, incc::XXH3Hasher> resSet;
+    ankerl::unordered_dense::set<std::pair<size_t, size_t>, incstd::hashing::XXH3Hasher> resSet;
     for (auto const &resVect : potentialRes) {
         for (auto const &resVectRP : resVect) { resSet.insert({resVectRP.posR, resVectRP.posC}); }
     }

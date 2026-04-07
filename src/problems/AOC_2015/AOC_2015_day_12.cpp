@@ -24,7 +24,7 @@ int day12_1(std::string dataFile) {
 
     int ans = 0;
     while (not q.empty()) {
-        std::visit(overloaded{[&](auto &a) {}, [&](double &a) { ans += a; },
+        std::visit(incstd::variant_utils::Overloads{[&](auto &a) {}, [&](double &a) { ans += a; },
                               [&](std::vector<glz::generic> &a) {
                                   for (auto &jsonItem : a) { q.push(&jsonItem); }
                               },
@@ -55,14 +55,14 @@ int day12_2(std::string dataFile) {
     int ans = 0;
 
     while (not q.empty()) {
-        std::visit(overloaded{[&](auto &a) {}, [&](double &a) { ans += a; },
+        std::visit(incstd::variant_utils::Overloads{[&](auto &a) {}, [&](double &a) { ans += a; },
                               [&](std::vector<glz::generic> &a) {
                                   for (auto &jsonItem : a) { q.push(&jsonItem); }
                               },
                               [&](std::map<std::string, glz::generic, std::less<>> &a) {
                                   bool enable = true;
                                   for (auto &[__, jsonItem] : a) {
-                                      std::visit(overloaded{[&](auto &it) {},
+                                      std::visit(incstd::variant_utils::Overloads{[&](auto &it) {},
                                                             [&](std::string &it) {
                                                                 if (it == "red") { enable = false; }
                                                             }},

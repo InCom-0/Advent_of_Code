@@ -11,7 +11,7 @@ std::pair<long long, long long> day20_1(std::string dataFile) {
 
     // DATA PREP
     auto any_ctre    = ctre::search<R"(.+)">;
-    auto inputString = incom::commons::parseInputUsingCTRE::processFile(dataFile, any_ctre).front().front();
+    auto inputString = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front().front();
 
     std::string                                  inp(inputString.begin(), --inputString.end());
     incom::omni::MD_ChunkVector<char, 2, '#', 8> os1;

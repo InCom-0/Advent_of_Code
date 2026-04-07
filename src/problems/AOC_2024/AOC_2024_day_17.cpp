@@ -5,7 +5,7 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 
 struct _instrBase_2024 {
     std::reference_wrapper<long long> source;
@@ -15,7 +15,7 @@ struct _instrBase_2024 {
 template <typename... instrT>
 requires(std::derived_from<instrT, _instrBase_2024> && ...)
 struct ProgramQuasiAssembly_LOC {
-    std::unordered_map<char, std::reference_wrapper<long long>, incom::commons::XXH3Hasher> mapping;
+    std::unordered_map<char, std::reference_wrapper<long long>, incstd::hashing::XXH3Hasher> mapping;
     size_t                                                                                  instructionID = 0;
     long long                                                                               fakeRegister  = LLONG_MIN;
     std::vector<long long>                                                                  registers;
@@ -35,14 +35,14 @@ struct ProgramQuasiAssembly_LOC {
         // Mapping a type 'by string' to the same type inside a std::variant instance;
         // TypeToString uses a very crude form of 'reflection'.
         // ENTIRELY POSSIBLE THAT THIS HACK IS NOT REALLY PORTABLE ... BEWARE.
-        std::unordered_map<std::string, std::variant<instrT...>, incom::commons::XXH3Hasher> instrTypeMap;
-        std::unordered_map<std::string, std::string, incom::commons::XXH3Hasher>             instrTypeRemap_bits2String;
-        (instrTypeMap.emplace(incc::PQA::TypeToString<instrT>(),
+        std::unordered_map<std::string, std::variant<instrT...>, incstd::hashing::XXH3Hasher> instrTypeMap;
+        std::unordered_map<std::string, std::string, incstd::hashing::XXH3Hasher>             instrTypeRemap_bits2String;
+        (instrTypeMap.emplace(incom::aoc::PQA::TypeToString<instrT>(),
                               std::variant<instrT...>{instrT{fakeRegister, fakeRegister}}),
          ...);
 
         int remapID = 0;
-        (instrTypeRemap_bits2String.emplace(std::to_string(remapID++), incc::PQA::TypeToString<instrT>()), ...);
+        (instrTypeRemap_bits2String.emplace(std::to_string(remapID++), incom::aoc::PQA::TypeToString<instrT>()), ...);
 
         registers.reserve(input.size() * 2); // Must NEVER reallocate.
 
@@ -132,7 +132,7 @@ struct cdv : _instrBase_2024 {
 };
 std::string day17_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     auto splt = std::views::chunk(input.back(), 2) | std::ranges::to<std::vector<std::vector<std::string>>>();
 
@@ -140,7 +140,7 @@ std::string day17_1(std::string dataFile) {
         splt, std::stoll(input[0].front()), std::stoll(input[1].front()), std::stoll(input[2].front()));
 
     std::string res          = "";
-    auto        overload_obj = overloaded{
+    auto        overload_obj = incstd::variant_utils::Overloads{
         [&](const adv &a) {
             pqa.registers[0] = static_cast<long long>(std::trunc(pqa.registers[0] / std::pow(2, a.source.get())));
         },
@@ -172,7 +172,7 @@ std::string day17_1(std::string dataFile) {
 
 long long day17_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     auto splt = std::views::chunk(input.back(), 2) | std::ranges::to<std::vector<std::vector<std::string>>>();
 
@@ -185,7 +185,7 @@ long long day17_2(std::string dataFile) {
     ProgramQuasiAssembly_LOC<adv, bxl, bst, jnz, bxc, out, bdv, cdv> pqa(
         splt, std::stoll(input[0].front()), std::stoll(input[1].front()), std::stoll(input[2].front()));
 
-    auto overload_obj = overloaded{
+    auto overload_obj = incstd::variant_utils::Overloads{
         [&](const adv &a) {
             pqa.registers[0] = static_cast<long long>(std::trunc(pqa.registers[0] / std::pow(2, a.source.get())));
         },

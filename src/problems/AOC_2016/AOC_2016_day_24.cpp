@@ -19,7 +19,7 @@ Creates a 'locations' vector as well for convenience.
 Using return parameters, because the alternative is some annoying tuple or a struct of complex types.
 */
 bool day24_0(std::string dataFile, std::vector<day_24_location_t> &locations,
-             std::unordered_map<std::pair<int, int>, int, incom::commons::XXH3Hasher> &shotestDistances) {
+             std::unordered_map<std::pair<int, int>, int, incstd::hashing::XXH3Hasher> &shotestDistances) {
     std::ifstream iStream;
     iStream.clear();
     iStream.open(dataFile);
@@ -122,7 +122,7 @@ bool day24_0(std::string dataFile, std::vector<day_24_location_t> &locations,
 int day24_1(std::string dataFile) {
 
     std::vector<day_24_location_t>                                        locations;
-    std::unordered_map<std::pair<int, int>, int, incom::commons::XXH3Hasher> shotestDistances;
+    std::unordered_map<std::pair<int, int>, int, incstd::hashing::XXH3Hasher> shotestDistances;
     day24_0(dataFile, locations, shotestDistances);
 
     std::vector<int> locIDs(locations.size(), 0);
@@ -143,7 +143,7 @@ int day24_1(std::string dataFile) {
 }
 int day24_2(std::string dataFile) {
     std::vector<day_24_location_t>                                        locations;
-    std::unordered_map<std::pair<int, int>, int, incom::commons::XXH3Hasher> shotestDistances;
+    std::unordered_map<std::pair<int, int>, int, incstd::hashing::XXH3Hasher> shotestDistances;
     day24_0(dataFile, locations, shotestDistances);
 
     std::vector<int> locIDs(locations.size() + 1, 0);

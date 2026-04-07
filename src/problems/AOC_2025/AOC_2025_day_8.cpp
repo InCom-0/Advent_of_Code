@@ -19,7 +19,7 @@ namespace AOC2025 {
 size_t
 day8_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<std::pair<size_t, std::vector<long long>>> data{};
     for (size_t id = 0; auto const &line : input) {
@@ -40,7 +40,7 @@ day8_1(std::string dataFile) {
 
     std::vector<Dist> pairDists;
 
-    for (auto const &[pA, pB] : incom::standard::views::combinations_k<2>(data)) {
+    for (auto const &[pA, pB] : incstd::views::combinations_k<2>(data)) {
         pairDists.push_back(
             Dist{pA.first, pB.first,
                  compute3dDistance(std::span<long long, 3>(pA.second), std::span<long long, 3>(pB.second))});
@@ -94,7 +94,7 @@ day8_1(std::string dataFile) {
 size_t
 day8_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<std::pair<size_t, std::vector<long long>>> data{};
     for (size_t id = 0; auto const &line : input) {
@@ -115,7 +115,7 @@ day8_2(std::string dataFile) {
 
     std::vector<Dist> pairDists;
 
-    for (auto const &[pA, pB] : incom::standard::views::combinations_k<2>(data)) {
+    for (auto const &[pA, pB] : incstd::views::combinations_k<2>(data)) {
         pairDists.push_back(
             Dist{pA.first, pB.first,
                  compute3dDistance(std::span<long long, 3>(pA.second), std::span<long long, 3>(pB.second))});

@@ -4,10 +4,10 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 long long day20_1(std::string dataFile) {
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
 
     for (auto &line : input) {
@@ -71,7 +71,7 @@ long long day20_1(std::string dataFile) {
 
 long long day20_2(std::string dataFile) {
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     std::pair<size_t, size_t> startPos;
     std::pair<size_t, size_t> endPos;

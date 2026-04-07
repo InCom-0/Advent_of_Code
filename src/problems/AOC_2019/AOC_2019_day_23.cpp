@@ -13,65 +13,65 @@
 
 
 namespace AOC2019 {
-namespace incc = incom::commons;
+
 long long
 day23_1(std::string dataFile) {
     // TYPE DEFS
-    struct add : incom::commons::PQA::_instrBase_INT {
+    struct add : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 3;
         }
     };
-    struct mul : incom::commons::PQA::_instrBase_INT {
+    struct mul : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 3;
         }
     };
-    struct end : incom::commons::PQA::_instrBase_INT {
+    struct end : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 0;
         }
     };
-    struct inp : incom::commons::PQA::_instrBase_INT {
+    struct inp : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 1;
         }
     };
-    struct out : incom::commons::PQA::_instrBase_INT {
+    struct out : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 1;
         }
     };
-    struct jit : incom::commons::PQA::_instrBase_INT {
+    struct jit : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 2;
         }
     };
-    struct jif : incom::commons::PQA::_instrBase_INT {
+    struct jif : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 2;
         }
     };
-    struct lth : incom::commons::PQA::_instrBase_INT {
+    struct lth : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 3;
         }
     };
-    struct eql : incom::commons::PQA::_instrBase_INT {
+    struct eql : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 3;
         }
     };
-    struct arb : incom::commons::PQA::_instrBase_INT {
+    struct arb : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 1;
@@ -79,7 +79,7 @@ day23_1(std::string dataFile) {
     };
 
     auto                   d_ctre = ctre::search<R"(-?\d+)">;
-    auto                   input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto                   input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
     std::vector<long long> data;
 
     for (auto &str : input.front()) { data.push_back(std::stoll(str)); }
@@ -87,7 +87,7 @@ day23_1(std::string dataFile) {
 
 
     std::vector programs(
-        50, incc::PQA::ProgramQuasiAssembly_INT<add, mul, end, inp, out, jit, jif, lth, eql, arb>(instrCodes, data));
+        50, incom::aoc::PQA::ProgramQuasiAssembly_INT<add, mul, end, inp, out, jit, jif, lth, eql, arb>(instrCodes, data));
 
     struct ProgramState {
         unsigned int outCycle = 0;
@@ -129,7 +129,7 @@ day23_1(std::string dataFile) {
 
     while (progStates.at(255).inpQueue.empty()) {
         for (size_t curProg = 0; curProg < programs.size(); ++curProg) {
-            auto instructions = overloaded{
+            auto instructions = incstd::variant_utils::Overloads{
                 [&](add &a) { a.m_refs[2].get() = a.m_refs[0] + a.m_refs[1]; },
                 [&](mul &a) { a.m_refs[2].get() = a.m_refs[0] * a.m_refs[1]; },
                 [&](end &a) { programs[curProg].m_cursor = LLONG_MIN; },
@@ -165,61 +165,61 @@ day23_1(std::string dataFile) {
 long long
 day23_2(std::string dataFile) {
     // TYPE DEFS
-    struct add : incom::commons::PQA::_instrBase_INT {
+    struct add : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 3;
         }
     };
-    struct mul : incom::commons::PQA::_instrBase_INT {
+    struct mul : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 3;
         }
     };
-    struct end : incom::commons::PQA::_instrBase_INT {
+    struct end : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 0;
         }
     };
-    struct inp : incom::commons::PQA::_instrBase_INT {
+    struct inp : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 1;
         }
     };
-    struct out : incom::commons::PQA::_instrBase_INT {
+    struct out : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 1;
         }
     };
-    struct jit : incom::commons::PQA::_instrBase_INT {
+    struct jit : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 2;
         }
     };
-    struct jif : incom::commons::PQA::_instrBase_INT {
+    struct jif : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 2;
         }
     };
-    struct lth : incom::commons::PQA::_instrBase_INT {
+    struct lth : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 3;
         }
     };
-    struct eql : incom::commons::PQA::_instrBase_INT {
+    struct eql : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 3;
         }
     };
-    struct arb : incom::commons::PQA::_instrBase_INT {
+    struct arb : incom::aoc::PQA::_instrBase_INT {
         constexpr long long
         get_numOfParams() override {
             return 1;
@@ -227,7 +227,7 @@ day23_2(std::string dataFile) {
     };
 
     auto                   d_ctre = ctre::search<R"(-?\d+)">;
-    auto                   input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto                   input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
     std::vector<long long> data;
 
     for (auto &str : input.front()) { data.push_back(std::stoll(str)); }
@@ -235,7 +235,7 @@ day23_2(std::string dataFile) {
 
 
     std::vector programs(
-        50, incc::PQA::ProgramQuasiAssembly_INT<add, mul, end, inp, out, jit, jif, lth, eql, arb>(instrCodes, data));
+        50, incom::aoc::PQA::ProgramQuasiAssembly_INT<add, mul, end, inp, out, jit, jif, lth, eql, arb>(instrCodes, data));
 
 
     std::optional<std::array<long long, 2>> NAT{std::nullopt};
@@ -297,7 +297,7 @@ day23_2(std::string dataFile) {
 
     while (true) {
         for (size_t curProg = 0; curProg < programs.size(); ++curProg) {
-            auto instructions = overloaded{
+            auto instructions = incstd::variant_utils::Overloads{
                 [&](add &a) { a.m_refs[2].get() = a.m_refs[0] + a.m_refs[1]; },
                 [&](mul &a) { a.m_refs[2].get() = a.m_refs[0] * a.m_refs[1]; },
                 [&](end &a) { programs[curProg].m_cursor = LLONG_MIN; },

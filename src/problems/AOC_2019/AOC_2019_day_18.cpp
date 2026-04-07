@@ -10,7 +10,7 @@
 namespace AOC2019 {
 long long day18_1(std::string dataFile) {
     auto                line_ctre = ctre::search<R"(.+)">;
-    auto                input     = incom::commons::parseInputUsingCTRE::processFile(dataFile, line_ctre).front();
+    auto                input     = incom::aoc::parseInputUsingCTRE::processFile(dataFile, line_ctre).front();
     std::pair<int, int> startLoc;
 
     std::vector<std::tuple<int, int, char>> keyLocations;
@@ -39,7 +39,7 @@ long long day18_1(std::string dataFile) {
     // Find all 'shortest' paths from each key to each other key
     for (int srcID = 0; srcID < keyLocations.size(); ++srcID) {
         auto                                                                            map2Explore = input;
-        incom::commons::doubleBuffer<std::queue<std::tuple<int, int, std::bitset<32>>>> buf_queues;
+        incstd::buffers::doubleBuffer<std::queue<std::tuple<int, int, std::bitset<32>>>> buf_queues;
 
         // Push source location to queue
         buf_queues.getNext().push({std::get<0>(keyLocations[srcID]), std::get<1>(keyLocations[srcID]),
@@ -94,8 +94,8 @@ long long day18_1(std::string dataFile) {
         }
     }
 
-    incom::commons::doubleBuffer<
-        ankerl::unordered_dense::map<std::pair<size_t, unsigned long>, size_t, incom::commons::XXH3Hasher>>
+    incstd::buffers::doubleBuffer<
+        ankerl::unordered_dense::map<std::pair<size_t, unsigned long>, size_t, incstd::hashing::XXH3Hasher>>
         buf_maps;
 
     std::bitset<32> thisBS;
@@ -131,7 +131,7 @@ long long day18_1(std::string dataFile) {
 
 long long day18_2(std::string dataFile) {
     auto                line_ctre = ctre::search<R"(.+)">;
-    auto                input     = incom::commons::parseInputUsingCTRE::processFile(dataFile, line_ctre).front();
+    auto                input     = incom::aoc::parseInputUsingCTRE::processFile(dataFile, line_ctre).front();
     std::pair<int, int> startLoc;
 
     std::vector<std::tuple<int, int, char>> keyLocations;
@@ -174,7 +174,7 @@ long long day18_2(std::string dataFile) {
     // Find all 'shortest' paths from each key to each other key
     for (int srcID = 0; srcID < keyLocations.size(); ++srcID) {
         auto                                                                            map2Explore = input;
-        incom::commons::doubleBuffer<std::queue<std::tuple<int, int, std::bitset<32>>>> buf_queues;
+        incstd::buffers::doubleBuffer<std::queue<std::tuple<int, int, std::bitset<32>>>> buf_queues;
 
         // Push source location to queue
         buf_queues.getNext().push({std::get<0>(keyLocations[srcID]), std::get<1>(keyLocations[srcID]),
@@ -232,8 +232,8 @@ long long day18_2(std::string dataFile) {
         }
     }
 
-    incom::commons::doubleBuffer<ankerl::unordered_dense::map<std::pair<std::array<size_t, 4>, unsigned long>, size_t,
-                                                              incom::commons::XXH3Hasher>>
+    incstd::buffers::doubleBuffer<ankerl::unordered_dense::map<std::pair<std::array<size_t, 4>, unsigned long>, size_t,
+                                                              incstd::hashing::XXH3Hasher>>
         buf_maps;
 
     std::bitset<32> thisBS;

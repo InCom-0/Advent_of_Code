@@ -9,7 +9,7 @@
 namespace AOC2018 {
 unsigned long long day9_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto VofS   = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front();
+    auto VofS   = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front();
 
     unsigned long players    = std::stoul(VofS.front());
     unsigned long lastMarble = std::stoul(VofS.back());

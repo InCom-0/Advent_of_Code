@@ -14,7 +14,7 @@ int day4_1(std::string dataFile) {
     auto dateTime_ctre = ctre::search<R"([^\[]+(?=\]))">;
     auto lastWord_ctre = ctre::search<R"(\w+)">;
 
-    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, dateTime_ctre, lastWord_ctre, lastWord_ctre);
+    auto VofV = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, dateTime_ctre, lastWord_ctre, lastWord_ctre);
 
     std::chrono::system_clock::time_point                              tm1;
     std::vector<std::pair<std::chrono::system_clock::time_point, int>> data;
@@ -88,7 +88,7 @@ int day4_2(std::string dataFile) {
     auto dateTime_ctre = ctre::search<R"([^\[]+(?=\]))">;
     auto lastWord_ctre = ctre::search<R"(\w+)">;
 
-    auto VofV = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, dateTime_ctre, lastWord_ctre, lastWord_ctre);
+    auto VofV = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, dateTime_ctre, lastWord_ctre, lastWord_ctre);
 
     std::chrono::system_clock::time_point                              tm1;
     std::vector<std::pair<std::chrono::system_clock::time_point, int>> data;

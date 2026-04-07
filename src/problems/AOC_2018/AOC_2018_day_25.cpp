@@ -16,7 +16,7 @@ namespace AOC2018 {
 long long day25_1(std::string dataFile) {
 
     auto d_ctre = ctre::search<R"(-?\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     // DATA PREP
     std::vector<std::vector<int>> coords;

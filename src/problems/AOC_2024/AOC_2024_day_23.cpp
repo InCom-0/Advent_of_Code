@@ -6,13 +6,13 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 long long day23_1(std::string dataFile) {
     auto w_ctre = ctre::search<R"(\w+)">;
-    auto input  = incc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
 
-    ankerl::unordered_dense::set<std::string, incc::XXH3Hasher>         uniqued;
-    ankerl::unordered_dense::map<std::string, size_t, incc::XXH3Hasher> mpOfIDs;
+    ankerl::unordered_dense::set<std::string, incstd::hashing::XXH3Hasher>         uniqued;
+    ankerl::unordered_dense::map<std::string, size_t, incstd::hashing::XXH3Hasher> mpOfIDs;
 
 
     for (auto const &line : input) {
@@ -27,7 +27,7 @@ long long day23_1(std::string dataFile) {
         links.at(mpOfIDs.at(line.back())).at(mpOfIDs.at(line.front())) = bit::bit1;
     }
 
-    ankerl::unordered_dense::set<std::vector<size_t>, incc::XXH3Hasher> uniqueThrees;
+    ankerl::unordered_dense::set<std::vector<size_t>, incstd::hashing::XXH3Hasher> uniqueThrees;
 
     for (size_t startID = 0; startID < links.size(); ++startID) {
         for (size_t midID = startID + 1; midID < links.size(); ++midID) {
@@ -61,10 +61,10 @@ long long day23_1(std::string dataFile) {
 
 std::string day23_2(std::string dataFile) {
     auto w_ctre = ctre::search<R"(\w+)">;
-    auto input  = incc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
 
-    ankerl::unordered_dense::set<std::string, incc::XXH3Hasher>         uniqued;
-    ankerl::unordered_dense::map<std::string, size_t, incc::XXH3Hasher> mpOfIDs;
+    ankerl::unordered_dense::set<std::string, incstd::hashing::XXH3Hasher>         uniqued;
+    ankerl::unordered_dense::map<std::string, size_t, incstd::hashing::XXH3Hasher> mpOfIDs;
 
 
     for (auto const &line : input) {

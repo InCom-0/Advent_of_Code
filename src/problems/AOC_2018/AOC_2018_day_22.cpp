@@ -11,7 +11,7 @@ long long day22_1(std::string dataFile) {
 
     auto d_ctre = ctre::search<R"(\d+)">;
 
-    auto input = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     long long depth = std::stoll(input.front().front());
 
@@ -89,7 +89,7 @@ long long day22_2(std::string dataFile) {
 
     // DATA PREP
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     long long                                    depth      = std::stoll(input.front().front());
     long long                                    eroModulo  = 20183;
@@ -114,7 +114,7 @@ long long day22_2(std::string dataFile) {
     auto cmp = [](auto &&a, auto &&b) { return a.second.back() > b.second.back(); };
 
     std::priority_queue<std::pair<KT, KT>, std::vector<std::pair<KT, KT>>, decltype(cmp)> roomsBeingEvaluated;
-    ankerl::unordered_dense::set<std::pair<KT, int>, incom::commons::XXH3Hasher>          seen;
+    ankerl::unordered_dense::set<std::pair<KT, int>, incstd::hashing::XXH3Hasher>          seen;
 
     roomsBeingEvaluated.push({entranceLoc, {0, 0}});
 

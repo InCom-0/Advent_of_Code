@@ -113,7 +113,7 @@ std::vector<int> day23_1(std::string dataFile, int regA, int regB, int regC, int
     int togleInstrID = 0;
     int curInstrID   = 0;
 
-    auto toggleOverload = overloaded{
+    auto toggleOverload = incstd::variant_utils::Overloads{
         [&](const cpy &a) {
             instrVect[togleInstrID] = jnzCondOffsetTarget{a.valInput_1, a.valInput_2, a.source, a.target};
         },
@@ -137,7 +137,7 @@ std::vector<int> day23_1(std::string dataFile, int regA, int regB, int regC, int
 
     while (curInstrID < instrVect.size()) {
         std::visit(
-            overloaded{
+            incstd::variant_utils::Overloads{
                 [&](const cpy &a) {
                     *a.target = *a.source;
                     curInstrID++;

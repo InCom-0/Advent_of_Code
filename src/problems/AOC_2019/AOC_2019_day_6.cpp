@@ -25,9 +25,9 @@ long long day6_1(std::string dataFile) {
     };
 
     auto w_ctre = ctre::search<R"(\w+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
 
-    ankerl::unordered_dense::segmented_map<std::string, SpaceObj, incom::commons::XXH3Hasher> so_map;
+    ankerl::unordered_dense::segmented_map<std::string, SpaceObj, incstd::hashing::XXH3Hasher> so_map;
 
     for (auto &line : input) {
         for (auto &strInLine : line) { so_map.emplace(strInLine, SpaceObj{strInLine}); }
@@ -48,9 +48,9 @@ long long day6_2(std::string dataFile) {
     };
 
     auto w_ctre = ctre::search<R"(\w+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
 
-    ankerl::unordered_dense::segmented_map<std::string, SpaceObj, incom::commons::XXH3Hasher> so_map;
+    ankerl::unordered_dense::segmented_map<std::string, SpaceObj, incstd::hashing::XXH3Hasher> so_map;
 
     for (auto &line : input) {
         for (auto &strInLine : line) { so_map.emplace(strInLine, SpaceObj{}); }

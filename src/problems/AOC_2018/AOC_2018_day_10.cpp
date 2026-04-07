@@ -17,7 +17,7 @@ int day10_1(std::string dataFile) {
     };
 
     auto d_ctre = ctre::search<R"(-?\d+)">;
-    auto VofV   = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto VofV   = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     // DATA PREP
     std::vector<SimplePair> positions;

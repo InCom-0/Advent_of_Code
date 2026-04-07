@@ -77,7 +77,7 @@ private:
         // direction. For 2 dimensions with c_blockSize 16 => (2^2=4)*(16^2) = 1'024. For 3 dimensions with c_blockSize
         // 16 => (2^3=8)*(16^3) = 32'768. Beware of dimensionality !!!
         _OV() {
-            if constexpr (incom::concepts::SpecializationOf<T, _OV>) {
+            if constexpr (incstd::concepts::is_specialization_of<T, _OV>) {
                 m_posVect = std::vector<T>(c_blockSize, T());
                 m_negVect = std::vector<T>(c_blockSize, T());
             }
@@ -116,7 +116,7 @@ private:
         consteval static size_t get_depthFromTop() { return c_numOfDimensions; }
 
         consteval static size_t get_depth() {
-            if constexpr (incom::concepts::SpecializationOf<T, _OV>) { return T::get_depth() + 1; }
+            if constexpr (incstd::concepts::is_specialization_of<T, _OV>) { return T::get_depth() + 1; }
             else { return 1; }
         }
 
@@ -148,7 +148,7 @@ private:
             // This must be done, because one can only call 'expand_atSignedLvl' when T is a specialization of
             // Omni_Vector
 
-            if constexpr (incom::concepts::SpecializationOf<T, _OV>) {
+            if constexpr (incstd::concepts::is_specialization_of<T, _OV>) {
                 if (std::abs(signedLvlToExpand) != 1) {
                     // The whole 'block size' number of elements in which idx_onThisLevel lies needs to be called with
                     // 'expand_atSignedLvl'
@@ -223,7 +223,7 @@ private:
                 get_depth() == (sizeof...(ids) + 1),
                 "Incorrect argument passing to findDepthOfFirstInvalid ... size of pack doesn't match getDepth()");
 
-            if constexpr (incom::concepts::SpecializationOf<T, _OV>) {
+            if constexpr (incstd::concepts::is_specialization_of<T, _OV>) {
                 if (test_idIsValid(first_id)) {
                     return 1 + (*this)[std::forward<decltype(first_id)>(first_id)]._find_DepthOfFirstInvalid(
                                    std::forward<decltype(ids)>(ids)...);
@@ -299,7 +299,7 @@ public:
 
  */
 template <typename Data_T, size_t c_numOfDimensions = 1, Data_T c_defaultValue = Data_T(), size_t c_blockSize = 4>
-requires std::is_trivially_copyable_v<Data_T> && incom::concepts::isPowerOf2<c_blockSize>
+requires std::is_trivially_copyable_v<Data_T> && incstd::concepts::is_power_of2<c_blockSize>
 class MD_ChunkVector {
 public:
     using Key_Type = typename std::array<long long, c_numOfDimensions>;
@@ -339,11 +339,11 @@ private:
     static constexpr const auto c_IDs_sequence = std::make_integer_sequence<size_t, c_numOfDimensions>{};
 
     static constexpr const auto c_X_repeat_blockSize =
-        (typename incom::concepts::c_gen_X_repeat_sequence<c_numOfDimensions, c_blockSize>::type){};
+        (typename incstd::typegen::c_gen_X_repeat_sequence<c_numOfDimensions, c_blockSize>::type){};
     static constexpr const auto c_X_repeat_three =
-        (typename incom::concepts::c_gen_X_repeat_sequence<c_numOfDimensions, 3LL>::type){};
+        (typename incstd::typegen::c_gen_X_repeat_sequence<c_numOfDimensions, 3LL>::type){};
     static constexpr const auto c_X_repeat_LLONG_MIN =
-        (typename incom::concepts::c_gen_X_repeat_sequence<c_numOfDimensions, LLONG_MIN>::type){};
+        (typename incstd::typegen::c_gen_X_repeat_sequence<c_numOfDimensions, LLONG_MIN>::type){};
 
     static constexpr const long long c_blockSize_long       = c_blockSize;
     static constexpr const size_t    c_blockOfChunksCount   = _c_detail_get_variadicPower(c_X_repeat_three);
@@ -371,7 +371,7 @@ private:
     std::reference_wrapper<_Chunk> m_selChunk = fake_chunk;
 
     // Map of all _Chunks keyed with 'bottom left corner' array of indices (Key_Type)
-    ankerl::unordered_dense::segmented_map<Key_Type, _Chunk, incom::commons::XXH3Hasher> mp;
+    ankerl::unordered_dense::segmented_map<Key_Type, _Chunk, incstd::hashing::XXH3Hasher> mp;
 
 
     // CHUNK NESTED TYPE DEFINITION

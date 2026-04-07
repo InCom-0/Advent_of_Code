@@ -24,7 +24,7 @@ int day15_1(std::string dataFile) {
     };
 
     auto all_ctre = ctre::search<R"(.+)">;
-    auto map      = incom::commons::parseInputUsingCTRE::processFile(dataFile, all_ctre).front();
+    auto map      = incom::aoc::parseInputUsingCTRE::processFile(dataFile, all_ctre).front();
 
     std::vector<Pawn>                         goblins;
     std::vector<Pawn>                         elves;
@@ -216,7 +216,7 @@ int day15_2(std::string dataFile) {
     };
 
     auto all_ctre = ctre::search<R"(.+)">;
-    auto mapOrig  = incom::commons::parseInputUsingCTRE::processFile(dataFile, all_ctre).front();
+    auto mapOrig  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, all_ctre).front();
     auto map      = mapOrig;
 
     std::vector<Pawn>                         goblins;

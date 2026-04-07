@@ -23,7 +23,7 @@ long long day12_1(std::string dataFile) {
 
     auto d_ctre = ctre::search<R"(-?\d+)">;
 
-    auto input = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<Vec3> positions;
 
@@ -77,7 +77,7 @@ long long day12_1(std::string dataFile) {
 long long day12_2(std::string dataFile) {
 
     auto d_ctre = ctre::search<R"(-?\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     // VofV, top level vector is the dimensions, bottom level are the positions of individual moons on that dimension
     std::vector positions(3, std::vector<long long>());

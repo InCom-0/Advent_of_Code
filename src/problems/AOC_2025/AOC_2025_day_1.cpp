@@ -12,7 +12,7 @@ long long
 day1_1(std::string dataFile) {
     auto oneLet_ctre = ctre::search<R"(\D)">;
     auto d_ctre      = ctre::search<R"(\d+)">;
-    auto input       = incom::commons::parseInputUsingCTRE::processFile(dataFile, oneLet_ctre, d_ctre);
+    auto input       = incom::aoc::parseInputUsingCTRE::processFile(dataFile, oneLet_ctre, d_ctre);
 
     int       cur      = 50;
     size_t    resCount = 0;
@@ -32,7 +32,7 @@ long long
 day1_2(std::string dataFile) {
     auto oneLet_ctre = ctre::search<R"(\D)">;
     auto d_ctre      = ctre::search<R"(\d+)">;
-    auto input       = incom::commons::parseInputUsingCTRE::processFile(dataFile, oneLet_ctre, d_ctre);
+    auto input       = incom::aoc::parseInputUsingCTRE::processFile(dataFile, oneLet_ctre, d_ctre);
 
     int       cur      = 50;
     size_t    resCount = 0;

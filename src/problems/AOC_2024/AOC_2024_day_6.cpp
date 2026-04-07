@@ -6,12 +6,12 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 long long day6_1(std::string dataFile) {
 
     using namespace std::literals;
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     constexpr std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};
 
@@ -51,7 +51,7 @@ long long day6_1(std::string dataFile) {
 long long day6_2(std::string dataFile) {
     using namespace std::literals;
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     constexpr std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};
     using LOC = std::array<int, 2>;
@@ -79,7 +79,7 @@ long long day6_2(std::string dataFile) {
         return (row >= 0 && row < input.size() && col >= 0 && col < input.front().size());
     };
 
-    ankerl::unordered_dense::set<std::pair<LOC, unsigned int>, incom::commons::XXH3Hasher> visited;
+    ankerl::unordered_dense::set<std::pair<LOC, unsigned int>, incstd::hashing::XXH3Hasher> visited;
 
     auto traceBack = [&]() -> bool {
         // Make local copies of relevant data

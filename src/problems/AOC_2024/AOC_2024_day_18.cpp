@@ -5,10 +5,10 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 long long day18_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     // Get a more reasonable input structure for the 'falling bytes'
     std::vector<std::pair<int, int>> fallingBytes;
@@ -31,7 +31,7 @@ long long day18_1(std::string dataFile) {
     // Let the first 1024 bytes 'fall' on the map
     for (int i = 0; i < 1024; i++) { map[fallingBytes[i].first][fallingBytes[i].second] = '#'; }
 
-    incc::doubleBuffer<std::vector<std::pair<int, int>>> nodesToExplore;
+    incstd::buffers::doubleBuffer<std::vector<std::pair<int, int>>> nodesToExplore;
     nodesToExplore.getCurrent().push_back({1, 1});
 
     constexpr std::array<std::array<int, 2>, 4> dirs{-1, 0, 0, 1, 1, 0, 0, -1};
@@ -57,7 +57,7 @@ long long day18_1(std::string dataFile) {
 
 std::string day18_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     // Get a more reasonable input structure for the 'falling bytes'
     std::vector<std::pair<int, int>> fallingBytes;
@@ -82,7 +82,7 @@ std::string day18_2(std::string dataFile) {
     // Let the first 1024 bytes 'fall' on the map
     for (int i = 0; i < 1024; i++) { map[fallingBytes[i].first][fallingBytes[i].second] = '#'; }
 
-    incc::doubleBuffer<std::vector<std::pair<int, int>>> nodesToExplore;
+    incstd::buffers::doubleBuffer<std::vector<std::pair<int, int>>> nodesToExplore;
     constexpr std::array<std::array<int, 2>, 4>          dirs{-1, 0, 0, 1, 1, 0, 0, -1};
     std::vector stepsFromStartMap(map.size(), std::vector(map.front().size(), LLONG_MIN));
 

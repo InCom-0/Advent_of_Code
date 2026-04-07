@@ -9,7 +9,7 @@ long long day4_1(std::string dataFile) {
 
     auto const d_ctre = ctre::search<R"(\d+)">;
 
-    auto const str_input = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto const str_input = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::string const str_start = str_input.front().front();
     std::string const str_end   = str_input.front().back();
@@ -52,7 +52,7 @@ long long day4_2(std::string dataFile) {
 
     auto const d_ctre = ctre::search<R"(\d+)">;
 
-    auto const str_input = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto const str_input = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::string const str_start = str_input.front().front();
     std::string const str_end   = str_input.front().back();

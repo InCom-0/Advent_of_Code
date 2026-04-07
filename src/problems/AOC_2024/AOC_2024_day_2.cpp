@@ -10,7 +10,7 @@
 namespace AOC2024 {
 long long day2_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector data(input.size(), std::vector<int>());
     for (int i = 0; auto const &line : input) {
@@ -35,7 +35,7 @@ long long day2_1(std::string dataFile) {
 
 long long day2_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector data(input.size(), std::vector<int>());
     for (int i = 0; auto const &line : input) {

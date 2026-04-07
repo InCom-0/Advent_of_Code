@@ -15,23 +15,23 @@ It is probably also more efficient as virtually all of the data is stored in 1 v
 */
 long long day18_1(std::string dataFile) {
     // CUSTOM LOCAL TYPES DEFINITIONS
-    struct snd : incom::commons::PQA::_instrBase {};
-    struct set : incom::commons::PQA::_instrBase {};
-    struct add : incom::commons::PQA::_instrBase {};
-    struct mul : incom::commons::PQA::_instrBase {};
-    struct mod : incom::commons::PQA::_instrBase {};
-    struct rcv : incom::commons::PQA::_instrBase {};
-    struct jgz : incom::commons::PQA::_instrBase {};
+    struct snd : incom::aoc::PQA::_instrBase {};
+    struct set : incom::aoc::PQA::_instrBase {};
+    struct add : incom::aoc::PQA::_instrBase {};
+    struct mul : incom::aoc::PQA::_instrBase {};
+    struct mod : incom::aoc::PQA::_instrBase {};
+    struct rcv : incom::aoc::PQA::_instrBase {};
+    struct jgz : incom::aoc::PQA::_instrBase {};
 
     auto getWord_ctre = ctre::search<R"([[:^blank:]]+)">;
-    auto VofV         = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
+    auto VofV         = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
 
     // DATA PREP
-    incom::commons::PQA::ProgramQuasiAssembly<snd, set, add, mul, mod, rcv, jgz> theProgram(VofV, 0);
+    incom::aoc::PQA::ProgramQuasiAssembly<snd, set, add, mul, mod, rcv, jgz> theProgram(VofV, 0);
 
     // LAMBDA DEFINITIONS
     long long lastSoundPlayed = LLONG_MIN;
-    auto      overload_obj    = overloaded{
+    auto      overload_obj    = incstd::variant_utils::Overloads{
         [&](const snd &a) { lastSoundPlayed = a.source.get(); },
         [&](const set &a) { a.source.get() = a.target; },
         [&](const add &a) { a.source += a.target; },
@@ -53,19 +53,19 @@ long long day18_1(std::string dataFile) {
 
 long long day18_2(std::string dataFile, int numOfPrograms) {
     // CUSTOM LOCAL TYPES DEFINITIONS
-    struct snd : incom::commons::PQA::_instrBase {};
-    struct set : incom::commons::PQA::_instrBase {};
-    struct add : incom::commons::PQA::_instrBase {};
-    struct mul : incom::commons::PQA::_instrBase {};
-    struct mod : incom::commons::PQA::_instrBase {};
-    struct rcv : incom::commons::PQA::_instrBase {};
-    struct jgz : incom::commons::PQA::_instrBase {};
+    struct snd : incom::aoc::PQA::_instrBase {};
+    struct set : incom::aoc::PQA::_instrBase {};
+    struct add : incom::aoc::PQA::_instrBase {};
+    struct mul : incom::aoc::PQA::_instrBase {};
+    struct mod : incom::aoc::PQA::_instrBase {};
+    struct rcv : incom::aoc::PQA::_instrBase {};
+    struct jgz : incom::aoc::PQA::_instrBase {};
 
     auto getWord_ctre = ctre::search<R"([[:^blank:]]+)">;
-    auto VofV         = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
+    auto VofV         = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, getWord_ctre);
 
     // DATA AND LAMBDA PREP
-    std::vector<incom::commons::PQA::ProgramQuasiAssembly<snd, set, add, mul, mod, rcv, jgz>> programs;
+    std::vector<incom::aoc::PQA::ProgramQuasiAssembly<snd, set, add, mul, mod, rcv, jgz>> programs;
     for (int i = 0; i < numOfPrograms; ++i) { programs.emplace_back(VofV, i); }
 
     std::vector<unsigned short>        switch_Xs(numOfPrograms, false);
@@ -75,7 +75,7 @@ long long day18_2(std::string dataFile, int numOfPrograms) {
     int  progID        = 0;
     bool queuesChanged = true;
     
-    auto overload_obj  = overloaded{
+    auto overload_obj  = incstd::variant_utils::Overloads{
         // If the 'snd' instruction specified ID of where to send the data, it would be possible to use arbitrary num of
         // programs. In this case ... it is just switching to 'the other one' 0 or 1;
         [&](const snd &a) {

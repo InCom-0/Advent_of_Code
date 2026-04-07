@@ -14,11 +14,11 @@ long long day16_1(std::string dataFile, size_t num_phases) {
     std::vector<short> basePattern = {0, 1, 0, -1};
 
     auto               d_ctre = ctre::search<R"(\d+)">;
-    auto               input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front();
+    auto               input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front();
     std::vector<short> data;
     for (auto &chr : input) { data.push_back(chr - 48); }
 
-    incom::commons::doubleBuffer<std::vector<short>> buf(data);
+    incstd::buffers::doubleBuffer<std::vector<short>> buf(data);
     buf.getNext().clear();
 
     int const bpOrigSize   = basePattern.size();
@@ -60,7 +60,7 @@ long long day16_2(std::string dataFile, size_t num_phases) {
     std::vector<short> basePattern = {0, 1, 0, -1};
 
     auto               d_ctre = ctre::search<R"(\d+)">;
-    auto               input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front();
+    auto               input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre).front().front();
     std::vector<short> data;
 
     size_t const offset = std::stoul(input.substr(0, 7));

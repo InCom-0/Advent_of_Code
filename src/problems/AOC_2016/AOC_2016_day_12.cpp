@@ -93,7 +93,7 @@ std::vector<int> day12_1(std::string dataFile, int regA, int regB, int regC, int
     int curInstrID = 0;
     while (curInstrID < instrVect.size()) {
         std::visit(
-            overloaded{
+            incstd::variant_utils::Overloads{
                 [&](const cpy &a) {
                     *a.target = *a.source;
                     curInstrID++;

@@ -87,7 +87,7 @@ std::vector<std::vector<int>> day8_2(std::string &&dataFile) {
     }
 
     for (auto &oneAction : actionsToTake) {
-        std::visit(overloaded{
+        std::visit(incstd::variant_utils::Overloads{
                        [&](Rect &a) -> void { display1.turnTLrectON(a.first, a.last); },
                        [&](RotR &a) -> void { display1.shiftRowBy(a.first, a.last); },
                        [&](RotC &a) -> void { display1.shiftColBy(a.first, a.last); },

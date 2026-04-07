@@ -6,10 +6,10 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 long long day14_1(std::string dataFile, size_t cyclesToSimulate) {
     auto d_ctre = ctre::search<R"(-?\d+)">;
-    auto input  = incc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre, d_ctre, d_ctre, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre, d_ctre, d_ctre, d_ctre);
 
     constexpr long long Xsize = 101;
     constexpr long long Ysize = 103;
@@ -52,7 +52,7 @@ long long day14_1(std::string dataFile, size_t cyclesToSimulate) {
 
 long long day14_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(-?\d+)">;
-    auto input  = incc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre, d_ctre, d_ctre, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre, d_ctre, d_ctre, d_ctre);
 
     constexpr long long Xsize = 101;
     constexpr long long Ysize = 103;

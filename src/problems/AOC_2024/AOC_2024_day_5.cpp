@@ -7,12 +7,12 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 
 long long day5_1(std::string dataFile) {
     using namespace std::literals;
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     auto firstPO = std::ranges::find_if(input, [](auto const &line) { return line.size() > 10; });
     std::vector<std::string> const rules(input.begin(), firstPO);
@@ -31,8 +31,8 @@ long long day5_1(std::string dataFile) {
         return std::vector<int>(splt.begin(), splt.end());
     });
 
-    ankerl::unordered_dense::set<int, incc::XXH3Hasher>                   inCur;
-    ankerl::unordered_dense::map<int, std::vector<int>, incc::XXH3Hasher> mustBeAfterKey;
+    ankerl::unordered_dense::set<int, incstd::hashing::XXH3Hasher>                   inCur;
+    ankerl::unordered_dense::map<int, std::vector<int>, incstd::hashing::XXH3Hasher> mustBeAfterKey;
 
     for (auto const &rule : rulesParsed) {
         mustBeAfterKey.insert({rule.front(), std::vector<int>()});
@@ -57,7 +57,7 @@ long long day5_1(std::string dataFile) {
 long long day5_2(std::string dataFile) {
     using namespace std::literals;
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     auto firstPO = std::ranges::find_if(input, [](auto const &line) { return line.size() > 10; });
     std::vector<std::string> const rules(input.begin(), firstPO);
@@ -76,8 +76,8 @@ long long day5_2(std::string dataFile) {
         return std::vector<int>(splt.begin(), splt.end());
     });
 
-    ankerl::unordered_dense::set<int, incc::XXH3Hasher>                   inCur;
-    ankerl::unordered_dense::map<int, std::vector<int>, incc::XXH3Hasher> mustBeAfterKey;
+    ankerl::unordered_dense::set<int, incstd::hashing::XXH3Hasher>                   inCur;
+    ankerl::unordered_dense::map<int, std::vector<int>, incstd::hashing::XXH3Hasher> mustBeAfterKey;
 
     for (auto const &rule : rulesParsed) {
         mustBeAfterKey.insert({rule.front(), std::vector<int>()});

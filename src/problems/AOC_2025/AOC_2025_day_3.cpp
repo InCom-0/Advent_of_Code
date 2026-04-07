@@ -10,7 +10,7 @@ namespace AOC2025 {
 size_t
 day3_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
+    auto input  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
 
     size_t accu = 0uz;
     for (auto const &line : input) {
@@ -34,7 +34,7 @@ size_t
 day3_2(std::string dataFile) {
 
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
+    auto input  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
 
     size_t accu = 0uz;
     for (auto const &line : input) {

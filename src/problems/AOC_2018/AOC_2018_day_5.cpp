@@ -9,7 +9,7 @@ namespace AOC2018 {
 int day5_1(std::string dataFile) {
     auto all_ctre = ctre::search<R"(.+)">;
     auto line =
-        std::move(incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, all_ctre).front().front());
+        std::move(incom::aoc::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, all_ctre).front().front());
 
     auto toBeDeleted = [](char &first, char &second) -> bool {
         if ((first - 32) == second) { return true; }
@@ -33,7 +33,7 @@ int day5_1(std::string dataFile) {
 int day5_2(std::string dataFile) {
     auto all_ctre = ctre::search<R"(.+)">;
     auto line =
-        std::move(incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, all_ctre).front().front());
+        std::move(incom::aoc::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, all_ctre).front().front());
 
     auto toBeDeleted = [](char &first, char &second) -> bool {
         if ((first - 32) == second) { return true; }

@@ -8,11 +8,11 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 long long day12_1(std::string dataFile) {
 
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     auto boundsCheck = [&](size_t const &row, size_t const &col) -> bool {
         return (row >= 0 && row < input.size() && col >= 0 && col < input[row].size());
@@ -20,7 +20,7 @@ long long day12_1(std::string dataFile) {
     constexpr std::array<std::array<int, 2>, 4> dirs{-1, 0, 0, 1, 1, 0, 0, -1};
 
 
-    ankerl::unordered_dense::map<size_t, std::pair<size_t, size_t>, incc::XXH3Hasher> regionData;
+    ankerl::unordered_dense::map<size_t, std::pair<size_t, size_t>, incstd::hashing::XXH3Hasher> regionData;
     std::vector dp(input.size(), std::vector(input.front().size(), std::optional<size_t>()));
 
     auto solve = [&, ID = 0uz](size_t row, size_t col) mutable -> bool {
@@ -62,14 +62,14 @@ long long day12_1(std::string dataFile) {
 long long day12_2(std::string dataFile) {
 
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     auto boundsCheck = [&](size_t const &row, size_t const &col) -> bool {
         return (row >= 0 && row < input.size() && col >= 0 && col < input[row].size());
     };
     constexpr std::array<std::array<int, 2>, 4> dirs{-1, 0, 0, 1, 1, 0, 0, -1};
 
-    ankerl::unordered_dense::map<size_t, std::pair<size_t, size_t>, incc::XXH3Hasher> regionData;
+    ankerl::unordered_dense::map<size_t, std::pair<size_t, size_t>, incstd::hashing::XXH3Hasher> regionData;
     std::vector dp(input.size(), std::vector(input.front().size(), std::optional<size_t>()));
     std::vector dp_fence(input.size(), std::vector(input.front().size(), std::bitset<4>()));
 

@@ -11,7 +11,7 @@ long long day2_1(std::string dataFile) {
 
     auto d_ctre = ctre::search<R"(-?\d+)">;
 
-    auto input = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<long long> dataVect;
     for (auto const &strNumber : input.front()) { dataVect.push_back(std::stoll(strNumber)); }
@@ -43,7 +43,7 @@ long long day2_1(std::string dataFile) {
 long long day2_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(-?\d+)">;
 
-    auto input = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto input = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
 
     std::vector<long long> dataVect;
     for (auto const &strNumber : input.front()) { dataVect.push_back(std::stoll(strNumber)); }

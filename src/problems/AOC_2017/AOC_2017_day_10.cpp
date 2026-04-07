@@ -16,7 +16,7 @@ int day10_1(std::string dataFile) {
     std::getline(iStream, oneStr);
 
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto Vof    = incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(oneStr, d_ctre);
+    auto Vof    = incom::aoc::parseInputUsingCTRE::processOneLineRPToneVect(oneStr, d_ctre);
 
     std::vector<int> input;
     for (auto &strItem : Vof) { input.push_back(std::stoi(strItem)); }
@@ -44,7 +44,7 @@ std::string day10_2(std::string dataFile) {
     std::getline(iStream, oneStr);
 
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto Vof    = incom::commons::parseInputUsingCTRE::processOneLineRPToneVect(oneStr, d_ctre);
+    auto Vof    = incom::aoc::parseInputUsingCTRE::processOneLineRPToneVect(oneStr, d_ctre);
 
     std::vector<char> inputRAW;
     for (auto &charItem : Vof.front()) { inputRAW.push_back(charItem); }

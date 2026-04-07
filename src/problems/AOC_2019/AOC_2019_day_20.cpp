@@ -11,14 +11,14 @@
 namespace AOC2019 {
 long long day20_1(std::string dataFile) {
     auto line_ctre = ctre::search<R"(.+)">;
-    auto input     = incom::commons::parseInputUsingCTRE::processFile(dataFile, line_ctre).front();
+    auto input     = incom::aoc::parseInputUsingCTRE::processFile(dataFile, line_ctre).front();
     auto inputOrig = input;
 
     std::pair<int, int>                         startPos;
     constexpr char const                        visited = '/';
     constexpr std::array<std::array<int, 2>, 4> dirs{-1, 0, 0, 1, 1, 0, 0, -1};
 
-    ankerl::unordered_dense::map<std::string, std::pair<int, int>, incom::commons::XXH3Hasher> portalMap;
+    ankerl::unordered_dense::map<std::string, std::pair<int, int>, incstd::hashing::XXH3Hasher> portalMap;
 
     // FIND START
     for (int row = 0; row < (input.size() - 1); row++) {
@@ -53,7 +53,7 @@ long long day20_1(std::string dataFile) {
     portalMap.emplace("ZZv", portalMap.at("ZZ^"));
 
 
-    ankerl::unordered_dense::map<std::pair<int, int>, std::pair<int, int>, incom::commons::XXH3Hasher> locationsLinks;
+    ankerl::unordered_dense::map<std::pair<int, int>, std::pair<int, int>, incstd::hashing::XXH3Hasher> locationsLinks;
     for (auto &pm_line : portalMap) {
         std::string theOtherPortal = pm_line.first;
         if (theOtherPortal.back() == 'v') { theOtherPortal.back() = '^'; }
@@ -63,7 +63,7 @@ long long day20_1(std::string dataFile) {
     }
 
     auto const                                                    terminalLocation = portalMap.at("ZZ^");
-    incom::commons::doubleBuffer<std::queue<std::pair<int, int>>> buf_que;
+    incstd::buffers::doubleBuffer<std::queue<std::pair<int, int>>> buf_que;
 
     auto explore = [&](std::pair<int, int> const &pr) -> std::optional<std::pair<int, int>> {
         std::pair<int, int> newLoc;
@@ -79,7 +79,7 @@ long long day20_1(std::string dataFile) {
     };
 
     ankerl::unordered_dense::map<std::pair<int, int>, std::vector<std::pair<size_t, std::pair<int, int>>>,
-                                 incom::commons::XXH3Hasher>
+                                 incstd::hashing::XXH3Hasher>
         walkConnections;
 
     // Explore from all portals too every reachable portal
@@ -110,7 +110,7 @@ long long day20_1(std::string dataFile) {
             dist++;
         }
     }
-    ankerl::unordered_dense::map<std::pair<int, int>, size_t, incom::commons::XXH3Hasher> minDistancesFound;
+    ankerl::unordered_dense::map<std::pair<int, int>, size_t, incstd::hashing::XXH3Hasher> minDistancesFound;
 
     for (auto const &portal : locationsLinks) { minDistancesFound.emplace(portal.first, SIZE_MAX); }
 
@@ -140,14 +140,14 @@ long long day20_1(std::string dataFile) {
 
 long long day20_2(std::string dataFile) {
     auto line_ctre = ctre::search<R"(.+)">;
-    auto input     = incom::commons::parseInputUsingCTRE::processFile(dataFile, line_ctre).front();
+    auto input     = incom::aoc::parseInputUsingCTRE::processFile(dataFile, line_ctre).front();
     auto inputOrig = input;
 
     std::pair<int, int>                         startPos;
     constexpr char const                        visited = '/';
     constexpr std::array<std::array<int, 2>, 4> dirs{-1, 0, 0, 1, 1, 0, 0, -1};
 
-    ankerl::unordered_dense::map<std::string, std::pair<int, int>, incom::commons::XXH3Hasher> portalMap;
+    ankerl::unordered_dense::map<std::string, std::pair<int, int>, incstd::hashing::XXH3Hasher> portalMap;
 
     // CREATE PORTAL MAP
     for (int row = 0; row < (input.size() - 1); row++) {
@@ -181,7 +181,7 @@ long long day20_2(std::string dataFile) {
     portalMap.emplace("ZZv", portalMap.at("ZZ^"));
 
     // CREATE A MAP OF PORTAL/TELEPORT CONNECTIONS (same symbols to each other)
-    ankerl::unordered_dense::map<std::pair<int, int>, std::pair<int, int>, incom::commons::XXH3Hasher> portalLinks;
+    ankerl::unordered_dense::map<std::pair<int, int>, std::pair<int, int>, incstd::hashing::XXH3Hasher> portalLinks;
     for (auto &pm_line : portalMap) {
         std::string theOtherPortal = pm_line.first;
         if (theOtherPortal.back() == 'v') { theOtherPortal.back() = '^'; }
@@ -197,9 +197,9 @@ long long day20_2(std::string dataFile) {
     std::pair<std::pair<int, int>, size_t> const terminalLocation{portalMap.at("ZZ^"), 0};
 
     ankerl::unordered_dense::map<std::pair<int, int>, std::vector<std::pair<size_t, std::pair<int, int>>>,
-                                 incom::commons::XXH3Hasher>
+                                 incstd::hashing::XXH3Hasher>
                                                                   walkConnections;
-    incom::commons::doubleBuffer<std::queue<std::pair<int, int>>> buf_que;
+    incstd::buffers::doubleBuffer<std::queue<std::pair<int, int>>> buf_que;
 
     // Explore func - evaluates surrounding of point on path and acts accordingly
     auto explore = [&](std::pair<int, int> const &pr) -> std::optional<std::pair<int, int>> {
@@ -247,7 +247,7 @@ long long day20_2(std::string dataFile) {
         }
     }
 
-    ankerl::unordered_dense::map<std::pair<int, int>, char, incom::commons::XXH3Hasher> portalInOrOut;
+    ankerl::unordered_dense::map<std::pair<int, int>, char, incstd::hashing::XXH3Hasher> portalInOrOut;
     for (auto const &port : portalMap) {
         if (port.first.back() == '^') { portalInOrOut.emplace(port.second, '^'); }
         else if (port.first.back() == 'v') { portalInOrOut.emplace(port.second, 'v'); }
@@ -255,7 +255,7 @@ long long day20_2(std::string dataFile) {
     }
 
     // 1: pair of 'location' and 'level', 2: min distance travelled
-    ankerl::unordered_dense::map<std::pair<std::pair<int, int>, size_t>, size_t, incom::commons::XXH3Hasher>
+    ankerl::unordered_dense::map<std::pair<std::pair<int, int>, size_t>, size_t, incstd::hashing::XXH3Hasher>
         minDistancesFound;
 
     std::queue<std::pair<std::pair<std::pair<int, int>, size_t>, size_t>> que_2;

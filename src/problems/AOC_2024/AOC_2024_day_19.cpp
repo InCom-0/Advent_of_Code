@@ -6,10 +6,10 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 long long day19_1(std::string dataFile) {
     auto w_ctre = ctre::search<R"(\w+)">;
-    auto input  = incc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
 
     std::vector<std::string> basePatterns;
     std::vector<std::string> desired;
@@ -17,7 +17,7 @@ long long day19_1(std::string dataFile) {
     for (auto const &desiredOne : input.front()) { basePatterns.push_back(desiredOne); }
     for (auto item = input.begin() + 2; item != input.end(); ++item) { desired.push_back((*item).front()); }
 
-    ankerl::unordered_dense::set<std::string_view, incc::XXH3Hasher> bp_set;
+    ankerl::unordered_dense::set<std::string_view, incstd::hashing::XXH3Hasher> bp_set;
     size_t                                                           maxLength = 0;
     for (auto const &bp : basePatterns) {
         bp_set.insert(std::string_view(bp));
@@ -54,7 +54,7 @@ long long day19_1(std::string dataFile) {
 
 long long day19_2(std::string dataFile) {
     auto w_ctre = ctre::search<R"(\w+)">;
-    auto input  = incc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, w_ctre);
 
     std::vector<std::string> basePatterns;
     std::vector<std::string> desired;
@@ -62,7 +62,7 @@ long long day19_2(std::string dataFile) {
     for (auto const &desiredOne : input.front()) { basePatterns.push_back(desiredOne); }
     for (auto item = input.begin() + 2; item != input.end(); ++item) { desired.push_back((*item).front()); }
 
-    ankerl::unordered_dense::set<std::string_view, incc::XXH3Hasher> bp_set;
+    ankerl::unordered_dense::set<std::string_view, incstd::hashing::XXH3Hasher> bp_set;
     size_t                                                           maxLength = 0;
     for (auto const &bp : basePatterns) {
         bp_set.insert(std::string_view(bp));

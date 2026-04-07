@@ -11,7 +11,7 @@ namespace AOC2025 {
 size_t
 day2_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre, d_ctre);
 
     struct Cur {
         size_t num;
@@ -73,7 +73,7 @@ day2_1(std::string dataFile) {
 size_t
 day2_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processOneLineRPTinFile(dataFile, d_ctre, d_ctre);
 
     auto parseNum = [](std::string const &str) { return std::stoull(str); };
 

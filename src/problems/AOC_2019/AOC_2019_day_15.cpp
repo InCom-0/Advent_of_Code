@@ -8,39 +8,39 @@
 
 namespace AOC2019 {
 auto day15_0(std::string dataFile, std::array<long long, 2> &k2Oxy) {
-    struct add : incom::commons::PQA::_instrBase_INT {
+    struct add : incom::aoc::PQA::_instrBase_INT {
         constexpr long long get_numOfParams() override { return 3; }
     };
-    struct mul : incom::commons::PQA::_instrBase_INT {
+    struct mul : incom::aoc::PQA::_instrBase_INT {
         constexpr long long get_numOfParams() override { return 3; }
     };
-    struct end : incom::commons::PQA::_instrBase_INT {
+    struct end : incom::aoc::PQA::_instrBase_INT {
         constexpr long long get_numOfParams() override { return 0; }
     };
-    struct inp : incom::commons::PQA::_instrBase_INT {
+    struct inp : incom::aoc::PQA::_instrBase_INT {
         constexpr long long get_numOfParams() override { return 1; }
     };
-    struct out : incom::commons::PQA::_instrBase_INT {
+    struct out : incom::aoc::PQA::_instrBase_INT {
         constexpr long long get_numOfParams() override { return 1; }
     };
-    struct jit : incom::commons::PQA::_instrBase_INT {
+    struct jit : incom::aoc::PQA::_instrBase_INT {
         constexpr long long get_numOfParams() override { return 2; }
     };
-    struct jif : incom::commons::PQA::_instrBase_INT {
+    struct jif : incom::aoc::PQA::_instrBase_INT {
         constexpr long long get_numOfParams() override { return 2; }
     };
-    struct lth : incom::commons::PQA::_instrBase_INT {
+    struct lth : incom::aoc::PQA::_instrBase_INT {
         constexpr long long get_numOfParams() override { return 3; }
     };
-    struct eql : incom::commons::PQA::_instrBase_INT {
+    struct eql : incom::aoc::PQA::_instrBase_INT {
         constexpr long long get_numOfParams() override { return 3; }
     };
-    struct arb : incom::commons::PQA::_instrBase_INT {
+    struct arb : incom::aoc::PQA::_instrBase_INT {
         constexpr long long get_numOfParams() override { return 1; }
     };
 
     auto                   d_ctre = ctre::search<R"(-?\d+)">;
-    auto                   input  = incom::commons::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
+    auto                   input  = incom::aoc::parseInputUsingCTRE::processFileRPT(dataFile, d_ctre);
     std::vector<long long> data;
 
     for (auto &str : input.front()) { data.push_back(std::stoll(str)); }
@@ -66,12 +66,12 @@ auto day15_0(std::string dataFile, std::array<long long, 2> &k2Oxy) {
     };
 
     SelDir                                                                                          selDir{};
-    incom::commons::PQA::ProgramQuasiAssembly_INT<add, mul, end, inp, out, jit, jif, lth, eql, arb> pqa(instrCodes,
+    incom::aoc::PQA::ProgramQuasiAssembly_INT<add, mul, end, inp, out, jit, jif, lth, eql, arb> pqa(instrCodes,
                                                                                                         data);
 
     std::stack<std::pair<KT, std::pair<long long, SelDir>>> stck;
 
-    auto instructions = overloaded{
+    auto instructions = incstd::variant_utils::Overloads{
         [&](add &a) { a.m_refs[2].get() = a.m_refs[0] + a.m_refs[1]; },
         [&](mul &a) { a.m_refs[2].get() = a.m_refs[0] * a.m_refs[1]; },
         [&](end &a) { pqa.m_cursor = LLONG_MIN; },
@@ -131,7 +131,7 @@ long long day15_1(std::string dataFile) {
     KT evaluated{0, 0};
     roomMap.get(evaluated) = 'E';
 
-    incom::commons::doubleBuffer<std::queue<KT>> doubleQue;
+    incstd::buffers::doubleBuffer<std::queue<KT>> doubleQue;
     doubleQue.getCurrent().push(KT{0, 0});
     std::vector<KT> dirs{{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 
@@ -174,7 +174,7 @@ long long day15_2(std::string dataFile) {
     roomMap.get(k2Oxy) = 'T';
     KT evaluated{0, 0};
 
-    incom::commons::doubleBuffer<std::queue<KT>> doubleQue;
+    incstd::buffers::doubleBuffer<std::queue<KT>> doubleQue;
     doubleQue.getCurrent().push(k2Oxy);
     std::vector<KT> dirs{{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 

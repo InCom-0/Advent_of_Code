@@ -8,7 +8,7 @@ namespace AOC2024 {
 long long day1_1(std::string dataFile) {
 
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFile(dataFile, d_ctre, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_ctre, d_ctre);
 
     std::vector<long long> listA;
     std::vector<long long> listB;
@@ -28,7 +28,7 @@ long long day1_1(std::string dataFile) {
 
 long long day1_2(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
-    auto input  = incom::commons::parseInputUsingCTRE::processFile(dataFile, d_ctre, d_ctre);
+    auto input  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_ctre, d_ctre);
 
     std::vector<long long> listA;
     std::vector<long long> listB;
@@ -38,7 +38,7 @@ long long day1_2(std::string dataFile) {
         listB.push_back(std::stoll(input[1][i]));
     }
 
-    ankerl::unordered_dense::map<long long, std::pair<long long, long long>, incom::commons::XXH3Hasher> mp;
+    ankerl::unordered_dense::map<long long, std::pair<long long, long long>, incstd::hashing::XXH3Hasher> mp;
     for (auto const &numA : listA) {
         auto pr = mp.insert({numA, {0, 0}});
         pr.first->second.first++;

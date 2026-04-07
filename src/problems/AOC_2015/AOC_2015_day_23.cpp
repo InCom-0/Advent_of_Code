@@ -86,7 +86,7 @@ int day23_1(std::string dataFile, unsigned int regA, unsigned int regB) {
     int curInstrID = 0;
     while (curInstrID < instrList.size()) {
         std::visit(
-            overloaded{
+            incstd::variant_utils::Overloads{
                 [&](tpl &a) {
                     *a.target *= 3;
                     curInstrID++;

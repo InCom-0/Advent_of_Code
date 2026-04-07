@@ -54,7 +54,7 @@ std::string day16_1(std::string dataFile) {
     // MAIN LOGIC
     for (auto &oneInstr : instructions) {
         std::visit(
-            overloaded{
+            incstd::variant_utils::Overloads{
                 [&](spn const &a) { std::rotate(progLine.rbegin(), progLine.rbegin() + a.num_1, progLine.rend()); },
                 [&](xch const &a) { std::swap(progLine[a.num_1], progLine[a.num_2]); },
                 [&](prt const &a) {
@@ -139,7 +139,7 @@ std::string day16_2(std::string dataFile) {
     // MAIN LOGIC
     for (int i = 0; i < 1000; ++i) {
         for (auto &oneInstr : posBasedInstr) {
-            std::visit(overloaded{
+            std::visit(incstd::variant_utils::Overloads{
                            [&](spn const &a) {
                                std::rotate(theOtherOne.rbegin(), theOtherOne.rbegin() + a.num_1, theOtherOne.rend());
                            },
@@ -158,7 +158,7 @@ std::string day16_2(std::string dataFile) {
     for (int i = 0; i < 1000; ++i) {
         for (auto &oneInstr : nameBasedInstr) {
             std::visit(
-                overloaded{
+                incstd::variant_utils::Overloads{
                     [&](prt const &a) {
                         std::swap(*std::ranges::find(theOtherOne, a.chr_1), *std::ranges::find(theOtherOne, a.chr_2));
                     },
@@ -167,7 +167,7 @@ std::string day16_2(std::string dataFile) {
                 oneInstr);
         }
     }
-    std::unordered_map<char, char, incom::commons::XXH3Hasher> nameBasedMap;
+    std::unordered_map<char, char, incstd::hashing::XXH3Hasher> nameBasedMap;
     for (auto &oneChar : theOne) {
         nameBasedMap.emplace(oneChar, theOne[std::ranges::find(theOtherOne, oneChar) - theOtherOne.begin()]);
     }
@@ -237,13 +237,13 @@ std::string day16_3(std::string dataFile, unsigned int numOfDances) {
     auto        charInit = std::views::iota(97, 113); // a => ASCII 97, p => ASCII 112
     std::string theOne(charInit.begin(), charInit.end());
 
-    auto overload2Visit = overloaded{
+    auto overload2Visit = incstd::variant_utils::Overloads{
         [&](spn const &a) { std::rotate(theOne.rbegin(), theOne.rbegin() + a.num_1, theOne.rend()); },
         [&](xch const &a) { std::swap(theOne[a.num_1], theOne[a.num_2]); },
         [&](prt const &a) { std::swap(*std::ranges::find(theOne, a.chr_1), *std::ranges::find(theOne, a.chr_2)); },
     };
 
-    std::unordered_set<std::string, incom::commons::XXH3Hasher> pastResults;
+    std::unordered_set<std::string, incstd::hashing::XXH3Hasher> pastResults;
 
     // MAIN LOGIC
     // Find a cycle (that is after X repeats end up where we started)

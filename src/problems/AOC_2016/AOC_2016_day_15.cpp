@@ -14,7 +14,7 @@ int day15_1(std::string &&dataFile) {
     auto getNumOfPos    = ctre::search<R"(\d+(?= positions))">;
     auto getStartingPos = ctre::search<R"(\d+(?=\.))">;
 
-    auto VofV_NumOfPos_StartPos = incom::commons::parseInputUsingCTRE::processFile(dataFile, getNumOfPos, getStartingPos);
+    auto VofV_NumOfPos_StartPos = incom::aoc::parseInputUsingCTRE::processFile(dataFile, getNumOfPos, getStartingPos);
 
     std::vector<oneDisc_t> discs;
 

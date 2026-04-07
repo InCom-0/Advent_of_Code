@@ -6,10 +6,10 @@
 
 
 namespace AOC2024 {
-namespace incc = incom::commons;
+
 long long day15_1(std::string dataFile) {
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     constexpr std::array<std::array<int, 2>, 4> dirs{-1, 0, 0, 1, 1, 0, 0, -1};
 
@@ -84,7 +84,7 @@ long long day15_1(std::string dataFile) {
 
 long long day15_2(std::string dataFile) {
     auto any_ctre = ctre::search<R"(.+)">;
-    auto input    = incc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     constexpr std::array<std::array<int, 2>, 4> dirs{-1, 0, 0, 1, 1, 0, 0, -1};
 
@@ -127,8 +127,8 @@ long long day15_2(std::string dataFile) {
     }
 
     for (auto const &oneInstr : instructions) {
-        using ankSet = ankerl::unordered_dense::set<std::pair<int, int>, incc::XXH3Hasher>;
-        incc::doubleBuffer<ankSet>       set_db;
+        using ankSet = ankerl::unordered_dense::set<std::pair<int, int>, incstd::hashing::XXH3Hasher>;
+        incstd::buffers::doubleBuffer<ankSet>       set_db;
         std::vector<std::pair<int, int>> validsToMove;
 
         auto rec_boxMoveByVer = [&](this auto const &self) -> std::optional<int> {
