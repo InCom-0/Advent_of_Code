@@ -1,6 +1,7 @@
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <incom_commons.h>
+#include <string>
 
 
 namespace AOC2024 {
@@ -65,14 +66,14 @@ std::string day18_2(std::string dataFile) {
     }
 
     // Create suitable map structure including 'padding'
-    std::vector<std::vector<char>> map;
-    std::vector<char>              middleInsert(71, '.');
+    std::vector<std::string> map;
+    std::string              middleInsert(71, '.');
     middleInsert.push_back('#');
     middleInsert.push_back('#');
     std::ranges::rotate(middleInsert, middleInsert.end() - 1);
-    map.push_back(std::vector(73, '#'));
+    map.push_back(std::string(73, '#'));
     for (int i = 0; i < 71; ++i) { map.push_back(middleInsert); }
-    map.push_back(std::vector(73, '#'));
+    map.push_back(std::string(73, '#'));
 
     auto map_BU = map;
 

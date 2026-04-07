@@ -8,25 +8,6 @@
 
 namespace AOC2025 {
 
-namespace {
-
-size_t
-pow10(size_t exp) {
-    size_t value = 1;
-    while (exp-- > 0) { value *= 10; }
-    return value;
-}
-
-size_t
-sumInclusive(size_t from, size_t upto) {
-    size_t const count = upto - from + 1;
-    size_t const ends  = from + upto;
-    if ((count % 2) == 0) { return (count / 2) * ends; }
-    return count * (ends / 2);
-}
-
-} // namespace
-
 size_t
 day2_1(std::string dataFile) {
     auto d_ctre = ctre::search<R"(\d+)">;
@@ -96,7 +77,13 @@ day2_2(std::string dataFile) {
 
     auto parseNum = [](std::string const &str) { return std::stoull(str); };
 
-    auto repeatValue = [](size_t block, size_t blockLen, size_t repeatCount) {
+    auto const pow10 = [](size_t exp) -> size_t {
+        size_t value = 1;
+        while (exp-- > 0) { value *= 10; }
+        return value;
+    };
+
+    auto repeatValue = [&](size_t block, size_t blockLen, size_t repeatCount) {
         size_t const mult = pow10(blockLen);
         size_t       out  = 0;
         for (size_t i = 0; i < repeatCount; ++i) { out = (out * mult) + block; }
