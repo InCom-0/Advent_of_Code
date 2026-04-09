@@ -44,4 +44,14 @@ day8_1(std::string dataFile);
 size_t
 day8_2(std::string dataFile);
 
+size_t
+day9_1(std::string dataFile);
+size_t
+day9_2(std::string dataFile);
+
+size_t
+day10_1(std::string dataFile);
+size_t
+day10_2(std::string dataFile);
+
 } // namespace AOC2025

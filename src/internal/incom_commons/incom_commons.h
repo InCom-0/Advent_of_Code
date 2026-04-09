@@ -10,6 +10,7 @@
 
 #include <ctre.hpp>
 #include <flux.hpp>
+#include <incom_aoc_solver.h>
 #include <more_concepts/more_concepts.hpp>
 #include <xxhash.h>
 
@@ -17,6 +18,8 @@
 
 namespace incom {
 namespace aoc {
+
+    
 
 class parseInputUsingCTRE {
 private:
