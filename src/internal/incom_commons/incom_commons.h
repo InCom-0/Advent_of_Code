@@ -19,8 +19,6 @@
 namespace incom {
 namespace aoc {
 
-    
-
 class parseInputUsingCTRE {
 private:
     struct oneLineProcessedHolder {
