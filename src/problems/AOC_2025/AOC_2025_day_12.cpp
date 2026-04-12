@@ -22,7 +22,7 @@ day12_1_trial(std::string dataFile) {
     inctetrix::Shape<5>  arc;
     inctetrix::Solver<5> rr;
 
-    auto tt = rr.getOrCompute(arc);
+    auto tt = rr.getOrCompute_possibsFor(arc);
 
     ankerl::unordered_dense::set<inctetrix::Shape<5>, incom::standard::hashing::XXH3Hasher> mp;
 

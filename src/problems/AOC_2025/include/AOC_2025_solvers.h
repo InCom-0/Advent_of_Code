@@ -2,17 +2,17 @@
 
 #include <algorithm>
 #include <ankerl/unordered_dense.h>
-#include <cassert>
-#include <functional>
+#include <iostream>
+#include <limits>
 #include <optional>
+#include <tuple>
 #include <utility>
-#include <vector>
 
-#include <ctre.hpp>
-#include <flux.hpp>
-#include <incom_aoc_solver.h>
-#include <more_concepts/more_concepts.hpp>
-#include <xxhash.h>
+#include <incom_commons.h>
+
+#if defined(_MSC_VER)
+#include <intrin.h>
+#endif
 
 #include <incstd/incstd_all.hpp>
 
@@ -21,6 +21,49 @@ namespace incom {
 namespace aoc {
 namespace solvers {
 namespace tetris {
+
+namespace {
+struct FastPseudoRandom {
+    uint64_t m_state = 0x9e3779b97f4a7c15ull;
+
+    FastPseudoRandom() = default;
+
+    explicit FastPseudoRandom(uint64_t seed) { setSeed(seed); }
+
+    void
+    setSeed(uint64_t seed) {
+        m_state = seed;
+        if (m_state == 0ull) { m_state = 0x9e3779b97f4a7c15ull; }
+    }
+
+    uint64_t
+    nextRandomWord() {
+        uint64_t z = (m_state += 0x9e3779b97f4a7c15ull);
+        z          = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9ull;
+        z          = (z ^ (z >> 27)) * 0x94d049bb133111ebull;
+        return z ^ (z >> 31);
+    }
+
+    static uint64_t
+    multiplyHigh64(uint64_t lhs, uint64_t rhs) {
+#if defined(_MSC_VER) && ! defined(__clang__)
+        uint64_t high = 0;
+        _umul128(lhs, rhs, &high);
+        return high;
+#else
+        return static_cast<uint64_t>((static_cast<unsigned __int128>(lhs) * rhs) >> 64);
+#endif
+    }
+
+    size_t
+    pseudoRandom_0_to(size_t maxInclusive) {
+        if (maxInclusive == std::numeric_limits<size_t>::max()) { return static_cast<size_t>(nextRandomWord()); }
+
+        auto const bound = static_cast<uint64_t>(maxInclusive) + 1ull;
+        return static_cast<size_t>(multiplyHigh64(nextRandomWord(), bound));
+    }
+};
+} // namespace
 
 
 template <size_t SQSZ>
@@ -31,7 +74,11 @@ struct Shape {
 
         size_t pointsAdded;
         size_t pointsOverlaid;
-        size_t pointTouching;
+        size_t bordersTouching;
+        size_t bordersNotTouching;
+
+        double surfaceCovered_relative;
+        double surfaceOpened_relative;
     };
 
     std::array<std::array<bool, SQSZ>, SQSZ> m_matrix = {};
@@ -72,13 +119,21 @@ struct Shape {
         for (size_t r = 1; r < SQSZ - 1; ++r) {
             for (size_t c = 1; c < SQSZ - 1; ++c) {
                 if (other.m_matrix[r][c]) {
-                    res.pointTouching += m_matrix[r - 1][c] & (not other.m_matrix[r - 1][c]);
-                    res.pointTouching += m_matrix[r][c - 1] & (not other.m_matrix[r][c - 1]);
-                    res.pointTouching += m_matrix[r][c + 1] & (not other.m_matrix[r][c + 1]);
-                    res.pointTouching += m_matrix[r + 1][c] & (not other.m_matrix[r + 1][c]);
+                    res.bordersTouching += m_matrix[r - 1][c] & (not other.m_matrix[r - 1][c]);
+                    res.bordersTouching += m_matrix[r][c - 1] & (not other.m_matrix[r][c - 1]);
+                    res.bordersTouching += m_matrix[r][c + 1] & (not other.m_matrix[r][c + 1]);
+                    res.bordersTouching += m_matrix[r + 1][c] & (not other.m_matrix[r + 1][c]);
+
+                    res.bordersNotTouching += (not m_matrix[r - 1][c]) & (not other.m_matrix[r - 1][c]);
+                    res.bordersNotTouching += (not m_matrix[r][c - 1]) & (not other.m_matrix[r][c - 1]);
+                    res.bordersNotTouching += (not m_matrix[r][c + 1]) & (not other.m_matrix[r][c + 1]);
+                    res.bordersNotTouching += (not m_matrix[r + 1][c]) & (not other.m_matrix[r + 1][c]);
                 }
             }
         }
+
+        res.surfaceCovered_relative = (res.bordersTouching / static_cast<double>(res.pointsAdded));
+        res.surfaceOpened_relative  = (res.bordersNotTouching / static_cast<double>(res.pointsAdded));
 
         return res;
     }
@@ -98,83 +153,264 @@ template <size_t SQSZ>
 class Solver {
 public:
     struct Pos {
-        size_t y = 0;
-        size_t x = 0;
+        long long y = 0;
+        long long x = 0;
     };
+
     using Shape_t   = Shape<SQSZ>;
-    using PastRes_t = std::pair<Pos, typename Shape_t::OverlayRes>;
+    using PastRes_t = std::pair<Pos, typename Shape_t::OverlayRes>; // Pos == [][] positions in 'm_shapes_alterns'
+    using pastResMap_t =
+        ankerl::unordered_dense::segmented_map<Shape_t, std::vector<PastRes_t>, incom::standard::hashing::XXH3Hasher>;
 
 
-    std::vector<std::pair<Pos, Shape_t>> frontierTiles = {{{0, 0}, {}}};
+    // 1) Position (top left) in matrix, 2) What shape currently is at that position, 3) Possibilities
+    std::vector<std::tuple<Pos, Shape_t &, std::vector<PastRes_t> &>> m_frontierTiles;
 
 
 private:
-    std::vector<Shape_t>              shapes;
-    std::vector<std::vector<Shape_t>> shapes_alterns;
-    std::vector<size_t>               useableCount_perShape;
+    std::vector<std::vector<char>> m_area;
+    Pos const                      firstTilePos;
+
+    std::vector<std::vector<Shape_t>> const m_shapes_alterns;
+    std::vector<size_t>                     m_useableCount_perShape;
+    FastPseudoRandom                        m_fprng;
 
     // Memoization of what 'shapes_alterns'
-    ankerl::unordered_dense::map<Shape_t, std::vector<PastRes_t>, incom::standard::hashing::XXH3Hasher> pastComputed;
+    pastResMap_t m_pastComputed;
 
+    void
+    set_pseudoRandomSeed(uint64_t seed) {
+        m_fprng.setSeed(seed);
+    }
 
-    std::optional<std::reference_wrapper<std::vector<PastRes_t>>>
-    get_computedFor(Shape_t const &tile) {
-        if (auto found = pastComputed.find(tile); found != pastComputed.end()) { return std::ref(found->second); }
+    std::size_t
+    hash_stateOfSelf() {
+        XXH3_state_t *state = XXH3_createState();
+        XXH3_64bits_reset(state);
+
+        size_t const m_area_ySz = m_area.size();
+        size_t const m_area_xSz = m_area.size() > 0 ? m_area.size() : 0uz;
+        XXH3_64bits_update(state, &m_area_ySz, sizeof(size_t));
+        XXH3_64bits_update(state, &m_area_xSz, sizeof(size_t));
+
+        if (m_frontierTiles.size() > 0) {
+            XXH3_64bits_update(state, &std::get<0>(m_frontierTiles.front()).y, sizeof(long long));
+            XXH3_64bits_update(state, &std::get<0>(m_frontierTiles.front()).x, sizeof(long long));
+        }
+
+        for (auto const &alternsLine : m_shapes_alterns) {
+            for (auto const &shp : alternsLine) { XXH3Hash(shp, state); }
+        }
+        // XXH3_64bits_update(state, m_useableCount_perShape.data(),
+        //                    sizeof(typename std::remove_cvref_t<decltype(m_useableCount_perShape)>::value_type) *
+        //                        m_useableCount_perShape.size());
+
+        XXH64_hash_t result = XXH3_64bits_digest(state);
+        XXH3_freeState(state);
+        return result;
+    }
+
+    std::optional<std::tuple<Shape_t &, std::vector<PastRes_t> &>>
+    get_possibsFor(Shape_t const &tile) {
+        if (auto found = m_pastComputed.find(tile); found != m_pastComputed.end()) {
+            return std::tie(found->first, found->second);
+        }
         return std::nullopt;
+    }
+
+    std::tuple<Shape_t &, std::vector<PastRes_t> &>
+    compute_possibsFor(Shape_t const &tile) {
+        std::vector<PastRes_t> resToMap;
+        auto allowed = [](PastRes_t const &toCheck) -> bool { return (toCheck.second.pointsOverlaid == 0uz); };
+
+        for (long long shpID = 0; shpID < m_shapes_alterns.size(); ++shpID) {
+            for (long long alternID = 0; alternID < m_shapes_alterns.at(shpID).size(); ++alternID) {
+                auto rs =
+                    PastRes_t{Pos{shpID, alternID}, tile.compute_overlayWith(m_shapes_alterns.at(shpID).at(alternID))};
+                if (allowed(rs)) { resToMap.push_back(rs); }
+            }
+        }
+        std::ranges::sort(resToMap, [](auto const &l, auto const &r) -> bool {
+            double const soDif = r.second.surfaceOpened_relative - l.second.surfaceOpened_relative;
+            if (soDif == 0.0) { return l.second.pointsAdded > r.second.pointsAdded; }
+            else { return std::abs(soDif) + soDif; }
+        });
+        auto insRes = m_pastComputed.insert({tile, resToMap});
+        return std::tie(insRes.first->first, insRes.first->second);
+    }
+
+    std::vector<Pos>
+    get_surrOverlappingPoss(Pos const &shapePos) {
+        std::vector<Pos> res;
+
+        size_t const rows = m_area.size();
+        size_t const cols = m_area.size() > 0 ? m_area.front().size() : 0;
+
+        // shapePos needs to be the Pos of some valid window in our area
+        if (shapePos.y <= (rows - SQSZ) && shapePos.x <= (cols - SQSZ)) {
+            for (int rc = -(SQSZ - 2); rc < (SQSZ + 2); ++rc) {
+                for (int cc = -(SQSZ - 2); cc < (SQSZ + 2); ++cc) {
+                    long long const r_loc = shapePos.y + rc;
+                    long long const c_loc = shapePos.x + cc;
+                    // if (rc != 0 && cc != 0) {
+                    //     if (r_loc >= 0 && r_loc <= (rows - SQSZ) && c_loc >= 0 && c_loc <= (cols - SQSZ)) {
+                    //         res.push_back(Pos{.y = r_loc, .x = c_loc});
+                    //     }
+                    // }
+                    if (r_loc >= 0 && r_loc <= (rows - SQSZ) && c_loc >= 0 && c_loc <= (cols - SQSZ)) {
+                        res.push_back(Pos{.y = r_loc, .x = c_loc});
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    std::expected<Shape_t, int>
+    get_windowAtPos(Pos const &shapePos) {
+        size_t const rows = m_area.size();
+        size_t const cols = m_area.size() > 0 ? m_area.front().size() : 0;
+
+        std::expected<Shape_t, int> res{std::unexpected(0)};
+
+        if (shapePos.y >= 0 && shapePos.y <= (rows - SQSZ) && shapePos.x >= 0 && shapePos.x <= (cols - SQSZ)) {
+            res             = Shape_t{};
+            Shape_t &shpRes = res.value();
+
+            for (int row = shapePos.y; row < shapePos.y + SQSZ; ++row) {
+                for (int col = shapePos.x; col < (shapePos.x + SQSZ); ++col) {
+                    shpRes.m_matrix[row - shapePos.y][col - shapePos.x] = m_area[row][col];
+                }
+            }
+        }
+        return res;
+    }
+
+    size_t
+    erase_fromFrontier(std::vector<Pos> const &shapePoss) {
+
+        auto const [ite_first, ite_last] = std::ranges::remove(m_frontierTiles, [&](auto &tpl) { return true; });
+        size_t const removed             = ite_last - ite_first;
+        m_frontierTiles.erase(ite_first, ite_last);
+        return removed;
+    }
+
+    size_t
+    add_toFrontier(std::vector<Pos> const &shapePoss) {
+        size_t resCount = 0uz;
+        for (auto const &onePos : shapePoss) {
+            auto window = get_windowAtPos(onePos);
+            if (not window.has_value()) { continue; }
+            m_frontierTiles.push_back(std::tuple_cat(std::make_tuple(onePos), getOrCompute_possibsFor(window.value())));
+            resCount++;
+        }
+        return resCount;
     }
 
 
 public:
     Solver() {}
-    Solver(std::vector<Shape_t> const &shps, std::vector<std::vector<Shape_t>> const &shps_alterns,
-           ankerl::unordered_dense::map<Shape_t, std::vector<PastRes_t>> const &pastReslts)
-        : shapes(shps), shapes_alterns(shps_alterns), pastComputed(pastReslts) {}
+    Solver(size_t const area_ySize, size_t const area_xSize, std::vector<std::vector<Shape_t>> const &shps_alterns,
+           size_t firstTile_yPos = 0uz, size_t firstTile_xPos = 0uz,
+           ankerl::unordered_dense::map<Shape_t, std::vector<PastRes_t>> const &pastReslts = {})
+        : m_area(std::vector(area_ySize + 2, std::vector<char>(area_xSize + 2, 0))),
+          firstTilePos(Pos{.y = firstTile_yPos, .x = firstTile_xPos}), m_shapes_alterns(shps_alterns),
+          m_pastComputed(pastReslts) {
+        auto firstTile = Shape_t{};
 
+        m_frontierTiles.push_back(std::tuple_cat(std::make_tuple(Pos{.y = firstTile_yPos, .x = firstTile_xPos}),
+                                                 getOrCompute_possibsFor(firstTile)));
+    }
+
+
+    size_t
+    get_pseudoRandom_0_to(size_t maxInclusive) {
+        return m_fprng.pseudoRandom_0_to(maxInclusive);
+    }
 
     // Returns true if this shape is actually new, False if it is the same as some other existing shape
     bool
-    addShape(Shape_t const &toAdd) {
+    add_shape(Shape_t const &toAdd) {
         return true;
     }
 
     Solver
     clone_keepShapeData() {
-        return Solver(shapes, shapes_alterns, pastComputed);
+        return Solver(m_area.size(), m_area.size() > 0 ? m_area.front().size() : 0uz, m_shapes_alterns, firstTilePos.y,
+                      firstTilePos.x, m_pastComputed);
+    }
+    Solver
+    clone_keepShapeData(size_t const area_ySize, size_t const area_xSize) {
+        return Solver(area_ySize, area_xSize, m_shapes_alterns, firstTilePos.y, firstTilePos.x, m_pastComputed);
     }
 
-    std::vector<PastRes_t> &
-    computeFor(Shape_t const &tile) {
-        std::vector<PastRes_t> resToMap;
-        auto allowed = [](PastRes_t const &toCheck) -> bool { return (toCheck.second.pointsOverlaid == 0uz); };
 
-        for (size_t shpID = 0; shpID < shapes_alterns.size(); ++shpID) {
-            for (size_t alternID = 0; alternID < shapes_alterns.at(shpID).size(); ++alternID) {
-                auto rs =
-                    PastRes_t{Pos{shpID, alternID}, tile.compute_overlayWith(shapes_alterns.at(shpID).at(alternID))};
-                if (allowed(rs)) { resToMap.push_back(rs); }
+    std::tuple<Shape_t &, std::vector<PastRes_t> &>
+    getOrCompute_possibsFor(Shape_t const &tile) {
+        if (auto comp = get_possibsFor(tile); comp.has_value()) { return comp.value(); }
+        return compute_possibsFor(tile);
+    }
+
+    void
+    print_areaState() {
+        for (auto const &line : m_area) { std::cout << std::format("{:s}\n", line); }
+    }
+
+
+    std::optional<std::tuple<Pos, PastRes_t &>>
+    solve_oneStep(size_t const &tolerance = 0uz) {
+        std::vector<std::array<size_t, 4>> toConsider;
+        double                             lastSOR{std::numeric_limits<double>::max()};
+        size_t                             maxUseableCount = 0uz;
+
+        for (size_t ft_i = 0uz; auto const &oneFT : m_frontierTiles) {
+            typename Shape_t::OverlayRes ora{};
+            for (size_t alt_i = 0uz; auto const &[alternsPos, overlay] : std::get<2>(oneFT)) {
+                if (overlay.surfaceOpened_relative > lastSOR) { break; }
+                if (overlay.surfaceOpened_relative < lastSOR) {
+                    maxUseableCount = 0uz;
+                    toConsider.clear();
+                    lastSOR = overlay.surfaceOpened_relative;
+                }
+                maxUseableCount = std::max(maxUseableCount, m_useableCount_perShape.at(ft_i));
+                toConsider.push_back({ft_i, alt_i++, std::get<0>(oneFT).y, std::get<0>(oneFT).x});
             }
+            ft_i++;
         }
-        std::ranges::sort(resToMap, [](auto const &l, auto const &r) {
-            return ((l.second.pointsAdded + l.second.pointTouching) > (r.second.pointsAdded + r.second.pointTouching));
-        });
-        auto insRes = pastComputed.insert({tile, resToMap});
-        return insRes.first->second;
+        //  There are none viable overlays ... can't solve any more
+        if (toConsider.empty()) { return std::nullopt; }
+
+
+        auto [last, end] = std::ranges::remove_if(
+            toConsider, [&](auto const &item) { return (item.front() + tolerance) >= maxUseableCount; });
+        toConsider.erase(last, end);
+
+        auto const selectedID = m_fprng.pseudoRandom_0_to(toConsider.size() - 1);
+
+        std::tuple<Pos, PastRes_t &> res{
+            std::get<0>(m_frontierTiles.at(toConsider.at(selectedID).at(0))),
+            std::get<2>(m_frontierTiles.at(toConsider.at(selectedID).at(0))).at(toConsider.at(selectedID).at(1))};
+
+
+        auto const surrPoss = get_surrOverlappingPoss(std::get<0>(res));
+        erase_fromFrontier(surrPoss);
+        add_toFrontier(surrPoss);
+
+
+        return res;
     }
-
-    std::vector<PastRes_t> &
-    getOrCompute(Shape_t const &tile) {
-        if (auto comp = get_computedFor(tile); comp.has_value()) { return comp.value(); }
-        return computeFor(tile);
-    }
-
-
-    Shape_t
-    solve_oneStep() {
-        std::vector<PastRes_t> possibilties;
-
-        for (auto const &oneFT : frontierTiles) {
-
+    std::vector<std::tuple<Pos, Shape_t &>>
+    solve_XSteps(size_t numOfSteps = std::numeric_limits<size_t>::max(), size_t const &tolerance = 0uz) {
+        std::vector<std::tuple<Pos, Shape_t>> res;
+        while (numOfSteps-- > 0) {
+            if (auto oneStepRes = solve_oneStep(tolerance)) {
+                res.push_back(
+                    {std::get<0>(oneStepRes.value()),
+                     m_shapes_alterns.at(std::get<1>(oneStepRes.value()).y).at(std::get<1>(oneStepRes.value()).x)});
+            }
+            else { break; }
         }
+        return res;
     }
 };
 } // namespace tetris
