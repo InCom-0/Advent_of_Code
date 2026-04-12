@@ -2,9 +2,13 @@
 
 #include <algorithm>
 #include <ankerl/unordered_dense.h>
+#include <array>
+#include <incstd/core/hashing.hpp>
+#include <incstd/core/matrix.hpp>
 #include <iostream>
 #include <limits>
 #include <optional>
+#include <ranges>
 #include <tuple>
 #include <utility>
 
@@ -139,14 +143,38 @@ struct Shape {
     }
 
     std::vector<Shape>
-    compute_alternsRotFlip() const {}
+    compute_alternsRotFlip() const {
+        namespace incmatrix = incom::standard::matrix;
+
+        auto                                                                                m_matrix_cpy = m_matrix;
+        ankerl::unordered_dense::set<decltype(m_matrix_cpy), standard::hashing::XXH3Hasher> hlprMP;
+
+        hlprMP.insert(m_matrix_cpy);
+        for (int rot_i = 0; rot_i < 3; ++rot_i) {
+            incmatrix::matrixRotateLeft(m_matrix_cpy);
+            hlprMP.insert(m_matrix_cpy);
+        }
+
+        // Flip vertically
+        for (size_t i = 0uz; i < (m_matrix_cpy.size() / 2); ++i) {
+            std::swap(m_matrix_cpy.at(i), m_matrix_cpy.at(m_matrix_cpy.size() - 1 - i));
+        }
+
+        hlprMP.insert(m_matrix_cpy);
+        for (int rot_i = 0; rot_i < 3; ++rot_i) {
+            incmatrix::matrixRotateLeft(m_matrix_cpy);
+            hlprMP.insert(m_matrix_cpy);
+        }
+
+        return std::vector<Shape>(hlprMP.begin(), hlprMP.end());
+    }
 };
 
 // ADL for hashing using XXH3Hasher
 template <size_t SQSZ>
 constexpr void
 XXH3Hash(Shape<SQSZ> const &input, XXH3_state_t *state) {
-    XXH3_64bits_update(state, input.m_matrix.data(), sizeof(decltype(input.m_matrix)) * input.m_matrix.size());
+    XXH3_64bits_update(state, input.m_matrix.data(), sizeof(decltype(input.m_matrix)));
 }
 
 template <size_t SQSZ>
@@ -165,6 +193,7 @@ public:
 
     // 1) Position (top left) in matrix, 2) What shape currently is at that position, 3) Possibilities
     std::vector<std::tuple<Pos, Shape_t &, std::vector<PastRes_t> &>> m_frontierTiles;
+    std::vector<size_t>                                               m_useableCount_perShape;
 
 
 private:
@@ -172,7 +201,6 @@ private:
     Pos const                      firstTilePos;
 
     std::vector<std::vector<Shape_t>> const m_shapes_alterns;
-    std::vector<size_t>                     m_useableCount_perShape;
     FastPseudoRandom                        m_fprng;
 
     // Memoization of what 'shapes_alterns'
@@ -183,13 +211,14 @@ private:
         m_fprng.setSeed(seed);
     }
 
+
     std::size_t
     hash_stateOfSelf() {
         XXH3_state_t *state = XXH3_createState();
-        XXH3_64bits_reset(state);
+        XXH3_64bits_reset_withSeed(state, 0);
 
         size_t const m_area_ySz = m_area.size();
-        size_t const m_area_xSz = m_area.size() > 0 ? m_area.size() : 0uz;
+        size_t const m_area_xSz = m_area.empty() ? 0uz : m_area.front().size();
         XXH3_64bits_update(state, &m_area_ySz, sizeof(size_t));
         XXH3_64bits_update(state, &m_area_xSz, sizeof(size_t));
 
@@ -246,10 +275,12 @@ private:
         size_t const rows = m_area.size();
         size_t const cols = m_area.size() > 0 ? m_area.front().size() : 0;
 
+        constexpr long long SQSZcpy = static_cast<long long>(SQSZ);
+
         // shapePos needs to be the Pos of some valid window in our area
         if (shapePos.y <= (rows - SQSZ) && shapePos.x <= (cols - SQSZ)) {
-            for (int rc = -(SQSZ - 2); rc < (SQSZ + 2); ++rc) {
-                for (int cc = -(SQSZ - 2); cc < (SQSZ + 2); ++cc) {
+            for (int rc = -(SQSZcpy - 2); rc < (SQSZcpy - 1); ++rc) {
+                for (int cc = -(SQSZcpy - 2); cc < (SQSZcpy - 1); ++cc) {
                     long long const r_loc = shapePos.y + rc;
                     long long const c_loc = shapePos.x + cc;
                     // if (rc != 0 && cc != 0) {
@@ -286,10 +317,33 @@ private:
         return res;
     }
 
+    bool
+    is_posValid(Pos const &p) {
+        const long long py = p.y;
+        const long long px = p.x;
+        if (py < 0ll || py > (static_cast<long long>(m_area.size()) - SQSZ) || px < 0ll ||
+            px > (m_area.size() == 0 ? 0 : m_area.front().size() - SQSZ)) {
+            return false;
+        }
+        return true;
+    }
+
+    bool
+    set_windowAtPos(Pos const &shapePos, PastRes_t const &pr) {
+        if (not is_posValid(shapePos)) { return false; }
+        for (long long r = shapePos.y; r < (shapePos.y + SQSZ); ++r) {
+            for (long long c = shapePos.x; c < (shapePos.x + SQSZ); ++c) {
+                m_area[r][c] = pr.second.res_shp.m_matrix[r - shapePos.y][c - shapePos.x];
+            }
+        }
+        return true;
+    }
+
+
     size_t
     erase_fromFrontier(std::vector<Pos> const &shapePoss) {
 
-        auto const [ite_first, ite_last] = std::ranges::remove(m_frontierTiles, [&](auto &tpl) { return true; });
+        auto const [ite_first, ite_last] = std::ranges::remove_if(m_frontierTiles, [&](auto &tpl) { return true; });
         size_t const removed             = ite_last - ite_first;
         m_frontierTiles.erase(ite_first, ite_last);
         return removed;
@@ -301,7 +355,11 @@ private:
         for (auto const &onePos : shapePoss) {
             auto window = get_windowAtPos(onePos);
             if (not window.has_value()) { continue; }
-            m_frontierTiles.push_back(std::tuple_cat(std::make_tuple(onePos), getOrCompute_possibsFor(window.value())));
+
+            auto possibsForWindow = getOrCompute_possibsFor(window.value());
+            if (std::get<1>(possibsForWindow).size() > 0) {
+                m_frontierTiles.push_back(std::tuple_cat(std::make_tuple(onePos), possibsForWindow));
+            }
             resCount++;
         }
         return resCount;
@@ -311,17 +369,42 @@ private:
 public:
     Solver() {}
     Solver(size_t const area_ySize, size_t const area_xSize, std::vector<std::vector<Shape_t>> const &shps_alterns,
-           size_t firstTile_yPos = 0uz, size_t firstTile_xPos = 0uz,
-           ankerl::unordered_dense::map<Shape_t, std::vector<PastRes_t>> const &pastReslts = {})
+           size_t const firstTile_yPos = 0uz, size_t const firstTile_xPos = 0uz, pastResMap_t const &pastReslts = {})
         : m_area(std::vector(area_ySize + 2, std::vector<char>(area_xSize + 2, 0))),
-          firstTilePos(Pos{.y = firstTile_yPos, .x = firstTile_xPos}), m_shapes_alterns(shps_alterns),
-          m_pastComputed(pastReslts) {
-        auto firstTile = Shape_t{};
+          firstTilePos(Pos{.y = static_cast<long long>(firstTile_yPos), .x = static_cast<long long>(firstTile_xPos)}),
+          m_shapes_alterns(shps_alterns), m_pastComputed(pastReslts) {
 
-        m_frontierTiles.push_back(std::tuple_cat(std::make_tuple(Pos{.y = firstTile_yPos, .x = firstTile_xPos}),
-                                                 getOrCompute_possibsFor(firstTile)));
+        std::ranges::fill(m_area.front(), 1);
+        for (auto &line : std::views::take(m_area, m_area.size() - 1) | std::views::drop(1)) {
+            line.front() = 1;
+            line.back()  = 1;
+        }
+        std::ranges::fill(m_area.back(), 1);
+
+        auto const ftPos     = Pos{.y = static_cast<long long>(std::min(firstTile_yPos, area_ySize - SQSZ)),
+                                   .x = static_cast<long long>(std::min(firstTile_xPos, area_xSize - SQSZ))};
+        auto       firstTile = get_windowAtPos(ftPos).value();
+
+        m_frontierTiles.push_back(std::tuple_cat(std::make_tuple(ftPos), getOrCompute_possibsFor(firstTile)));
     }
 
+    Solver(size_t const &area_ySize, size_t const &area_xSize,
+           std::vector<std::array<std::array<bool, SQSZ - 2>, SQSZ - 2>> const &shps, size_t const firstTile_yPos = 0uz,
+           size_t const firstTile_xPos = 0uz, pastResMap_t const &pastReslts = {})
+        : Solver(area_ySize, area_xSize,
+                 std::views::transform(
+                     shps, [](auto const &smallerShp) { return Shape_t(smallerShp).compute_alternsRotFlip(); }) |
+                     std::ranges::to<std::vector>(),
+                 firstTile_yPos, firstTile_xPos, pastReslts) {}
+
+    // 'Primes' random number generator used by the solver instance with a seed based on hash of the solver state
+    // Returns the the seed it used
+    size_t
+    prime_fprng() {
+        size_t const res = hash_stateOfSelf();
+        set_pseudoRandomSeed(res);
+        return res;
+    }
 
     size_t
     get_pseudoRandom_0_to(size_t maxInclusive) {
@@ -353,7 +436,15 @@ public:
 
     void
     print_areaState() {
-        for (auto const &line : m_area) { std::cout << std::format("{:s}\n", line); }
+        for (auto const &line : m_area) {
+
+            auto        r = std::views::transform(line, [](char oneCh) -> char {
+                if (oneCh == 0) { return 46; }
+                return 35;
+            });
+            std::string a = std::format("{:s}\n", r);
+            std::cout << a;
+        }
     }
 
 
@@ -372,17 +463,24 @@ public:
                     toConsider.clear();
                     lastSOR = overlay.surfaceOpened_relative;
                 }
-                maxUseableCount = std::max(maxUseableCount, m_useableCount_perShape.at(ft_i));
-                toConsider.push_back({ft_i, alt_i++, std::get<0>(oneFT).y, std::get<0>(oneFT).x});
+                maxUseableCount = std::max(maxUseableCount, m_useableCount_perShape.at(alternsPos.y));
+                toConsider.push_back(
+                    {ft_i, alt_i++, static_cast<size_t>(alternsPos.y), static_cast<size_t>(alternsPos.x)});
             }
             ft_i++;
         }
         //  There are none viable overlays ... can't solve any more
-        if (toConsider.empty()) { return std::nullopt; }
+        if (toConsider.empty()) {
+             return std::nullopt; }
+        if (maxUseableCount == 0uz) {
+             return std::nullopt; }
 
 
-        auto [last, end] = std::ranges::remove_if(
-            toConsider, [&](auto const &item) { return (item.front() + tolerance) >= maxUseableCount; });
+        auto [last, end] = std::ranges::remove_if(toConsider, [&](auto const &item) {
+            return m_useableCount_perShape.at(item[2]) == 0
+                       ? true
+                       : (m_useableCount_perShape.at(item[2]) + tolerance) < maxUseableCount;
+        });
         toConsider.erase(last, end);
 
         auto const selectedID = m_fprng.pseudoRandom_0_to(toConsider.size() - 1);
@@ -394,9 +492,11 @@ public:
 
         auto const surrPoss = get_surrOverlappingPoss(std::get<0>(res));
         erase_fromFrontier(surrPoss);
+        set_windowAtPos(std::get<0>(res), std::get<1>(res));
         add_toFrontier(surrPoss);
 
-
+        // We used one
+        m_useableCount_perShape[std::get<1>(res).first.y]--;
         return res;
     }
     std::vector<std::tuple<Pos, Shape_t &>>
