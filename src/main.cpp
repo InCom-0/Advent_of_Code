@@ -30,7 +30,7 @@ int main() {
     // auto pth_2024 = std::filesystem::path(DATAFOLDER_2024) / "2024_25_1.txt";
     auto pth_2025 = std::filesystem::path(DATAFOLDER_2025) / "2025_12_1.txt";
 
-    std::cout << AOC2025::day12_1_trial(pth_2025.generic_string()) << '\n';
+    std::cout << AOC2025::day12_1(pth_2025.generic_string()) << '\n';
 
 
     return 1;

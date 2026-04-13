@@ -60,8 +60,6 @@ size_t
 day11_2(std::string dataFile);
 
 size_t
-day12_1_trial(std::string dataFile);
-size_t
 day12_1(std::string dataFile);
 size_t
 day12_2(std::string dataFile);

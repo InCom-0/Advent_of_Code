@@ -1,24 +1,16 @@
 #pragma once
 
 #include <algorithm>
-#include <ankerl/unordered_dense.h>
-#include <array>
-#include <incstd/core/hashing.hpp>
-#include <incstd/core/matrix.hpp>
 #include <iostream>
-#include <limits>
-#include <optional>
-#include <ranges>
-#include <tuple>
-#include <utility>
-
-#include <incom_commons.h>
 
 #if defined(_MSC_VER)
 #include <intrin.h>
 #endif
 
+#include <incom_commons.h>
 #include <incstd/incstd_all.hpp>
+
+#include <ankerl/unordered_dense.h>
 
 
 namespace incom {
@@ -192,16 +184,18 @@ public:
 
 
     // 1) Position (top left) in matrix, 2) What shape currently is at that position, 3) Possibilities
-    std::vector<std::tuple<Pos, Shape_t &, std::vector<PastRes_t> &>> m_frontierTiles;
-    std::vector<size_t>                                               m_useableCount_perShape;
+    std::vector<std::tuple<Pos, std::reference_wrapper<Shape_t>, std::reference_wrapper<std::vector<PastRes_t>>>>
+        m_frontierTiles;
 
 
 private:
     std::vector<std::vector<char>> m_area;
-    Pos const                      firstTilePos;
+    Pos                            m_firstTilePos;
 
-    std::vector<std::vector<Shape_t>> const m_shapes_alterns;
-    FastPseudoRandom                        m_fprng;
+    std::vector<std::vector<Shape_t>> m_shapes_alterns;
+    std::vector<size_t>               m_useableCount_perShape;
+    std::vector<double>               m_shapesRatios_orig;
+    FastPseudoRandom                  m_fprng;
 
     // Memoization of what 'shapes_alterns'
     pastResMap_t m_pastComputed;
@@ -342,8 +336,11 @@ private:
 
     size_t
     erase_fromFrontier(std::vector<Pos> const &shapePoss) {
-
-        auto const [ite_first, ite_last] = std::ranges::remove_if(m_frontierTiles, [&](auto &tpl) { return true; });
+        auto const [ite_first, ite_last] = std::ranges::remove_if(m_frontierTiles, [&](auto &tpl) {
+            return std::ranges::find_if(shapePoss, [&](Pos const &onePos) {
+                       return ((std::get<0>(tpl).y == onePos.y) && (std::get<0>(tpl).x == onePos.x));
+                   }) != shapePoss.end();
+        });
         size_t const removed             = ite_last - ite_first;
         m_frontierTiles.erase(ite_first, ite_last);
         return removed;
@@ -365,13 +362,40 @@ private:
         return resCount;
     }
 
+    auto
+    compute_perShapeScoringAdjustments() {
+        auto ratiosHlprView = std::views::transform(
+            m_useableCount_perShape,
+            [&, id = 0uz,
+             sum = static_cast<double>(std::ranges::fold_left_first(m_useableCount_perShape, std::plus{}).value_or(0))](
+                size_t oneCount) mutable {
+                return (oneCount == 0uz ? std::numeric_limits<double>::max() : (sum / oneCount)) *
+                       m_shapesRatios_orig.at(id++);
+            });
+
+        // This wierd adjustment is to prevent the solver f
+        return decltype(m_shapesRatios_orig)(ratiosHlprView.begin(), ratiosHlprView.end());
+    }
+
 
 public:
-    Solver() {}
+    // Construction
+    Solver()                  = delete;
+    Solver(Solver const &src) = default;
+    Solver(Solver &&src)      = default;
+    ~Solver()                 = default;
+
+    Solver &
+    operator=(Solver const &) = default;
+    Solver &
+    operator=(Solver &&) = default;
+
     Solver(size_t const area_ySize, size_t const area_xSize, std::vector<std::vector<Shape_t>> const &shps_alterns,
-           size_t const firstTile_yPos = 0uz, size_t const firstTile_xPos = 0uz, pastResMap_t const &pastReslts = {})
-        : m_area(std::vector(area_ySize + 2, std::vector<char>(area_xSize + 2, 0))),
-          firstTilePos(Pos{.y = static_cast<long long>(firstTile_yPos), .x = static_cast<long long>(firstTile_xPos)}),
+           std::vector<size_t> const &shps_counts, size_t const firstTile_yPos = 0uz, size_t const firstTile_xPos = 0uz,
+           pastResMap_t const &pastReslts = {})
+        : m_useableCount_perShape(shps_counts),
+          m_area(std::vector(area_ySize + 2, std::vector<char>(area_xSize + 2, 0))),
+          m_firstTilePos(Pos{.y = static_cast<long long>(firstTile_yPos), .x = static_cast<long long>(firstTile_xPos)}),
           m_shapes_alterns(shps_alterns), m_pastComputed(pastReslts) {
 
         std::ranges::fill(m_area.front(), 1);
@@ -381,6 +405,15 @@ public:
         }
         std::ranges::fill(m_area.back(), 1);
 
+        m_useableCount_perShape.resize(m_shapes_alterns.size(), 0uz);
+        auto ratiosHlprView = std::views::transform(
+            m_useableCount_perShape,
+            [sum = static_cast<double>(
+                 std::ranges::fold_left_first(m_useableCount_perShape, std::plus{}).value_or(nextafter(0.0, 1.0)))](
+                size_t oneCount) { return oneCount / sum; });
+
+        m_shapesRatios_orig = decltype(m_shapesRatios_orig)(ratiosHlprView.begin(), ratiosHlprView.end());
+
         auto const ftPos     = Pos{.y = static_cast<long long>(std::min(firstTile_yPos, area_ySize - SQSZ)),
                                    .x = static_cast<long long>(std::min(firstTile_xPos, area_xSize - SQSZ))};
         auto       firstTile = get_windowAtPos(ftPos).value();
@@ -389,13 +422,14 @@ public:
     }
 
     Solver(size_t const &area_ySize, size_t const &area_xSize,
-           std::vector<std::array<std::array<bool, SQSZ - 2>, SQSZ - 2>> const &shps, size_t const firstTile_yPos = 0uz,
-           size_t const firstTile_xPos = 0uz, pastResMap_t const &pastReslts = {})
+           std::vector<std::array<std::array<bool, SQSZ - 2>, SQSZ - 2>> const &shps,
+           std::vector<size_t> const &shps_counts, size_t const firstTile_yPos = 0uz, size_t const firstTile_xPos = 0uz,
+           pastResMap_t const &pastReslts = {})
         : Solver(area_ySize, area_xSize,
                  std::views::transform(
                      shps, [](auto const &smallerShp) { return Shape_t(smallerShp).compute_alternsRotFlip(); }) |
                      std::ranges::to<std::vector>(),
-                 firstTile_yPos, firstTile_xPos, pastReslts) {}
+                 shps_counts, firstTile_yPos, firstTile_xPos, pastReslts) {}
 
     // 'Primes' random number generator used by the solver instance with a seed based on hash of the solver state
     // Returns the the seed it used
@@ -404,6 +438,15 @@ public:
         size_t const res = hash_stateOfSelf();
         set_pseudoRandomSeed(res);
         return res;
+    }
+
+    size_t
+    get_useableShapeCountRemaining() {
+        return std::ranges::fold_left_first(m_useableCount_perShape, std::plus()).value_or(0uz);
+    }
+    size_t
+    get_pastResSize() {
+        return m_pastComputed.size();
     }
 
     size_t
@@ -418,13 +461,14 @@ public:
     }
 
     Solver
-    clone_keepShapeData() {
-        return Solver(m_area.size(), m_area.size() > 0 ? m_area.front().size() : 0uz, m_shapes_alterns, firstTilePos.y,
-                      firstTilePos.x, m_pastComputed);
+    clone_keepShapeData(std::vector<size_t> const &shps_counts) {
+        return Solver(m_area.size(), m_area.size() > 0 ? m_area.front().size() : 0uz, m_shapes_alterns, shps_counts,
+                      m_firstTilePos.y, m_firstTilePos.x, m_pastComputed);
     }
     Solver
-    clone_keepShapeData(size_t const area_ySize, size_t const area_xSize) {
-        return Solver(area_ySize, area_xSize, m_shapes_alterns, firstTilePos.y, firstTilePos.x, m_pastComputed);
+    clone_keepShapeData(size_t const area_ySize, size_t const area_xSize, std::vector<size_t> const &shps_counts) {
+        return Solver(area_ySize, area_xSize, m_shapes_alterns, shps_counts, m_firstTilePos.y, m_firstTilePos.x,
+                      m_pastComputed);
     }
 
 
@@ -436,58 +480,65 @@ public:
 
     void
     print_areaState() {
+        std::string toPrint{};
         for (auto const &line : m_area) {
 
-            auto        r = std::views::transform(line, [](char oneCh) -> char {
+            auto r = std::views::transform(line, [](char oneCh) -> char {
                 if (oneCh == 0) { return 46; }
                 return 35;
             });
-            std::string a = std::format("{:s}\n", r);
-            std::cout << a;
+            toPrint.append(std::format("{:s}\n", r));
         }
+        std::cout << toPrint;
     }
 
 
-    std::optional<std::tuple<Pos, PastRes_t &>>
-    solve_oneStep(size_t const &tolerance = 0uz) {
+    std::optional<std::tuple<Pos, PastRes_t>>
+    solve_oneStep() {
         std::vector<std::array<size_t, 4>> toConsider;
-        double                             lastSOR{std::numeric_limits<double>::max()};
-        size_t                             maxUseableCount = 0uz;
+
+        std::vector<std::vector<std::array<size_t, 4>>> toConsider2(m_shapes_alterns.size());
+        std::vector<double> lastSORs(m_shapes_alterns.size(), std::numeric_limits<double>::max());
+
+        // This 'wierd' adjustment is to make sure the solver selects shapes more evenly
+        auto perShape_adjustments = compute_perShapeScoringAdjustments();
 
         for (size_t ft_i = 0uz; auto const &oneFT : m_frontierTiles) {
-            typename Shape_t::OverlayRes ora{};
-            for (size_t alt_i = 0uz; auto const &[alternsPos, overlay] : std::get<2>(oneFT)) {
-                if (overlay.surfaceOpened_relative > lastSOR) { break; }
-                if (overlay.surfaceOpened_relative < lastSOR) {
-                    maxUseableCount = 0uz;
-                    toConsider.clear();
-                    lastSOR = overlay.surfaceOpened_relative;
+
+            std::vector<char> tracker(m_shapes_alterns.size(), 0);
+            for (size_t alt_i = 0uz; alt_i < std::get<2>(oneFT).get().size(); ++alt_i) {
+                auto const &[alternsPos, overlay] = std::get<2>(oneFT).get().at(alt_i);
+
+                if (std::ranges::fold_left_first(tracker, std::bit_and{}).value_or(0) == 1) { break; }
+                else if (m_useableCount_perShape.at(alternsPos.y) == 0 ||
+                         overlay.surfaceOpened_relative * perShape_adjustments.at(alternsPos.y) >
+                             lastSORs.at(alternsPos.y)) {
+                    continue;
                 }
-                maxUseableCount = std::max(maxUseableCount, m_useableCount_perShape.at(alternsPos.y));
-                toConsider.push_back(
-                    {ft_i, alt_i++, static_cast<size_t>(alternsPos.y), static_cast<size_t>(alternsPos.x)});
+                else if (overlay.surfaceOpened_relative * perShape_adjustments.at(alternsPos.y) <
+                         lastSORs.at(alternsPos.y)) {
+                    lastSORs.at(alternsPos.y) = overlay.surfaceOpened_relative * perShape_adjustments.at(alternsPos.y);
+                    toConsider2.at(alternsPos.y).clear();
+                }
+                tracker.at(alternsPos.y) = 1;
+                toConsider2.at(alternsPos.y)
+                    .push_back({ft_i, alt_i, static_cast<size_t>(alternsPos.y), static_cast<size_t>(alternsPos.x)});
             }
             ft_i++;
         }
         //  There are none viable overlays ... can't solve any more
-        if (toConsider.empty()) {
-             return std::nullopt; }
-        if (maxUseableCount == 0uz) {
-             return std::nullopt; }
+        if (std::ranges::all_of(toConsider2, [](auto const &toConsLine) { return toConsLine.empty(); })) {
+            return std::nullopt;
+        }
 
+        size_t const selEleToConsider  = std::ranges::min_element(lastSORs, std::less()) - lastSORs.begin();
+        size_t const selEleAnternative = m_fprng.pseudoRandom_0_to(toConsider2.at(selEleToConsider).size() - 1);
 
-        auto [last, end] = std::ranges::remove_if(toConsider, [&](auto const &item) {
-            return m_useableCount_perShape.at(item[2]) == 0
-                       ? true
-                       : (m_useableCount_perShape.at(item[2]) + tolerance) < maxUseableCount;
-        });
-        toConsider.erase(last, end);
-
-        auto const selectedID = m_fprng.pseudoRandom_0_to(toConsider.size() - 1);
-
-        std::tuple<Pos, PastRes_t &> res{
-            std::get<0>(m_frontierTiles.at(toConsider.at(selectedID).at(0))),
-            std::get<2>(m_frontierTiles.at(toConsider.at(selectedID).at(0))).at(toConsider.at(selectedID).at(1))};
+        std::tuple<Pos, PastRes_t> res{
+            std::get<0>(m_frontierTiles.at(toConsider2.at(selEleToConsider).at(selEleAnternative).at(0))),
+            std::get<2>(m_frontierTiles.at(toConsider2.at(selEleToConsider).at(selEleAnternative).at(0)))
+                .get()
+                .at(toConsider2.at(selEleToConsider).at(selEleAnternative).at(1))};
 
 
         auto const surrPoss = get_surrOverlappingPoss(std::get<0>(res));
@@ -499,15 +550,11 @@ public:
         m_useableCount_perShape[std::get<1>(res).first.y]--;
         return res;
     }
-    std::vector<std::tuple<Pos, Shape_t &>>
-    solve_XSteps(size_t numOfSteps = std::numeric_limits<size_t>::max(), size_t const &tolerance = 0uz) {
-        std::vector<std::tuple<Pos, Shape_t>> res;
+    std::vector<std::tuple<Pos, PastRes_t>>
+    solve_XSteps(size_t numOfSteps = std::numeric_limits<size_t>::max()) {
+        std::vector<std::tuple<Pos, PastRes_t>> res;
         while (numOfSteps-- > 0) {
-            if (auto oneStepRes = solve_oneStep(tolerance)) {
-                res.push_back(
-                    {std::get<0>(oneStepRes.value()),
-                     m_shapes_alterns.at(std::get<1>(oneStepRes.value()).y).at(std::get<1>(oneStepRes.value()).x)});
-            }
+            if (auto oneStepRes = solve_oneStep()) { res.push_back(std::move(oneStepRes.value())); }
             else { break; }
         }
         return res;
