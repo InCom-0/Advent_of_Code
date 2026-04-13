@@ -1,12 +1,12 @@
+#include <ranges>
+
 #include <ankerl/unordered_dense.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 
-#include <incstd/core/hashing.hpp>
-#include <ranges>
-
-#include <AOC_2025_solvers.h>
 #include <incom_commons.h>
+#include <incstd/core/hashing.hpp>
+#include <incstd/core/solvers.hpp>
 
 
 namespace AOC2025 {
@@ -49,20 +49,25 @@ day12_1(std::string dataFile) {
                                  std::stoull(prsRes.at(5)), std::stoull(prsRes.at(6)), std::stoull(prsRes.at(7))}});
         }
     }
-    namespace inctetris = incom::aoc::solvers::tetris;
+    namespace incsolvpack = incom::standard::solvers::packing;
 
-    inctetris::Solver<5> solv_1(trees.front().yDim, trees.front().xDim,
-                                std::views::transform(shapes, [](auto const &oneShp) { return oneShp.matrices; }) |
-                                    std::ranges::to<std::vector>(),
-                                trees.front().reqdShapes);
+    incsolvpack::BoxPacker_2D<5> solv_1(
+        trees.front().yDim, trees.front().xDim,
+        std::views::transform(shapes, [](auto const &oneShp) { return oneShp.matrices; }) |
+            std::ranges::to<std::vector>(),
+        trees.front().reqdShapes);
 
     size_t resAccu = 0uz;
+
     for (auto const &oneTree : std::views::drop(trees, 1)) {
-        solv_1 = solv_1.clone_keepShapeData(oneTree.yDim, oneTree.xDim, oneTree.reqdShapes);
+        solv_1.reset_allButNotPastComputed(oneTree.yDim, oneTree.xDim, oneTree.reqdShapes);
         solv_1.prime_fprng();
         solv_1.solve_XSteps();
         resAccu += (solv_1.get_useableShapeCountRemaining() == 0uz);
+        // solv_1.print_areaState();
+        // std::cout << '\n' << solv_1.get_useableShapeCountRemaining() << "\n\n\n";
     }
+
 
     return resAccu;
 }
