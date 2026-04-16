@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <limits>
 #include <map>
 #include <numeric>
@@ -72,6 +73,9 @@ public:
     struct Pos {
         long long y = 0;
         long long x = 0;
+
+        auto
+        operator<=>(Pos const &) const = default;
     };
     struct Shape {
         struct OverlayRes {
@@ -229,13 +233,11 @@ public:
     // 1) Position (top left) in matrix, 2) What shape currently is at that position, 3) Possibilities
 
     struct FrontierPerSA {
-        double        surfaceOpened_relative;
         Pos           p;
         PastRes_t_NEW olPossib;
-
-        Shape nowShape;
     };
 
+    // By shape ID
     std::vector<std::vector<FrontierPerSA>> m_frontierPossibs;
 
     std::vector<std::tuple<Pos, std::reference_wrapper<Shape>, std::reference_wrapper<std::vector<PastRes_t>>>>
@@ -377,20 +379,33 @@ private:
     void
     erase_fromFrontier(std::vector<Pos> const &shapePoss) {
         for (std::vector<FrontierPerSA> &fpLine : m_frontierPossibs) {
-            auto [last, end] = std::ranges::remove_if(
-                fpLine, [&](FrontierPerSA &item) { return std::ranges::find(shapePoss, item.p) != shapePoss.end(); });
+
+            auto [last, end] = std::ranges::remove_if(fpLine, [&](FrontierPerSA const &item) {
+                return std::ranges::find(shapePoss, item.p) != shapePoss.end();
+            });
             fpLine.erase(last, end);
         }
     }
 
+    void
+    add_toFrontierPossibs(Pos const &p, std::tuple<Shape &, std::vector<PastRes_t_NEW> &> const &possib) {
+        for (PastRes_t_NEW const &onePR : std::get<1>(possib)) {
+            m_frontierPossibs.at(onePR.ids.shpID).push_back(FrontierPerSA{.p = p, .olPossib = onePR});
+        }
+    }
 
     void
-    add_toFrontier(std::vector<Pos> const &poss, std::vector<Shape> const &shps) {
-        for (auto const &[oneShp, onePos] : std::views::zip(shps, poss)) {
-            auto possibsForWindow = getOrCompute_possibsFor(oneShp);
-            if (std::get<1>(possibsForWindow).size() > 0) {
-                m_frontierTiles.push_back(std::tuple_cat(std::make_tuple(oneShp), possibsForWindow));
-            }
+    add_toFrontierPossibs(std::vector<Pos> const                                               &poss,
+                          std::vector<std::tuple<Shape &, std::vector<PastRes_t_NEW> &>> const &possibs) {
+        for (auto const &[p, possib] : std::views::zip(poss, possibs)) { add_toFrontierPossibs(p, possib); }
+    }
+
+    void
+    sort_frontierPossibs() {
+        for (auto &possibLine : m_frontierPossibs) {
+            std::ranges::sort(possibLine, [](FrontierPerSA &l, FrontierPerSA &r) {
+                return l.olPossib.olayRes.surfaceOpened_relative < r.olPossib.olayRes.surfaceOpened_relative;
+            });
         }
     }
 
@@ -425,11 +440,11 @@ public:
 
     BoxPacker_2D(size_t const area_ySize, size_t const area_xSize, std::vector<std::vector<Shape>> const &shps_alterns,
                  std::vector<size_t> const &shps_counts, size_t const firstTile_yPos = 0uz,
-                 size_t const firstTile_xPos = 0uz, pastResMap_t const &pastReslts = {})
+                 size_t const firstTile_xPos = 0uz, pastResMap_t_NEW const &pastReslts = {})
         : m_useableCount_perShape(shps_counts),
           m_area(std::vector(area_ySize + 2, std::vector<char>(area_xSize + 2, 0))),
           m_firstTilePos(Pos{.y = static_cast<long long>(firstTile_yPos), .x = static_cast<long long>(firstTile_xPos)}),
-          m_shapes_alterns(shps_alterns), m_pastComputed(pastReslts) {
+          m_shapes_alterns(shps_alterns), m_pastComputed(pastReslts), m_frontierPossibs(shps_alterns.size()) {
 
         std::ranges::fill(m_area.front(), 1);
         for (auto &line : std::views::take(m_area, m_area.size() - 1) | std::views::drop(1)) {
@@ -454,17 +469,18 @@ public:
                 [](size_t a, size_t b) { return std::max(a, b); })
                 .value_or(0uz);
 
-        auto const ftPos     = Pos{.y = static_cast<long long>(std::min(firstTile_yPos, area_ySize - SQSZ)),
-                                   .x = static_cast<long long>(std::min(firstTile_xPos, area_xSize - SQSZ))};
-        auto       firstTile = get_windowAtPos(ftPos).value();
+        auto const ftPos           = Pos{.y = static_cast<long long>(std::min(firstTile_yPos, area_ySize - SQSZ)),
+                                         .x = static_cast<long long>(std::min(firstTile_xPos, area_xSize - SQSZ))};
+        auto       firstTilePossib = getOrCompute_possibsFor(get_windowAtPos(ftPos).value());
 
-        m_frontierTiles.push_back(std::tuple_cat(std::make_tuple(ftPos), getOrCompute_possibsFor(firstTile)));
+        add_toFrontierPossibs(ftPos, firstTilePossib);
+        sort_frontierPossibs();
     }
 
     BoxPacker_2D(size_t const &area_ySize, size_t const &area_xSize,
                  std::vector<std::array<std::array<bool, SQSZ - 2>, SQSZ - 2>> const &shps,
                  std::vector<size_t> const &shps_counts, size_t const firstTile_yPos = 0uz,
-                 size_t const firstTile_xPos = 0uz, pastResMap_t const &pastReslts = {})
+                 size_t const firstTile_xPos = 0uz, pastResMap_t_NEW const &pastReslts = {})
         : BoxPacker_2D(area_ySize, area_xSize,
                        std::views::transform(
                            shps, [](auto const &smallerShp) { return Shape(smallerShp).compute_alternsRotFlip(); }) |
@@ -484,6 +500,15 @@ public:
     get_useableShapeCountRemaining() {
         return std::ranges::fold_left_first(m_useableCount_perShape, std::plus()).value_or(0uz);
     }
+    size_t
+    get_areaEmptyCount() {
+        size_t res{};
+        for (auto const &line : m_area) {
+            for (char ch : line) { res += (ch == 0); }
+        }
+        return res;
+    }
+
     size_t
     get_pastResSize() {
         return m_pastComputed.size();
@@ -554,8 +579,18 @@ public:
     void
     reset_frontier() {
         auto firstTile = get_windowAtPos(m_firstTilePos).value();
-        m_frontierTiles.clear();
-        m_frontierTiles.push_back(std::tuple_cat(std::make_tuple(m_firstTilePos), getOrCompute_possibsFor(firstTile)));
+
+        for (auto &ft : m_frontierPossibs) { ft.clear(); }
+
+        auto const ftPos =
+            Pos{.y = static_cast<long long>(m_firstTilePos.y), .x = static_cast<long long>(m_firstTilePos.x)};
+        auto firstTilePossib = getOrCompute_possibsFor(get_windowAtPos(ftPos).value());
+
+        add_toFrontierPossibs(ftPos, firstTilePossib);
+        sort_frontierPossibs();
+
+        // m_frontierTiles.push_back(std::tuple_cat(std::make_tuple(m_firstTilePos),
+        // getOrCompute_possibsFor(firstTile)));
     }
 
     void
@@ -596,14 +631,14 @@ public:
             for (long long shpID = 0; shpID < m_shapes_alterns.size(); ++shpID) {
                 for (long long alternID = 0; alternID < m_shapes_alterns.at(shpID).size(); ++alternID) {
                     auto rs =
-                        PastRes_t_NEW{.ids{shpID, alternID},
+                        PastRes_t_NEW{.ids{static_cast<size_t>(shpID), static_cast<size_t>(alternID)},
                                       .olayRes = tile.compute_overlayWith(m_shapes_alterns.at(shpID).at(alternID))};
                     if (rs.olayRes.pointsOverlaid == 0uz) { vpr.push_back(rs); }
                 }
             }
             std::ranges::sort(vpr, [](auto const &l, auto const &r) -> bool {
-                double const soDif = l.second.surfaceOpened_relative - r.second.surfaceOpened_relative;
-                if (soDif == 0.0) { return l.second.pointsAdded > r.second.pointsAdded; }
+                double const soDif = l.olayRes.surfaceOpened_relative - r.olayRes.surfaceOpened_relative;
+                if (soDif == 0.0) { return l.olayRes.pointsAdded > r.olayRes.pointsAdded; }
                 else { return soDif < 0; }
             });
         }
@@ -630,44 +665,6 @@ public:
         return toPrint;
     }
 
-
-    std::pair<std::vector<std::vector<std::array<size_t, 4>>>, std::vector<size_t>>
-    calculate_nextStepsToConsider() {
-
-        std::pair<std::vector<std::vector<std::array<size_t, 4>>>, std::vector<size_t>> res{
-            std::vector<std::vector<std::array<size_t, 4>>>(m_shapes_alterns.size()),
-            std::views::iota(0uz, m_shapes_alterns.size()) | std::ranges::to<std::vector>()};
-
-        std::vector<double> lastSORs(m_shapes_alterns.size(), std::numeric_limits<double>::max());
-
-        // This 'wierd' adjustment is to make sure the solver selects shapes more evenly
-        auto const perShape_adjustments = compute_perShapeScoringAdjustments();
-
-        for (size_t ft_i = 0uz; auto const &oneFT : m_frontierTiles) {
-
-            std::vector<char> tracker(m_shapes_alterns.size(), 0);
-            for (size_t alt_i = 0uz; alt_i < std::get<2>(oneFT).get().size(); ++alt_i) {
-                auto const &[alternsPos, overlay] = std::get<2>(oneFT).get().at(alt_i);
-                auto const adjSOR = overlay.surfaceOpened_relative * perShape_adjustments.at(alternsPos.y);
-
-                if (std::ranges::fold_left_first(tracker, std::bit_and{}).value_or(0) == 1) { break; }
-                else if (m_useableCount_perShape.at(alternsPos.y) == 0 || adjSOR > lastSORs.at(alternsPos.y)) {
-                    continue;
-                }
-                else if (adjSOR < lastSORs.at(alternsPos.y)) {
-                    lastSORs.at(alternsPos.y) = adjSOR;
-                    res.first.at(alternsPos.y).clear();
-                }
-                tracker.at(alternsPos.y) = 1;
-                res.first.at(alternsPos.y)
-                    .push_back({ft_i, alt_i, static_cast<size_t>(alternsPos.y), static_cast<size_t>(alternsPos.x)});
-            }
-            ft_i++;
-        }
-
-        std::ranges::sort(res.second, [&](auto &a, auto &b) { return lastSORs[a] < lastSORs[b]; });
-        return res;
-    }
 
     std::vector<Pos>
     calculate_windowBorderIndices(Pos const &atPos) {
@@ -700,7 +697,7 @@ public:
 
     size_t
     calculate_unfillableCount(Pos const &atPos, std::vector<Pos> const &surrPoss,
-                              std::vector<std::tuple<Shape &, std::vector<PastRes_t> &>> const &possibsForWindows) {
+                              std::vector<std::tuple<Shape &, std::vector<PastRes_t_NEW> &>> const &possibsForWindows) {
 
         size_t res = 0uz;
         // auto const borders = calculate_windowBorderIndices(atPos);
@@ -711,10 +708,10 @@ public:
                 auto const exe = [&]() -> bool {
                     for (auto const &[sp, pfw] : std::views::zip(surrPoss, possibsForWindows)) {
                         if (auto insidePos = relPos_insideWindowAtPos_minus1(Pos{r, c}, sp)) {
-                            for (PastRes_t const &pr : std::get<1>(pfw)) {
-                                if (pr.second.res_shp.m_matrix.at(insidePos.value().y).at(insidePos.value().x) ==
+                            for (PastRes_t_NEW const &pr : std::get<1>(pfw)) {
+                                if (pr.olayRes.res_shp.m_matrix.at(insidePos.value().y).at(insidePos.value().x) ==
                                         true &&
-                                    m_useableCount_perShape.at(pr.first.y) > 0) {
+                                    m_useableCount_perShape.at(pr.ids.shpID) > 0) {
                                     return false;
                                 }
                             }
@@ -737,6 +734,7 @@ public:
 
 
         for (size_t shpID = 0uz; shpID < m_shapes_alterns.size(); ++shpID) {
+            if (m_useableCount_perShape.at(shpID) == 0uz) { continue; }
             for (size_t fpsaID = 0uz; fpsaID < m_frontierPossibs.at(shpID).size(); ++fpsaID) {
                 FrontierPerSA const &one = m_frontierPossibs.at(shpID).at(fpsaID);
 
@@ -755,7 +753,7 @@ public:
                 }
                 else {
                     auto &curUF = res.second.at(shpID);
-                    if (not curUF || curUF.value().second > unfillCount) { res.second = {one, unfillCount}; }
+                    if (not curUF || curUF.value().second > unfillCount) { curUF = {one, unfillCount}; }
                 }
                 set_windowAtPos(one.p, priorState.value());
             }
@@ -767,36 +765,46 @@ public:
 
     std::optional<FrontierPerSA>
     solve_oneStep() {
+        if (m_frontierPossibs.size() == 0) { return std::nullopt; }
 
         auto [nonUnfilledPoss, unfilledPoss] = get_possibs();
 
         // Adjust SOR
         auto const PS_scoreAdj = compute_perShapeScoringAdjustments();
         for (size_t i = 0; i < PS_scoreAdj.size(); ++i) {
-            if (nonUnfilledPoss.at(i)) { nonUnfilledPoss.at(i).value().surfaceOpened_relative *= PS_scoreAdj.at(i); }
-            if (unfilledPoss.at(i)) { unfilledPoss.at(i).value().first.surfaceOpened_relative *= PS_scoreAdj.at(i); }
+            if (nonUnfilledPoss.at(i)) {
+                nonUnfilledPoss.at(i).value().olPossib.olayRes.surfaceOpened_relative *= PS_scoreAdj.at(i);
+            }
+            if (unfilledPoss.at(i)) {
+                unfilledPoss.at(i).value().first.olPossib.olayRes.surfaceOpened_relative *= PS_scoreAdj.at(i);
+            }
         }
 
         auto selectOne = [&]() -> std::optional<FrontierPerSA> {
             std::ranges::sort(nonUnfilledPoss, [](auto &l, auto &r) {
-                if (not l.value()) { return false; }
-                else if (not r.value()) { return true; }
-                else { return l.value().surfaceOpened_relative < r.value().surfaceOpened_relative; }
+                if (not l) { return false; }
+                else if (not r) { return true; }
+                else {
+                    return l.value().olPossib.olayRes.surfaceOpened_relative <
+                           r.value().olPossib.olayRes.surfaceOpened_relative;
+                }
             });
 
             // There is some nonUnfilled available
-            if (nonUnfilledPoss.front()) { return unfilledPoss.front(); }
+            if (nonUnfilledPoss.front()) { return nonUnfilledPoss.front(); }
             // There are only unfilled ones
             else {
                 std::ranges::sort(unfilledPoss, [](auto &l, auto &r) {
-                    if (not l.value()) { return false; }
-                    else if (not r.value()) { return true; }
+                    if (not l) { return false; }
+                    else if (not r) { return true; }
                     else if (l.value().second != r.value().second) {
-                        return l.value().first.surfaceOpened_relative < r.value().first.surfaceOpened_relative;
+                        return l.value().first.olPossib.olayRes.surfaceOpened_relative <
+                               r.value().first.olPossib.olayRes.surfaceOpened_relative;
                     }
                     else { return l.value().second < r.value().second; }
                 });
 
+                if (not unfilledPoss.front()) { return std::nullopt; }
                 return unfilledPoss.front().value().first;
             }
         };
@@ -804,21 +812,20 @@ public:
         std::optional<FrontierPerSA> selected = selectOne();
         if (not selected) { return std::nullopt; }
 
-
-        set_windowAtPos(selected.value().p, selected.value().olayRes.res_shp);
+        set_windowAtPos(selected.value().p, selected.value().olPossib.olayRes.res_shp);
 
         auto const surrPoss          = get_surrOverlappingPoss(selected.value().p);
         auto const possibsForWindows = getOrCompute_possibsFor(get_windowsAtPos(surrPoss).value());
 
-
         erase_fromFrontier(surrPoss);
-        add_toFrontier(surrPoss);
+        add_toFrontierPossibs(surrPoss, possibsForWindows);
+        sort_frontierPossibs();
 
         // We used one
         m_useableCount_perShape[selected->olPossib.ids.shpID]--;
         return selected;
     }
-    std::vector<std::tuple<Pos, PastRes_t>>
+    std::vector<FrontierPerSA>
     solve_XSteps(size_t numOfSteps = std::numeric_limits<size_t>::max()) {
         std::vector<std::tuple<Pos, PastRes_t>> res;
         while (numOfSteps-- > 0) {

@@ -58,27 +58,29 @@ day12_1(std::string dataFile) {
     namespace locpack     = incom::aoc::packing;
     namespace locpack_2   = incom::aoc::packing_2;
 
-    locpack::BoxPacker_2D<5> solv_1(trees.front().yDim, trees.front().xDim,
-                                    std::views::transform(shapes, [](auto const &oneShp) { return oneShp.matrices; }) |
-                                        std::ranges::to<std::vector>(),
-                                    trees.front().reqdShapes);
+    incsolvpack::BoxPacker_2D<5> solv_1(
+        trees.front().yDim, trees.front().xDim,
+        std::views::transform(shapes, [](auto const &oneShp) { return oneShp.matrices; }) |
+            std::ranges::to<std::vector>(),
+        trees.front().reqdShapes);
 
     size_t resAccu   = 0uz;
     size_t resUltima = 0uz;
 
-    for (auto const &oneTree : std::views::drop(trees, 20)) {
+    for (auto const &oneTree : std::views::drop(trees, 0)) {
         solv_1.reset_allButNotPastComputed(oneTree.yDim, oneTree.xDim, oneTree.reqdShapes);
         solv_1.prime_fprng();
         while (solv_1.solve_oneStep()) {
-            std::cout << solv_1.get_areaState() << '\n' << solv_1.get_useableShapeCountRemaining() << '\n';
+            // std::cout << solv_1.get_areaState() << '\n' << solv_1.get_useableShapeCountRemaining() << '\n';
             int a = 5;
             a++;
         }
         // solv_1.solve_XSteps();
         resAccu   += (solv_1.get_useableShapeCountRemaining() == 0uz);
         resUltima += solv_1.get_useableShapeCountRemaining();
-        std::cout << solv_1.get_areaState();
-        std::cout << '\n' << solv_1.get_useableShapeCountRemaining() << "\n\n\n";
+        // std::cout << solv_1.get_areaState();
+        // std::cout << '\n' << solv_1.get_useableShapeCountRemaining() << '\n' << solv_1.get_areaEmptyCount();
+        // std::cout << "\n\n\n";
     }
 
     std::cout << resUltima << '\n';

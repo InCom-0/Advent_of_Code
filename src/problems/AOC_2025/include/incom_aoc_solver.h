@@ -482,6 +482,15 @@ public:
         return std::ranges::fold_left_first(m_useableCount_perShape, std::plus()).value_or(0uz);
     }
     size_t
+    get_areaEmptyCount() {
+        size_t res{};
+        for (auto const &line : m_area) {
+            for (char ch : line) { res += (ch == 0); }
+        }
+        return res;
+    }
+
+    size_t
     get_pastResSize() {
         return m_pastComputed.size();
     }
@@ -708,7 +717,7 @@ public:
     calculate_unfillableCount(Pos const &atPos, std::vector<Pos> const &surrPoss,
                               std::vector<std::tuple<Shape_t &, std::vector<PastRes_t> &>> const &possibsForWindows) {
 
-        size_t     res     = 0uz;
+        size_t res = 0uz;
         // auto const borders = calculate_windowBorderIndices(atPos);
 
         for (long long r = atPos.y; r < atPos.y + SQSZ; ++r) {
