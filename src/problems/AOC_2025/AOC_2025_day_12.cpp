@@ -1,12 +1,17 @@
+#include <iostream>
 #include <ranges>
+
 
 #include <ankerl/unordered_dense.h>
 #include <ctre.hpp>
 #include <flux.hpp>
 
-#include <incom_commons.h>
 #include <incstd/core/hashing.hpp>
 #include <incstd/core/solvers.hpp>
+
+#include <incom_aoc_solver.h>
+#include <incom_aoc_solver_2.h>
+#include <incom_commons.h>
 
 
 namespace AOC2025 {
@@ -50,25 +55,33 @@ day12_1(std::string dataFile) {
         }
     }
     namespace incsolvpack = incom::standard::solvers::packing;
+    namespace locpack     = incom::aoc::packing;
+    namespace locpack_2   = incom::aoc::packing_2;
 
-    incsolvpack::BoxPacker_2D<5> solv_1(
-        trees.front().yDim, trees.front().xDim,
-        std::views::transform(shapes, [](auto const &oneShp) { return oneShp.matrices; }) |
-            std::ranges::to<std::vector>(),
-        trees.front().reqdShapes);
+    locpack::BoxPacker_2D<5> solv_1(trees.front().yDim, trees.front().xDim,
+                                    std::views::transform(shapes, [](auto const &oneShp) { return oneShp.matrices; }) |
+                                        std::ranges::to<std::vector>(),
+                                    trees.front().reqdShapes);
 
-    size_t resAccu = 0uz;
+    size_t resAccu   = 0uz;
+    size_t resUltima = 0uz;
 
-    for (auto const &oneTree : std::views::drop(trees, 1)) {
+    for (auto const &oneTree : std::views::drop(trees, 20)) {
         solv_1.reset_allButNotPastComputed(oneTree.yDim, oneTree.xDim, oneTree.reqdShapes);
         solv_1.prime_fprng();
-        solv_1.solve_XSteps();
-        resAccu += (solv_1.get_useableShapeCountRemaining() == 0uz);
-        // solv_1.print_areaState();
-        // std::cout << '\n' << solv_1.get_useableShapeCountRemaining() << "\n\n\n";
+        while (solv_1.solve_oneStep()) {
+            std::cout << solv_1.get_areaState() << '\n' << solv_1.get_useableShapeCountRemaining() << '\n';
+            int a = 5;
+            a++;
+        }
+        // solv_1.solve_XSteps();
+        resAccu   += (solv_1.get_useableShapeCountRemaining() == 0uz);
+        resUltima += solv_1.get_useableShapeCountRemaining();
+        std::cout << solv_1.get_areaState();
+        std::cout << '\n' << solv_1.get_useableShapeCountRemaining() << "\n\n\n";
     }
 
-
+    std::cout << resUltima << '\n';
     return resAccu;
 }
 

@@ -2,12 +2,15 @@
 #include <cstdint>
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <incom_commons.h>
 #include <optional>
 #include <ranges>
 #include <span>
 #include <string>
 #include <string_view>
+
+#include <incom_commons.h>
+#include <incom_aoc_solver.h>
+
 
 
 namespace AOC2025 {
