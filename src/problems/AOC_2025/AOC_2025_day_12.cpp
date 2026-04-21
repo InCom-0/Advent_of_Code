@@ -78,9 +78,9 @@ day12_1(std::string dataFile) {
         // solv_1.solve_XSteps();
         resAccu   += (solv_1.get_useableShapeCountRemaining() == 0uz);
         resUltima += solv_1.get_useableShapeCountRemaining();
-        // std::cout << solv_1.get_areaState();
+        std::cout << solv_1.get_areaState();
         // std::cout << '\n' << solv_1.get_useableShapeCountRemaining() << '\n' << solv_1.get_areaEmptyCount();
-        // std::cout << "\n\n\n";
+        std::cout << "\n\n\n";
     }
 
     std::cout << resUltima << '\n';
