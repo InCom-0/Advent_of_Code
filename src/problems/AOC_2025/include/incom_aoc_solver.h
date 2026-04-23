@@ -723,6 +723,7 @@ public:
         for (long long r = atPos.y; r < atPos.y + SQSZ; ++r) {
             for (long long c = atPos.x; c < atPos.x + SQSZ; ++c) {
                 if (m_area.at(r).at(c) != 0) { continue; }
+
                 auto const exe = [&]() -> bool {
                     for (auto const &[sp, pfw] : std::views::zip(surrPoss, possibsForWindows)) {
                         if (auto insidePos = relPos_insideWindowAtPos_minus1(Pos{r, c}, sp)) {

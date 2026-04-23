@@ -58,7 +58,7 @@ day12_1(std::string dataFile) {
     namespace locpack     = incom::aoc::packing;
     namespace locpack_2   = incom::aoc::packing_2;
 
-    incsolvpack::BoxPacker_2D<5> solv_1(
+    locpack_2::BoxPacker_2D<5> solv_1(
         trees.front().yDim, trees.front().xDim,
         std::views::transform(shapes, [](auto const &oneShp) { return oneShp.matrices; }) |
             std::ranges::to<std::vector>(),
@@ -72,8 +72,8 @@ day12_1(std::string dataFile) {
         solv_1.prime_fprng();
         while (solv_1.solve_oneStep()) {
             // std::cout << solv_1.get_areaState() << '\n' << solv_1.get_useableShapeCountRemaining() << '\n';
-            int a = 5;
-            a++;
+            // int a = 5;
+            // a++;
         }
         // solv_1.solve_XSteps();
         resAccu   += (solv_1.get_useableShapeCountRemaining() == 0uz);
