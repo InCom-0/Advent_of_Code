@@ -7,19 +7,13 @@
 #include <source_location>
 #include <vector>
 
-
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <incom_aoc_solver.h>
-#include <more_concepts/more_concepts.hpp>
-#include <xxhash.h>
 
 #include <incstd/incstd_all.hpp>
 
 namespace incom {
 namespace aoc {
-
-    
 
 class parseInputUsingCTRE {
 private:
@@ -221,7 +215,8 @@ struct _instrBase_2018 {
     std::reference_wrapper<long long> B;
     std::reference_wrapper<long long> C;
 
-    _instrBase_2018(long long &aRef, long long &bRef, long long &cRef) : A{aRef}, B{bRef}, C{cRef} {};
+    _instrBase_2018(long long &aRef, long long &bRef, long long &cRef)
+        : A{aRef}, B{bRef}, C{cRef} {};
 
     std::reference_wrapper<std::reference_wrapper<long long>>
     getMappedRef(const int &id) {
@@ -244,10 +239,10 @@ template <typename... instrT>
 requires(std::derived_from<instrT, _instrBase> && ...)
 struct ProgramQuasiAssembly {
     std::unordered_map<char, std::reference_wrapper<long long>, incstd::hashing::XXH3Hasher> mapping;
-    unsigned long long                                                                      instructionID = 0;
-    long long                                                                               fakeRegister  = LLONG_MIN;
-    std::vector<long long>                                                                  registers;
-    std::vector<std::variant<instrT...>>                                                    instrVect;
+    unsigned long long                                                                       instructionID = 0;
+    long long                                                                                fakeRegister  = LLONG_MIN;
+    std::vector<long long>                                                                   registers;
+    std::vector<std::variant<instrT...>>                                                     instrVect;
 
     // The one and only constructor of the 'prog' type
     ProgramQuasiAssembly(const std::vector<std::vector<std::string>> &input, const long long registersStartValue = 0) {
@@ -456,7 +451,7 @@ struct ProgramQuasiAssembly_2018 {
         }
 
         std::unordered_map<std::string, std::variant<instrT...>, incstd::hashing::XXH3Hasher> instrTypeMap;
-        long long                                                                            cntr = 0;
+        long long                                                                             cntr = 0;
 
         // Horrifying hack creating a dangling reference with the 'counter' being passed into Instr_T constructor
         (instrTypeMap.emplace(IDsMap.at(cntr++), std::variant<instrT...>{instrT{cntr, cntr, cntr}}), ...);
@@ -465,7 +460,7 @@ struct ProgramQuasiAssembly_2018 {
 
     // The one and only constructor of the 'prog' type
     ProgramQuasiAssembly_2018(
-        const std::vector<std::vector<std::string>>                                          &rawInstrInput,
+        const std::vector<std::vector<std::string>>                                           &rawInstrInput,
         std::unordered_map<std::string, std::variant<instrT...>, incstd::hashing::XXH3Hasher> &mapped,
         const std::vector<long long> regStartVal = {0, 0, 0, 0}) {
 
@@ -634,7 +629,8 @@ public:
     exe_externalPointedToInstr(long long &externalID, auto const &ol_set) -> long long {
         auto instruction = get_externalCursorInstr(externalID);
 
-        auto ol_set_numOfParams = incstd::variant_utils::Overloads{[](auto &instr) { return instr.get_numOfParams() + 1; }};
+        auto ol_set_numOfParams =
+            incstd::variant_utils::Overloads{[](auto &instr) { return instr.get_numOfParams() + 1; }};
 
         std::visit(ol_set, instruction);
         return externalID += std::visit(ol_set_numOfParams, instruction);
@@ -646,5 +642,5 @@ public:
 };
 
 } // namespace PQA
-} // namespace commons
+} // namespace aoc
 } // namespace incom

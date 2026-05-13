@@ -58,8 +58,8 @@ std::vector<std::vector<char>> day17_0(std::string dataFile) {
 
 
     auto instructions = incstd::variant_utils::Overloads{
-        [&](add &a) { a.m_refs[2].get() = a.m_refs[0] + a.m_refs[1]; },
-        [&](mul &a) { a.m_refs[2].get() = a.m_refs[0] * a.m_refs[1]; },
+        [&](add &a) { a.m_refs[2].get() = a.m_refs[0].get() + a.m_refs[1]; },
+        [&](mul &a) { a.m_refs[2].get() = a.m_refs[0].get() * a.m_refs[1]; },
         [&](end &a) { pqa.m_cursor = LLONG_MIN; },
         [&](inp &a) {},
         [&](out &a) {
@@ -79,10 +79,10 @@ std::vector<std::vector<char>> day17_0(std::string dataFile) {
             // std::cout << "out says: " << a.m_refs[0].get() << '\n';
         },
         [&](jit &a) {
-            if (a.m_refs[0] != 0) { pqa.m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+            if (a.m_refs[0].get() != 0) { pqa.m_cursor = (a.m_refs[1].get() - (a.get_numOfParams() + 1)); }
         },
         [&](jif &a) {
-            if (a.m_refs[0] == 0) { pqa.m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+            if (a.m_refs[0].get() == 0) { pqa.m_cursor = (a.m_refs[1].get() - (a.get_numOfParams() + 1)); }
         },
         [&](lth &a) { a.m_refs[2].get() = (a.m_refs[0].get() < a.m_refs[1].get()); },
         [&](eql &a) { a.m_refs[2].get() = (a.m_refs[0].get() == a.m_refs[1].get()); },
@@ -273,16 +273,16 @@ long long day17_2(std::string dataFile) {
     size_t dustCollected = 0;
 
     auto instructions = incstd::variant_utils::Overloads{
-        [&](add &a) { a.m_refs[2].get() = a.m_refs[0] + a.m_refs[1]; },
-        [&](mul &a) { a.m_refs[2].get() = a.m_refs[0] * a.m_refs[1]; },
+        [&](add &a) { a.m_refs[2].get() = a.m_refs[0].get() + a.m_refs[1]; },
+        [&](mul &a) { a.m_refs[2].get() = a.m_refs[0].get() * a.m_refs[1]; },
         [&](end &a) { pqa.m_cursor = LLONG_MIN; },
         [&](inp &a) { a.m_refs[0].get() = inputSequence.at(inpCursor++); },
         [&](out &a) { dustCollected = a.m_refs[0].get(); },
         [&](jit &a) {
-            if (a.m_refs[0] != 0) { pqa.m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+            if (a.m_refs[0].get() != 0) { pqa.m_cursor = (a.m_refs[1].get() - (a.get_numOfParams() + 1)); }
         },
         [&](jif &a) {
-            if (a.m_refs[0] == 0) { pqa.m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+            if (a.m_refs[0].get() == 0) { pqa.m_cursor = (a.m_refs[1].get() - (a.get_numOfParams() + 1)); }
         },
         [&](lth &a) { a.m_refs[2].get() = (a.m_refs[0].get() < a.m_refs[1].get()); },
         [&](eql &a) { a.m_refs[2].get() = (a.m_refs[0].get() == a.m_refs[1].get()); },

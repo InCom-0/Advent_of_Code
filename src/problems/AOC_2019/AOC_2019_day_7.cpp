@@ -7,34 +7,62 @@
 
 
 namespace AOC2019 {
-long long day7_1(std::string dataFile) {
+long long
+day7_1(std::string dataFile) {
 
     struct add : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct mul : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct end : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 0; }
+        constexpr long long
+        get_numOfParams() override {
+            return 0;
+        }
     };
     struct inp : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
     struct out : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
     struct jit : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 2; }
+        constexpr long long
+        get_numOfParams() override {
+            return 2;
+        }
     };
     struct jif : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 2; }
+        constexpr long long
+        get_numOfParams() override {
+            return 2;
+        }
     };
     struct lth : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct eql : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
 
     auto                   d_ctre = ctre::search<R"(-?\d+)">;
@@ -56,8 +84,8 @@ long long day7_1(std::string dataFile) {
     long long maxFinalOutput = LLONG_MIN;
 
     auto instructions = incstd::variant_utils::Overloads{
-        [&](add &a) { a.m_refs[2].get() = a.m_refs[0] + a.m_refs[1]; },
-        [&](mul &a) { a.m_refs[2].get() = a.m_refs[0] * a.m_refs[1]; },
+        [&](add &a) { a.m_refs[2].get() = a.m_refs[0].get() + a.m_refs[1]; },
+        [&](mul &a) { a.m_refs[2].get() = a.m_refs[0].get() * a.m_refs[1]; },
         [&](end &a) { amps[selAmp].m_cursor = LLONG_MIN; },
         [&](inp &a) {
             if (amps[selAmp].m_cursor == 0) { a.m_refs[0].get() = phases[selAmp]; }
@@ -68,10 +96,10 @@ long long day7_1(std::string dataFile) {
             amps[selAmp].m_cursor = LLONG_MIN;
         },
         [&](jit &a) {
-            if (a.m_refs[0] != 0) { amps[selAmp].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+            if (a.m_refs[0].get() != 0) { amps[selAmp].m_cursor = (a.m_refs[1].get() - (a.get_numOfParams() + 1)); }
         },
         [&](jif &a) {
-            if (a.m_refs[0] == 0) { amps[selAmp].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+            if (a.m_refs[0].get() == 0) { amps[selAmp].m_cursor = (a.m_refs[1].get() - (a.get_numOfParams() + 1)); }
         },
         [&](lth &a) { a.m_refs[2].get() = (a.m_refs[0].get() < a.m_refs[1].get()); },
         [&](eql &a) { a.m_refs[2].get() = (a.m_refs[0].get() == a.m_refs[1].get()); },
@@ -91,33 +119,61 @@ long long day7_1(std::string dataFile) {
     return maxFinalOutput;
 }
 
-long long day7_2(std::string dataFile) {
+long long
+day7_2(std::string dataFile) {
     struct add : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct mul : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct end : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 0; }
+        constexpr long long
+        get_numOfParams() override {
+            return 0;
+        }
     };
     struct inp : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
     struct out : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
     struct jit : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 2; }
+        constexpr long long
+        get_numOfParams() override {
+            return 2;
+        }
     };
     struct jif : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 2; }
+        constexpr long long
+        get_numOfParams() override {
+            return 2;
+        }
     };
     struct lth : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct eql : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
 
     auto                   d_ctre = ctre::search<R"(-?\d+)">;
@@ -139,8 +195,8 @@ long long day7_2(std::string dataFile) {
     long long maxFinalOutput = LLONG_MIN;
 
     auto instructions = incstd::variant_utils::Overloads{
-        [&](add &a) { a.m_refs[2].get() = a.m_refs[0] + a.m_refs[1]; },
-        [&](mul &a) { a.m_refs[2].get() = a.m_refs[0] * a.m_refs[1]; },
+        [&](add &a) { a.m_refs[2].get() = a.m_refs[0].get() + a.m_refs[1]; },
+        [&](mul &a) { a.m_refs[2].get() = a.m_refs[0].get() * a.m_refs[1]; },
         [&](end &a) { amps[selAmp].m_cursor = LLONG_MIN; },
         [&](inp &a) {
             if (amps[selAmp].m_cursor == 0) { a.m_refs[0].get() = phases[selAmp]; }
@@ -151,10 +207,10 @@ long long day7_2(std::string dataFile) {
             selAmp++; // output instruction means we should continue with the next amplifier
         },
         [&](jit &a) {
-            if (a.m_refs[0] != 0) { amps[selAmp].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+            if (a.m_refs[0].get() != 0) { amps[selAmp].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
         },
         [&](jif &a) {
-            if (a.m_refs[0] == 0) { amps[selAmp].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+            if (a.m_refs[0].get() == 0) { amps[selAmp].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
         },
         [&](lth &a) { a.m_refs[2].get() = (a.m_refs[0].get() < a.m_refs[1].get()); },
         [&](eql &a) { a.m_refs[2].get() = (a.m_refs[0].get() == a.m_refs[1].get()); },

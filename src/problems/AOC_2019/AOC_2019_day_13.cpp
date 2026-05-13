@@ -63,8 +63,8 @@ long long day13_1(std::string dataFile) {
 
     int       outSwitch          = 0;
     auto      instructions       = incstd::variant_utils::Overloads{
-        [&](add &a) { a.m_refs[2].get() = a.m_refs[0] + a.m_refs[1]; },
-        [&](mul &a) { a.m_refs[2].get() = a.m_refs[0] * a.m_refs[1]; },
+        [&](add &a) { a.m_refs[2].get() = a.m_refs[0].get() + a.m_refs[1]; },
+        [&](mul &a) { a.m_refs[2].get() = a.m_refs[0].get() * a.m_refs[1]; },
         [&](end &a) { pqa.m_cursor = LLONG_MIN; },
         [&](inp &a) {
             a.m_refs[0].get() = screen.get(curKey);
@@ -89,10 +89,10 @@ long long day13_1(std::string dataFile) {
             // std::cout << "out says: " << a.m_refs[0].get() << '\n';
         },
         [&](jit &a) {
-            if (a.m_refs[0] != 0) { pqa.m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+            if (a.m_refs[0].get() != 0) { pqa.m_cursor = (a.m_refs[1].get() - (a.get_numOfParams() + 1)); }
         },
         [&](jif &a) {
-            if (a.m_refs[0] == 0) { pqa.m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+            if (a.m_refs[0].get() == 0) { pqa.m_cursor = (a.m_refs[1].get() - (a.get_numOfParams() + 1)); }
         },
         [&](lth &a) { a.m_refs[2].get() = (a.m_refs[0].get() < a.m_refs[1].get()); },
         [&](eql &a) { a.m_refs[2].get() = (a.m_refs[0].get() == a.m_refs[1].get()); },
@@ -164,8 +164,8 @@ long long day13_2(std::string dataFile) {
     std::pair<long long, long long> lastPos;
 
     auto instructions = incstd::variant_utils::Overloads{
-        [&](add &a) { a.m_refs[2].get() = a.m_refs[0] + a.m_refs[1]; },
-        [&](mul &a) { a.m_refs[2].get() = a.m_refs[0] * a.m_refs[1]; },
+        [&](add &a) { a.m_refs[2].get() = a.m_refs[0].get() + a.m_refs[1]; },
+        [&](mul &a) { a.m_refs[2].get() = a.m_refs[0].get() * a.m_refs[1]; },
         [&](end &a) { pqa.m_cursor = LLONG_MIN; },
         [&](inp &a) {
             if (lastBallPos.first < lastPaddlePos.first) { a.m_refs[0].get() = -1; }
@@ -201,10 +201,10 @@ long long day13_2(std::string dataFile) {
             // std::cout << "out says: " << a.m_refs[0].get() << '\n';
         },
         [&](jit &a) {
-            if (a.m_refs[0] != 0) { pqa.m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+            if (a.m_refs[0].get() != 0) { pqa.m_cursor = (a.m_refs[1].get() - (a.get_numOfParams() + 1)); }
         },
         [&](jif &a) {
-            if (a.m_refs[0] == 0) { pqa.m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+            if (a.m_refs[0].get() == 0) { pqa.m_cursor = (a.m_refs[1].get() - (a.get_numOfParams() + 1)); }
         },
         [&](lth &a) { a.m_refs[2].get() = (a.m_refs[0].get() < a.m_refs[1].get()); },
         [&](eql &a) { a.m_refs[2].get() = (a.m_refs[0].get() == a.m_refs[1].get()); },

@@ -38,10 +38,10 @@ long long day18_1(std::string dataFile) {
         [&](const mul &a) { a.source *= a.target; },
         [&](const mod &a) { a.source %= a.target; },
         [&](const rcv &a) {
-            if (a.source != 0) { theProgram.instructionID = LLONG_MAX; }
+            if (a.source.get() != 0) { theProgram.instructionID = LLONG_MAX; }
         },
         [&](const jgz &a) {
-            if (a.source > 0) { theProgram.instructionID += (a.target - 1); }
+            if (a.source.get() > 0) { theProgram.instructionID += (a.target.get() - 1); }
         },
     };
 
@@ -99,7 +99,7 @@ long long day18_2(std::string dataFile, int numOfPrograms) {
             }
         },
         [&](const jgz &a) {
-            if (a.source > 0) { programs[progID].instructionID += (a.target - 1); }
+            if (a.source.get() > 0) { programs[progID].instructionID += (a.target.get() - 1); }
             switch_Xs[progID] = false;
         },
     };

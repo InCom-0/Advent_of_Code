@@ -130,8 +130,8 @@ day23_1(std::string dataFile) {
     while (progStates.at(255).inpQueue.empty()) {
         for (size_t curProg = 0; curProg < programs.size(); ++curProg) {
             auto instructions = incstd::variant_utils::Overloads{
-                [&](add &a) { a.m_refs[2].get() = a.m_refs[0] + a.m_refs[1]; },
-                [&](mul &a) { a.m_refs[2].get() = a.m_refs[0] * a.m_refs[1]; },
+                [&](add &a) { a.m_refs[2].get() = a.m_refs[0].get() + a.m_refs[1]; },
+                [&](mul &a) { a.m_refs[2].get() = a.m_refs[0].get() * a.m_refs[1]; },
                 [&](end &a) { programs[curProg].m_cursor = LLONG_MIN; },
                 [&](inp &a) {
                     if (progStates[curProg].booted) { progStates[curProg].inputPacket(a.m_refs[0].get()); }
@@ -142,10 +142,10 @@ day23_1(std::string dataFile) {
                 },
                 [&](out &a) { progStates.at(curProg).constructPacket(progStates, a.m_refs[0].get()); },
                 [&](jit &a) {
-                    if (a.m_refs[0] != 0) { programs[curProg].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+                    if (a.m_refs[0].get() != 0) { programs[curProg].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
                 },
                 [&](jif &a) {
-                    if (a.m_refs[0] == 0) { programs[curProg].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+                    if (a.m_refs[0].get() == 0) { programs[curProg].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
                 },
                 [&](lth &a) { a.m_refs[2].get() = (a.m_refs[0].get() < a.m_refs[1].get()); },
                 [&](eql &a) { a.m_refs[2].get() = (a.m_refs[0].get() == a.m_refs[1].get()); },
@@ -298,8 +298,8 @@ day23_2(std::string dataFile) {
     while (true) {
         for (size_t curProg = 0; curProg < programs.size(); ++curProg) {
             auto instructions = incstd::variant_utils::Overloads{
-                [&](add &a) { a.m_refs[2].get() = a.m_refs[0] + a.m_refs[1]; },
-                [&](mul &a) { a.m_refs[2].get() = a.m_refs[0] * a.m_refs[1]; },
+                [&](add &a) { a.m_refs[2].get() = a.m_refs[0].get() + a.m_refs[1]; },
+                [&](mul &a) { a.m_refs[2].get() = a.m_refs[0].get() * a.m_refs[1]; },
                 [&](end &a) { programs[curProg].m_cursor = LLONG_MIN; },
                 [&](inp &a) {
                     if (progStates[curProg].booted) {
@@ -312,10 +312,10 @@ day23_2(std::string dataFile) {
                 },
                 [&](out &a) { emptyQueues -= progStates.at(curProg).constructPacket(progStates, a.m_refs[0].get()); },
                 [&](jit &a) {
-                    if (a.m_refs[0] != 0) { programs[curProg].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+                    if (a.m_refs[0].get() != 0) { programs[curProg].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
                 },
                 [&](jif &a) {
-                    if (a.m_refs[0] == 0) { programs[curProg].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
+                    if (a.m_refs[0].get() == 0) { programs[curProg].m_cursor = (a.m_refs[1] - (a.get_numOfParams() + 1)); }
                 },
                 [&](lth &a) { a.m_refs[2].get() = (a.m_refs[0].get() < a.m_refs[1].get()); },
                 [&](eql &a) { a.m_refs[2].get() = (a.m_refs[0].get() == a.m_refs[1].get()); },

@@ -5,6 +5,8 @@
 #include <flux.hpp>
 #include <glaze/glaze.hpp>
 
+#include "include/AOC_2016.h"
+
 namespace AOC2016 {
 
 

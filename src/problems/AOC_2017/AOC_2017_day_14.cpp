@@ -7,6 +7,7 @@
 #include <ctre.hpp>
 
 #include <flux.hpp>
+#include "include/AOC_2017.h"
 
 namespace AOC2017 {
 int day14_1(std::string dataFile) {

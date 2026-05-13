@@ -15,8 +15,10 @@ target_link_libraries(incom_commons INTERFACE
     incstd::incstd
     bitlib::bitlib
     hash-library::hash-library
-    mdspan::mdspan
 )
+
+# target_compile_options(incom_commons INTERFACE -freflection)
+target_compile_features(incom_commons INTERFACE cxx_std_26)
 
 # target_link_options(incom_commons PUBLIC -static-libgcc -static-libstdc++ "LINKER:-Bstatic,--whole-archive" -lwinpthread "LINKER:-Bdynamic,--no-whole-archive")
 

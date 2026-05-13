@@ -31,7 +31,7 @@ int day23_1(std::string dataFile) {
             mulInvocations++;
         },
         [&](const jnz &a) {
-            if (a.source != 0) { theProgram.instructionID += (a.target - 1); }
+            if (a.source.get() != 0) { theProgram.instructionID += (a.target.get() - 1); }
         },
     };
 
@@ -62,7 +62,7 @@ int day23_2(std::string dataFile) {
         [&](const sub &a) { a.source -= a.target; },
         [&](const mul &a) { a.source *= a.target; },
         [&](const jnz &a) {
-            if (a.source != 0) { theProgram.instructionID += (a.target - 1); }
+            if (a.source.get() != 0) { theProgram.instructionID += (a.target.get() - 1); }
         },
     };
 

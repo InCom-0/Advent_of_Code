@@ -3,6 +3,8 @@
 #include <AOC_2025.h>
 #include <incom_commons.h>
 
+#include <incom_aoc_solver.h>
+
 #define DATAFOLDER      "../../../data"
 #define DATAFOLDER_2024 "../../../data/AOC_2025"
 

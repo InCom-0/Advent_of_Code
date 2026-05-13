@@ -1,19 +1,17 @@
 #pragma once
 
 #include <algorithm>
-#include <cassert>
 #include <map>
 #include <numeric>
 #include <optional>
-#include <string>
 #include <string_view>
-#include <unordered_map>
-#include <utility>
-#include <vector>
+
+#include <incstd/incstd_all.hpp>
 
 
 namespace incom {
 namespace aoc {
+using namespace incom::standard;
 
 /*
 Elimination-first solver for small systems of sum equations over non-negative integers.
@@ -75,7 +73,7 @@ private:
 
             auto const divisor = std::gcd(numerator, denominator);
             if (divisor != 0) {
-                numerator /= divisor;
+                numerator   /= divisor;
                 denominator /= divisor;
             }
         }
@@ -83,7 +81,7 @@ private:
 
     friend rational
     operator+(rational lhs, rational const &rhs) {
-        lhs.numerator = lhs.numerator * rhs.denominator + rhs.numerator * lhs.denominator;
+        lhs.numerator    = lhs.numerator * rhs.denominator + rhs.numerator * lhs.denominator;
         lhs.denominator *= rhs.denominator;
         lhs.normalize();
         return lhs;
@@ -91,7 +89,7 @@ private:
 
     friend rational
     operator-(rational lhs, rational const &rhs) {
-        lhs.numerator = lhs.numerator * rhs.denominator - rhs.numerator * lhs.denominator;
+        lhs.numerator    = lhs.numerator * rhs.denominator - rhs.numerator * lhs.denominator;
         lhs.denominator *= rhs.denominator;
         lhs.normalize();
         return lhs;
@@ -104,7 +102,7 @@ private:
 
     friend rational
     operator*(rational lhs, rational const &rhs) {
-        lhs.numerator *= rhs.numerator;
+        lhs.numerator   *= rhs.numerator;
         lhs.denominator *= rhs.denominator;
         lhs.normalize();
         return lhs;
@@ -127,7 +125,7 @@ private:
     friend rational
     operator/(rational lhs, rational const &rhs) {
         assert(rhs.numerator != 0);
-        lhs.numerator *= rhs.denominator;
+        lhs.numerator   *= rhs.denominator;
         lhs.denominator *= rhs.numerator;
         lhs.normalize();
         return lhs;
@@ -172,14 +170,14 @@ private:
 
     // Preprocessed information extracted from elimination.
     struct prepared_problem {
-        std::vector<size_t> variableOrder;
-        std::vector<int>    staticUpperBounds;
-        std::vector<int>    freeIndexByVariable;
-        std::vector<size_t> pivotVariables;
+        std::vector<size_t>            variableOrder;
+        std::vector<int>               staticUpperBounds;
+        std::vector<int>               freeIndexByVariable;
+        std::vector<size_t>            pivotVariables;
         std::vector<affine_expression> variableExpressions;
-        rational                    objectiveConstant{};
-        std::vector<rational>       objectiveWeights;
-        bool                        isValid = true;
+        rational                       objectiveConstant{};
+        std::vector<rational>          objectiveWeights;
+        bool                           isValid = true;
     };
 
 public:
@@ -206,7 +204,8 @@ public:
     // Fluent builder used to define one equation term-by-term.
     class equation_builder {
     public:
-        equation_builder(solver &owner, size_t equationId) : m_owner(owner), m_equationId(equationId) {}
+        equation_builder(solver &owner, size_t equationId)
+            : m_owner(owner), m_equationId(equationId) {}
 
         // Adds one occurrence of a variable to the current equation.
         // Calling input("x") twice means 2*x in the final equation.
@@ -290,7 +289,7 @@ public:
     }
 
 private:
-    std::vector<equation>                    m_equations;
+    std::vector<equation>                   m_equations;
     std::vector<std::string>                m_variableNames;
     std::unordered_map<std::string, size_t> m_variableIdByName;
 
@@ -347,10 +346,10 @@ private:
             return result;
         }
 
-        std::vector<int> occurrences(m_variableNames.size(), 0);
-        int              globalUpperBound = 0;
-        std::vector<std::vector<rational>> reducedMatrix(
-            m_equations.size(), std::vector<rational>(m_variableNames.size() + 1, rational{}));
+        std::vector<int>                   occurrences(m_variableNames.size(), 0);
+        int                                globalUpperBound = 0;
+        std::vector<std::vector<rational>> reducedMatrix(m_equations.size(),
+                                                         std::vector<rational>(m_variableNames.size() + 1, rational{}));
 
         for (size_t rowId = 0; rowId < m_equations.size(); ++rowId) {
             auto const &equation = m_equations.at(rowId);
@@ -377,9 +376,9 @@ private:
                 auto const coefficient = localCoefficients.at(variableId);
                 if (coefficient == 0) { continue; }
 
-                auto const maxValue = equation.rhs / coefficient;
+                auto const maxValue                     = equation.rhs / coefficient;
                 result.staticUpperBounds.at(variableId) = std::min(result.staticUpperBounds.at(variableId), maxValue);
-                reducedMatrix.at(rowId).at(variableId) = rational(coefficient);
+                reducedMatrix.at(rowId).at(variableId)  = rational(coefficient);
             }
 
             reducedMatrix.at(rowId).back() = rational(equation.rhs);
@@ -445,7 +444,7 @@ private:
 
             expression.constant = reducedMatrix.at(pivotRow).back();
             for (size_t freeIndex = 0; freeIndex < result.variableOrder.size(); ++freeIndex) {
-                auto const freeVariableId = result.variableOrder.at(freeIndex);
+                auto const freeVariableId                 = result.variableOrder.at(freeIndex);
                 expression.freeCoefficients.at(freeIndex) = -reducedMatrix.at(pivotRow).at(freeVariableId);
             }
         }
@@ -469,15 +468,15 @@ private:
         auto optimisticObjective = prepared.objectiveConstant;
         for (size_t freeIndex = 0; freeIndex < prepared.variableOrder.size(); ++freeIndex) {
             if (assignedFreeMask.at(freeIndex)) {
-                optimisticObjective = optimisticObjective +
-                                      prepared.objectiveWeights.at(freeIndex) * assignedFreeValues.at(freeIndex);
+                optimisticObjective =
+                    optimisticObjective + prepared.objectiveWeights.at(freeIndex) * assignedFreeValues.at(freeIndex);
                 continue;
             }
 
             if (prepared.objectiveWeights.at(freeIndex) < rational{}) {
-                optimisticObjective = optimisticObjective +
-                                      prepared.objectiveWeights.at(freeIndex) *
-                                          prepared.staticUpperBounds.at(prepared.variableOrder.at(freeIndex));
+                optimisticObjective =
+                    optimisticObjective + prepared.objectiveWeights.at(freeIndex) *
+                                              prepared.staticUpperBounds.at(prepared.variableOrder.at(freeIndex));
             }
         }
 
@@ -493,8 +492,8 @@ private:
 
                 if (assignedFreeMask.at(freeIndex)) {
                     auto const contribution = coefficient * assignedFreeValues.at(freeIndex);
-                    valueMin = valueMin + contribution;
-                    valueMax = valueMax + contribution;
+                    valueMin                = valueMin + contribution;
+                    valueMax                = valueMax + contribution;
                     continue;
                 }
 
@@ -610,5 +609,6 @@ private:
     }
 };
 
-}
-}
+
+} // namespace aoc
+} // namespace incom

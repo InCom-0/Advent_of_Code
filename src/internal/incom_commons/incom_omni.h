@@ -4,7 +4,7 @@
 #include <incom_commons.h>
 
 #include <ankerl/unordered_dense.h>
-#include <mdspan/mdspan.hpp>
+#include <mdspan>
 #include <vector>
 
 
@@ -98,7 +98,8 @@ private:
         // Acess style modelling vector
         // Can use the
         template <typename First_ID, typename... Other_IDs>
-        auto &operator[](First_ID const &&id, Other_IDs const &&...other_ids) {
+        auto &
+        operator[](First_ID const &&id, Other_IDs const &&...other_ids) {
             if constexpr (sizeof...(other_ids) == 0) {
                 if (id < 0) { return m_negVect[(-id) - 1]; }
                 else { return m_posVect[id]; }
@@ -111,11 +112,21 @@ private:
         }
 
         // CONSTEVAL STATIC QUERYING
-        consteval static size_t get_blockSize() { return c_blockSize; }
-        consteval static Data_T get_defaultValue() { return c_defaultValue; }
-        consteval static size_t get_depthFromTop() { return c_numOfDimensions; }
+        consteval static size_t
+        get_blockSize() {
+            return c_blockSize;
+        }
+        consteval static Data_T
+        get_defaultValue() {
+            return c_defaultValue;
+        }
+        consteval static size_t
+        get_depthFromTop() {
+            return c_numOfDimensions;
+        }
 
-        consteval static size_t get_depth() {
+        consteval static size_t
+        get_depth() {
             if constexpr (incstd::concepts::is_specialization_of<T, _OV>) { return T::get_depth() + 1; }
             else { return 1; }
         }
@@ -125,7 +136,8 @@ private:
         // This will expand recursivelly (happens when higher levels need to be expanded)
         // Returns how many times it performed expansion. If no expansion took place returns 0.
         template <typename... IDs>
-        size_t expand_ifNecessary(IDs... ids) {
+        size_t
+        expand_ifNecessary(IDs... ids) {
             static_assert(get_depth() == (sizeof...(ids)),
                           "You passed incorrect number of indices to 'expand_ifNecessary' ... ");
 
@@ -139,8 +151,8 @@ private:
         }
 
         template <typename... OtherIDs>
-        void expand_atSignedLvl(long long signedLvlToExpand, long long idx_onThisLevel,
-                                OtherIDs... idxs_onOtherLevels) {
+        void
+        expand_atSignedLvl(long long signedLvlToExpand, long long idx_onThisLevel, OtherIDs... idxs_onOtherLevels) {
             static_assert(get_depth() == (sizeof...(idxs_onOtherLevels) + 1),
                           "Incorrect argument passing to 'expand_atSignedLvl' ...");
 
@@ -202,7 +214,8 @@ private:
         // (this is done in order to not having to perform the same work twice)
         template <typename... IDS>
         requires true && ((std::convertible_to<IDS, long long>) && ...)
-        long long find_firstInvalidSignedDepth(IDS const &&...ids) {
+        long long
+        find_firstInvalidSignedDepth(IDS const &&...ids) {
             long long depthOfInvalid = _find_DepthOfFirstInvalid(std::forward<decltype(ids)>(ids)...);
             if (depthOfInvalid > get_depth()) { return 0; }
 
@@ -218,7 +231,8 @@ private:
         // TODO: Attempt to move this function inside the function above to avoid clutter
         template <typename FirstID, typename... IDs>
         requires std::convertible_to<FirstID, long long> && ((std::convertible_to<IDs, long long>) && ...)
-        size_t _find_DepthOfFirstInvalid(FirstID const &&first_id, IDs const &&...ids) {
+        size_t
+        _find_DepthOfFirstInvalid(FirstID const &&first_id, IDs const &&...ids) {
             static_assert(
                 get_depth() == (sizeof...(ids) + 1),
                 "Incorrect argument passing to findDepthOfFirstInvalid ... size of pack doesn't match getDepth()");
@@ -238,7 +252,8 @@ private:
             std::unreachable();
         }
 
-        bool test_idIsValid(long long id) {
+        bool
+        test_idIsValid(long long id) {
             if ((static_cast<long long>(m_posVect.size()) > id) &&
                 (static_cast<long long>(m_negVect.size()) > (-1 * id - 1))) {
                 return true;
@@ -262,7 +277,8 @@ private:
 
 private:
     template <size_t lvlToGo>
-    consteval static auto _getContainedType_sampleInst() {
+    consteval static auto
+    _getContainedType_sampleInst() {
 
         if constexpr (lvlToGo == 1) { return _OV<Data_T>(); }
         else { return _OV<decltype(_getContainedType_sampleInst<lvlToGo - 1>())>(); }
@@ -272,26 +288,38 @@ private:
     decltype(_getContainedType_sampleInst<c_numOfDimensions>()) m_data;
 
 public:
-    MD_Vector() : m_data() {};
+    MD_Vector()
+        : m_data() {};
 
     template <typename First_ID, typename... Other_IDs>
     requires(std::same_as<std::remove_cvref_t<std::remove_pointer_t<std::decay_t<First_ID>>>, long long>) &&
             ((std::same_as<std::remove_cvref_t<std::remove_pointer_t<std::decay_t<Other_IDs>>>, long long>), ...)
-    auto &operator[](First_ID const &&id, Other_IDs const &&...other_ids) {
+    auto &
+    operator[](First_ID const &&id, Other_IDs const &&...other_ids) {
         if constexpr (sizeof...(other_ids) == 0) { return m_data[std::forward<decltype(id)>(id)]; }
         else { return m_data[std::forward<decltype(id)>(id), std::forward<decltype(other_ids)>(other_ids)...]; }
         std::unreachable();
     }
 
     template <typename... IDs>
-    size_t expand_ifNecessary(IDs... ids) {
+    size_t
+    expand_ifNecessary(IDs... ids) {
         return m_data.expand_ifNecessary(std::forward<decltype(ids)>(ids)...);
     }
 
 
-    consteval static size_t get_blockSize() { return c_blockSize; }
-    consteval static Data_T get_defaultValue() { return c_defaultValue; }
-    consteval static size_t get_numOfDimensions() { return c_numOfDimensions; }
+    consteval static size_t
+    get_blockSize() {
+        return c_blockSize;
+    }
+    consteval static Data_T
+    get_defaultValue() {
+        return c_defaultValue;
+    }
+    consteval static size_t
+    get_numOfDimensions() {
+        return c_numOfDimensions;
+    }
 };
 
 
@@ -310,14 +338,17 @@ private:
 
     // PRIVATE STATIC CONSTEVAL FUNC
     template <typename T, T... ints>
-    consteval static size_t _c_detail_get_variadicPower(const std::integer_sequence<T, ints...>) {
+    consteval static size_t
+    _c_detail_get_variadicPower(const std::integer_sequence<T, ints...>) {
         return (ints * ...);
     }
     template <typename T, T... ints>
-    consteval static Key_Type _c_detail_get_cornerDefault(const std::integer_sequence<T, ints...>) {
+    consteval static Key_Type
+    _c_detail_get_cornerDefault(const std::integer_sequence<T, ints...>) {
         return Key_Type{ints...};
     }
-    consteval static auto _c_detail_mds_convArrayPair(auto const &&powerBase) {
+    consteval static auto
+    _c_detail_mds_convArrayPair(auto const &&powerBase) {
         std::array<std::pair<long long, long long>, c_numOfDimensions> res;
         for (int i = 0; i < c_numOfDimensions; ++i) {
             res[i].first  = i;
@@ -326,7 +357,8 @@ private:
         }
         return res;
     }
-    consteval static auto _c_detail_gen_pairs_fFSS() {
+    consteval static auto
+    _c_detail_gen_pairs_fFSS() {
         std::array<std::pair<long long, long long>, c_numOfDimensions> res;
         for (int i = 0; i < c_numOfDimensions; ++i) {
             res[i].first  = 3;
@@ -384,15 +416,20 @@ private:
 
         // _DETAIL
         template <typename T, T... ints>
-        constexpr auto _detail_gen_mdspan_toSelf(const std::integer_sequence<T, ints...>) {
-            return Kokkos::mdspan(m_data.data(), ints...);
+        constexpr auto
+        _detail_gen_mdspan_toSelf(const std::integer_sequence<T, ints...>) {
+            return std::mdspan(m_data.data(), ints...);
         }
         template <typename T, T... ints>
-        constexpr auto _detail_gen_mdspan_toSurrChunks(const std::integer_sequence<T, ints...>) {
-            return Kokkos::mdspan(m_refsToSurrChunks.data(), ints...);
+        constexpr auto
+        _detail_gen_mdspan_toSurrChunks(const std::integer_sequence<T, ints...>) {
+            return std::mdspan(m_refsToSurrChunks.data(), ints...);
         }
 
-        void _setSurrValidFlag_True() { m_refsToSurrChunkAllValid = true; }
+        void
+        _setSurrValidFlag_True() {
+            m_refsToSurrChunkAllValid = true;
+        }
 
     public:
         // CONSTRUCT
@@ -406,16 +443,28 @@ private:
 
         // constexpr auto  gen_mdspan_toSelf() { return _detail_gen_mdspan_toSelf(c_X_repeat_blockSize); }
         // constexpr auto  gen_mdspan_ToSurrChunks() { return _detail_gen_mdspan_toSurrChunks(c_X_repeat_three); }
-        constexpr auto &get_surrChunks() { return m_refsToSurrChunks; }
+        constexpr auto &
+        get_surrChunks() {
+            return m_refsToSurrChunks;
+        }
 
-        bool is_refsToSurrAllValid() { return m_refsToSurrChunkAllValid; }
-        void set_refsToSurrAllValid_true() { m_refsToSurrChunkAllValid = true; }
+        bool
+        is_refsToSurrAllValid() {
+            return m_refsToSurrChunkAllValid;
+        }
+        void
+        set_refsToSurrAllValid_true() {
+            m_refsToSurrChunkAllValid = true;
+        }
 
-        Data_T &_get_dataItemBySizeT(size_t &id) { return m_data[id]; }
+        Data_T &
+        _get_dataItemBySizeT(size_t &id) {
+            return m_data[id];
+        }
 
         template <typename T, T... ints>
-        inline std::reference_wrapper<_Chunk> _get_surrChunk(Key_Type const &keyInSurr,
-                                                             const std::integer_sequence<T, ints...> &) {
+        inline std::reference_wrapper<_Chunk>
+        _get_surrChunk(Key_Type const &keyInSurr, const std::integer_sequence<T, ints...> &) {
             return m_refsToSurrChunks[((keyInSurr[ints] * c_mds_surrRefConvArray[ints].second) + ...)];
         }
     };
@@ -424,19 +473,22 @@ private:
     // PRIVATE DETAIL INTERNAL
     // Get reference to one Data_T instance ... the 'goal'
     template <typename T, T... ints>
-    inline Data_T &_get_fromSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
+    inline Data_T &
+    _get_fromSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
         size_t id = (((key[ints] - m_selChunk_Corner[ints]) * c_mds_chunkIdConvArray[ints].second) + ...);
         return m_selChunk.get()._get_dataItemBySizeT(id);
     }
 
     template <typename T, T... ints>
-    constexpr inline Key_Type _get_chunkCornerFromKey(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
+    constexpr inline Key_Type
+    _get_chunkCornerFromKey(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
         return Key_Type{(((key[ints] + std::signbit(key[ints])) / c_blockSize_long) * c_blockSize_long) +
                         (std::signbit(key[ints]) * (-c_blockSize_long))...};
     }
 
     template <typename T, T... ints>
-    constexpr inline void _update_selChunkMembers(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
+    constexpr inline void
+    _update_selChunkMembers(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
         // Seems comlicated, but it just sets the helper variables so that access to said chunk is fast later on.
         // Most of this is done in order to 'remap' negative indices the correct way
         // Should be calculated nearly instantenously on any modern CPU
@@ -446,14 +498,16 @@ private:
     }
 
     template <typename T, T... ints>
-    inline _Chunk &_get_chunkFromMapOrGenerate(Key_Type key, const std::integer_sequence<T, ints...> &) {
+    inline _Chunk &
+    _get_chunkFromMapOrGenerate(Key_Type key, const std::integer_sequence<T, ints...> &) {
         ((key[ints] = m_selChunk_Corner[ints] + (key[ints] * c_blockSize_long)), ...);
         auto iter = mp.insert({key, _Chunk(c_defaultValue, fake_chunk)});
         return iter.first->second;
     }
 
     template <typename T, T... ints>
-    void _gen_missingSurrChunks(const std::integer_sequence<T, ints...> &) {
+    void
+    _gen_missingSurrChunks(const std::integer_sequence<T, ints...> &) {
         Key_Type curIDs{(ints, -1)...};
         auto    &surrChunks_ref = m_selChunk.get().get_surrChunks();
 
@@ -472,7 +526,8 @@ private:
 
     // 'Hard' lookup ... direct reference unavailable must lookup in map
     template <typename T, T... ints>
-    void _hardLookup(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
+    void
+    _hardLookup(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
 
         _update_selChunkMembers(key, c_IDs_sequence);
 
@@ -489,7 +544,8 @@ private:
 
     // 'Soft' lookup ... direct reference available
     template <typename T, T... ints>
-    void _softLookup(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
+    void
+    _softLookup(Key_Type const &key, const std::integer_sequence<T, ints...> &) {
         Key_Type oldCorner = m_selChunk_Corner;
         _update_selChunkMembers(key, c_IDs_sequence);
 
@@ -503,13 +559,15 @@ private:
     }
 
     template <typename T, T... ints>
-    inline bool _detail_is_inSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...> &) const {
-        return not (
+    inline bool
+    _detail_is_inSelChunk(Key_Type const &key, const std::integer_sequence<T, ints...> &) const {
+        return not(
             ((key[ints] < m_selChunk_Corner[ints]) || (key[ints] >= (m_selChunk_Corner[ints] + c_blockSize_long))) ||
             ...);
     }
     template <typename T, T... ints>
-    inline bool _detail_is_outsideSurrChunks(Key_Type const &key, const std::integer_sequence<T, ints...> &) const {
+    inline bool
+    _detail_is_outsideSurrChunks(Key_Type const &key, const std::integer_sequence<T, ints...> &) const {
         return (((key[ints] < (m_selChunk_Corner[ints] - c_blockSize_long)) ||
                  (key[ints] >= (m_selChunk_Corner[ints] + (2 * c_blockSize_long)))) ||
                 ...);
@@ -517,19 +575,27 @@ private:
 
 public:
     // IS_ FUNCTIONS
-    inline bool is_inSelChunk(Key_Type const &key) const { return _detail_is_inSelChunk(key, c_IDs_sequence); }
-    inline bool is_outsideSurrChunks(Key_Type const &key) const {
+    inline bool
+    is_inSelChunk(Key_Type const &key) const {
+        return _detail_is_inSelChunk(key, c_IDs_sequence);
+    }
+    inline bool
+    is_outsideSurrChunks(Key_Type const &key) const {
         return _detail_is_outsideSurrChunks(key, c_IDs_sequence);
     }
 
     // MAIN INTERFACE
-    Data_T &get(Key_Type const &key) {
+    Data_T &
+    get(Key_Type const &key) {
         if (is_inSelChunk(key)) {}
         else if (is_outsideSurrChunks(key)) { _hardLookup(key, c_IDs_sequence); }
         else { _softLookup(key, c_IDs_sequence); }
         return _get_fromSelChunk(key, c_IDs_sequence);
     }
-    auto &get_mp() const { return mp; }
+    auto &
+    get_mp() const {
+        return mp;
+    }
 };
 
 } // namespace omni
