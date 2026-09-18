@@ -540,6 +540,7 @@ requires(std::derived_from<instrT, _instrBase_INT> && ...)
 class ProgramQuasiAssembly_INT {
 private:
     std::unordered_map<long long, std::variant<instrT...>, incstd::hashing::XXH3Hasher> m_instrTypeMap;
+    
     static std::unordered_map<long long, std::variant<instrT...>, incstd::hashing::XXH3Hasher>
     instrTypeMapCreator(std::vector<long long> const &instrCodes) {
         assert(sizeof...(instrT) == instrCodes.size());

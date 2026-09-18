@@ -1,42 +1,75 @@
+#include <algorithm>
 #include <bitset>
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <incom_commons.h>
 #include <iostream>
 #include <optional>
+#include <string_view>
 
 
 namespace AOC2019 {
-std::string day25_1(std::string dataFile) {
+std::string
+day25_1(std::string dataFile) {
     struct add : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct mul : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct end : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 0; }
+        constexpr long long
+        get_numOfParams() override {
+            return 0;
+        }
     };
     struct inp : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
     struct out : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
     struct jit : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 2; }
+        constexpr long long
+        get_numOfParams() override {
+            return 2;
+        }
     };
     struct jif : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 2; }
+        constexpr long long
+        get_numOfParams() override {
+            return 2;
+        }
     };
     struct lth : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct eql : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 3; }
+        constexpr long long
+        get_numOfParams() override {
+            return 3;
+        }
     };
     struct arb : incom::aoc::PQA::_instrBase_INT {
-        constexpr long long get_numOfParams() override { return 1; }
+        constexpr long long
+        get_numOfParams() override {
+            return 1;
+        }
     };
 
 
@@ -47,8 +80,7 @@ std::string day25_1(std::string dataFile) {
     for (auto &str : input.front()) { data.push_back(std::stoll(str)); }
     std::vector<long long> instrCodes{1, 2, 99, 3, 4, 5, 6, 7, 8, 9};
 
-    incom::aoc::PQA::ProgramQuasiAssembly_INT<add, mul, end, inp, out, jit, jif, lth, eql, arb> pqa(instrCodes,
-                                                                                                        data);
+    incom::aoc::PQA::ProgramQuasiAssembly_INT<add, mul, end, inp, out, jit, jif, lth, eql, arb> pqa(instrCodes, data);
 
     std::vector<std::string>           droidOutput(1, std::string());
     std::vector<decltype(droidOutput)> pastDroidOutputs;
@@ -79,44 +111,78 @@ std::string day25_1(std::string dataFile) {
         std::array<int, 2> m_droidPos{16, 16};
         Command            m_curCommand;
         Room               m_curRoom;
+        bool               m_explored = false;
 
-        void parse_roomRawInfo(std::vector<std::string> const &rawInfo) {
+        void
+        parse_roomRawInfo(std::vector<std::string> const &rawInfo) {
             static constexpr std::array<std::string, 4> const dirs_str{"north", "east", "south", "west"};
 
             m_curRoom = Room();
             for (int lineID = 0; lineID < rawInfo.size(); ++lineID) {
-                if (rawInfo[lineID].front() == '=') {
+                if (not rawInfo[lineID].empty() && rawInfo[lineID].front() == '=') {
                     m_curRoom.roomName    = rawInfo[lineID++];
                     m_curRoom.description = rawInfo[lineID++];
                 }
                 else if (rawInfo[lineID] == "Doors here lead:") {
 
-                    while (rawInfo[++lineID].front() == '-') {
+                    lineID++;
+                    while (not rawInfo[lineID].empty() && rawInfo[lineID].front() == '-') {
                         m_curRoom.m_doors.set(std::ranges::find(dirs_str, rawInfo[lineID].substr(2)) - dirs_str.begin(),
                                               true);
+                        lineID++;
                     }
                 }
 
                 else if (rawInfo[lineID] == "Items here:") {
-                    while (rawInfo[++lineID].front() == '-') { m_curRoom.m_items.push_back(rawInfo[lineID].substr(2)); }
+                    lineID++;
+                    while (not rawInfo[lineID].empty() && rawInfo[lineID].front() == '-') {
+                        m_curRoom.m_items.push_back(rawInfo[lineID].substr(2));
+                        lineID++;
+                    }
                 }
             }
         }
 
-        void move_outcomeOfEjected() {
+        void
+        move_outcomeOfEjected() {
             static constexpr std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};
             m_droidPos[0] += dirs[(m_routeFromStart.back() + 2) % 4][0];
             m_droidPos[1] += dirs[(m_routeFromStart.back() + 2) % 4][1];
             m_routeFromStart.pop_back();
         }
 
-        std::optional<int> _create_itemPickupCommand() {
-            if (m_curRoom.m_items.empty()) { return std::nullopt; }
-            else { return std::nullopt; }
-        }
-        std::optional<int> _create_itemPutdownCommand() { return std::nullopt; }
+        std::optional<int>
+        _create_itemPickupCommand() {
+            using std::operator""sv;
+            static constexpr std::array<std::string_view, 5> const forbidden{"giant electromagnet", "molten lava",
+                                                                             "escape pod", "infinite loop", "photons"};
 
-        std::optional<int> _create_goForthCommand() {
+            if (m_curRoom.m_items.empty()) { return std::nullopt; }
+            else {
+                auto itToItemToTake = std::ranges::find_if(m_curRoom.m_items, [](auto const &item) {
+                    return std::ranges::find(forbidden, item) == forbidden.end();
+                });
+
+                if (itToItemToTake != m_curRoom.m_items.end()) {
+                    m_carrying.emplace_back(*itToItemToTake);
+                    m_curCommand.commandString = "take "sv;
+                    m_curCommand.commandString.append(*itToItemToTake);
+                    m_curCommand.curPos = 0;
+
+                    auto remSubRng = std::ranges::remove(m_curRoom.m_items, *itToItemToTake);
+                    m_curRoom.m_items.erase(remSubRng.begin(), remSubRng.end());
+                    return 11;
+                }
+                return std::nullopt;
+            }
+        }
+        std::optional<int>
+        _create_itemPutdownCommand() {
+            return std::nullopt;
+        }
+
+        std::optional<int>
+        _create_goForthCommand() {
             static constexpr std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};
             static constexpr std::array<std::string, 4> const        dirs_str{"north", "east", "south", "west"};
 
@@ -137,7 +203,9 @@ std::string day25_1(std::string dataFile) {
             return std::nullopt;
         }
 
-        std::optional<int> _create_goBackCommand() {
+        std::optional<int>
+        _create_goBackCommand() {
+            if (m_routeFromStart.empty()) { return std::nullopt; }
             static constexpr std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};
 
             // Going back ie. not found valid unexplored direction
@@ -151,16 +219,103 @@ std::string day25_1(std::string dataFile) {
             return std::optional<int>(4);
         }
 
-        auto create_nextCommand() {
-            auto const pickUp  = [&]() { return _create_itemPickupCommand(); };
-            auto const putDown = [&]() { return _create_itemPutdownCommand(); };
-            auto const goForth = [&]() { return _create_goForthCommand(); };
-            auto const goBack  = [&]() { return _create_goBackCommand(); };
+        auto
+        create_nextCommand() {
+            if (not m_explored) {
+                auto const pickUp      = [&]() { return _create_itemPickupCommand(); };
+                auto const putDown     = [&]() { return _create_itemPutdownCommand(); };
+                auto const goForth     = [&]() { return _create_goForthCommand(); };
+                auto const goBack      = [&]() { return _create_goBackCommand(); };
+                auto const backAtStart = [&]() -> std::optional<int> {
+                    m_explored = true;
+                    return std::nullopt;
+                };
 
-            return pickUp().or_else(putDown).or_else(goForth).or_else(goBack);
+                return pickUp().or_else(putDown).or_else(goForth).or_else(goBack).or_else(backAtStart);
+            }
+            return askFor_nextCommand();
         }
 
-        char get_nextCharInDecision() {
+        std::optional<int>
+        askFor_nextCommand() {
+            static constexpr std::array<std::string, 4> const dirs_str{"north", "east", "south", "west"};
+
+            std::string userInput;
+
+        RESTART:
+            std::getline(std::cin, userInput);
+
+
+            using std::operator""sv;
+            constexpr auto delim{" "sv};
+
+            for (std::size_t i = 0uz; const auto &word : std::views::split(userInput, delim)) {
+                auto wordSV = std::string_view(word);
+                if (wordSV == "inv"sv) {
+                    m_curCommand.commandString = "inv"sv;
+                    m_curCommand.curPos        = 0;
+                    break;
+                }
+                else if (wordSV == "take"sv) {
+                    auto itemSV       = std::string_view(userInput.begin() + 5, userInput.end());
+                    auto itemITinRoom = std::ranges::find(m_curRoom.m_items, itemSV);
+
+                    if (itemITinRoom != m_curRoom.m_items.end()) {
+                        auto remSubRng = std::ranges::remove(m_curRoom.m_items, *itemITinRoom);
+                        m_curRoom.m_items.erase(remSubRng.begin(), remSubRng.end());
+
+                        m_carrying.emplace_back(itemSV);
+                        m_curCommand.commandString = "take "sv;
+                        m_curCommand.commandString.append(itemSV);
+                        m_curCommand.curPos = 0;
+                        break;
+                    }
+                    else {
+                        std::cout << "That item is not in current room" << '\n' << "Enter a command:" << '\n';
+                        goto RESTART;
+                    }
+                }
+                else if (wordSV == "drop"sv) {
+                    auto itemSV        = std::string_view(userInput.begin() + 5, userInput.end());
+                    auto itemITinDroid = std::ranges::find(m_carrying, itemSV);
+
+                    if (itemITinDroid != m_carrying.end()) {
+                        auto remSubRng = std::ranges::remove(m_carrying, *itemITinDroid);
+                        m_carrying.erase(remSubRng.begin(), remSubRng.end());
+
+                        m_curCommand.commandString = "drop "sv;
+                        m_curCommand.commandString.append(itemSV);
+                        m_curCommand.curPos = 0;
+                        break;
+                    }
+                    else {
+                        std::cout << "The droid is not carrying this item" << '\n' << "Enter a command:" << '\n';
+                        goto RESTART;
+                    }
+                }
+
+                // Directions
+                else if (auto it = std::ranges::find(dirs_str, wordSV); it != dirs_str.end()) {
+                    static constexpr std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};
+
+                    m_routeFromStart.push_back(it - dirs_str.begin());
+                    m_curCommand.commandString = dirs_str[it - dirs_str.begin()];
+                    m_curCommand.curPos        = 0;
+                    break;
+                }
+
+                else {
+                    std::cout << "Command not recognized." << '\n' << "Enter a command:" << '\n';
+                    goto RESTART;
+                }
+            }
+            std::cout << '\n';
+
+            return std::nullopt;
+        }
+
+        char
+        get_nextCharInDecision() {
             if (m_curCommand.curPos == m_curCommand.commandString.size()) {
                 m_curCommand.curPos = 0;
                 return '\n';
@@ -172,10 +327,12 @@ std::string day25_1(std::string dataFile) {
     Droid droid;
 
     droid.m_mazeVisited[16][16] = 1;
+    // droid.create_nextCommand();
 
-    std::string_view const commandQuestionStr("Command?");
-    std::string_view const ejectedStr("A loud, robotic voice says \"Alert! Droids on this ship are heavier than the "
-                                      "detected value!\" and you are ejected back to the checkpoint.");
+    constexpr std::string_view commandQuestionStr("Command?");
+    constexpr std::string_view ejectedStr(
+        "A loud, robotic voice says \"Alert! Droids on this ship are heavier than the "
+        "detected value!\" and you are ejected back to the checkpoint.");
 
     long long outValue;
     auto      instructions = incstd::variant_utils::Overloads{
@@ -194,7 +351,22 @@ std::string day25_1(std::string dataFile) {
             if (droidOutput.back() == commandQuestionStr) {
                 pastDroidOutputs.push_back(droidOutput);
                 droidOutput.clear();
-                droid.parse_roomRawInfo(pastDroidOutputs.back());
+
+                using std::operator""sv;
+                if (pastDroidOutputs.back().size() > 3 && pastDroidOutputs.back().at(3).size() > 2 &&
+                    (std::string_view(pastDroidOutputs.back().at(3).begin(),
+                                      pastDroidOutputs.back().at(3).begin() + 2) == "=="sv)) {
+                    if ((std::string_view(pastDroidOutputs.back().at(9).begin(), pastDroidOutputs.back().at(9).end()) ==
+                         "A loud, robotic voice says \"Alert! Droids on this ship are lighter than the detected value!\" and you are ejected back to the checkpoint."sv)) {
+                        static constexpr std::array<std::array<int, 2>, 4> const dirs{-1, 0, 0, 1, 1, 0, 0, -1};
+                        droid.parse_roomRawInfo(
+                            std::vector(pastDroidOutputs.back().begin() + 10, pastDroidOutputs.back().end()));
+                        droid.m_droidPos[0] += dirs[(droid.m_routeFromStart.back() + 2) % 4][0];
+                        droid.m_droidPos[1] += dirs[(droid.m_routeFromStart.back() + 2) % 4][1];
+                    }
+
+                    else { droid.parse_roomRawInfo(pastDroidOutputs.back()); }
+                }
             }
             else if (droidOutput.back() == ejectedStr) {
                 pastDroidOutputs.push_back(droidOutput);
@@ -207,10 +379,10 @@ std::string day25_1(std::string dataFile) {
 
             std::cout << static_cast<char>(a.m_refs[0].get());
 
-            if (droid.m_routeFromStart.empty() &&
-                droid.m_mazeVisited[droid.m_droidPos.front()][droid.m_droidPos.back()]) {
-                pqa.m_cursor = LLONG_MIN;
-            }
+            // if (droid.m_routeFromStart.empty() &&
+            //     droid.m_mazeVisited[droid.m_droidPos.front()][droid.m_droidPos.back()]) {
+            //     pqa.m_cursor = LLONG_MIN;
+            // }
         },
         [&](jit &a) {
             if (a.m_refs[0].get() != 0) { pqa.m_cursor = (a.m_refs[1].get() - (a.get_numOfParams() + 1)); }
@@ -229,7 +401,8 @@ std::string day25_1(std::string dataFile) {
     return "TEMP OUT";
 }
 
-std::string day25_2(std::string dataFile) {
+std::string
+day25_2(std::string dataFile) {
 
     return "TEMP OUT";
 }

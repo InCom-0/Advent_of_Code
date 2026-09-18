@@ -1,4 +1,5 @@
 #include <ranges>
+#include <iostream>
 
 #include <ankerl/unordered_dense.h>
 #include <ctre.hpp>
@@ -69,8 +70,8 @@ day12_1(std::string dataFile) {
 
         size_t iter = 0;
         while (solv_1.solve_oneStep()) {
-            // std::cout << solv_1.get_areaState() << solv_1.get_useableShapeCountRemaining() << '\n' << '\n';
-            // iter++;
+            std::cout << solv_1.get_areaState() << solv_1.get_useableShapeCountRemaining() << '\n' << '\n';
+            iter++;
         }
 
         resUltima += solv_1.get_useableShapeCountRemaining();
@@ -81,13 +82,13 @@ day12_1(std::string dataFile) {
             filled          += fil;
         }
 
-        // std::cout << solv_1.get_areaState() << solv_1.get_useableShapeCountRemaining();
-        // std::cout << '\n' << solv_1.get_useableShapeCountRemaining() << '\n' << solv_1.get_areaEmptyCount();
-        // std::cout << "\n\n\n";
+        std::cout << solv_1.get_areaState() << solv_1.get_useableShapeCountRemaining();
+        std::cout << '\n' << solv_1.get_useableShapeCountRemaining() << '\n';
+        std::cout << "\n\n\n";
     }
 
     // std::cout << resUltima << '\n';
-    // std::cout << empty << '\n';
+    // std::cout << empty << '\n';\
     // std::cout << filled << '\n';
     return resAccu;
 }
