@@ -6,6 +6,7 @@
 #include <AOC_2017.h>
 #include <AOC_2018.h>
 #include <AOC_2019.h>
+#include <AOC_2023.h>
 #include <AOC_2024.h>
 #include <AOC_2025.h>
 #include <incom_commons.h>
@@ -13,6 +14,7 @@
 #define DATAFOLDER      "../../../data"
 #define DATAFOLDER_2019 "../../../data/AOC_2019"
 
+#define DATAFOLDER_2023 "../../../data/AOC_2023"
 #define DATAFOLDER_2024 "../../../data/AOC_2024"
 #define DATAFOLDER_2025 "../../../data/AOC_2025"
 
@@ -24,13 +26,14 @@ functionality etc.
 Note that this main is used while developing the solutions.
 */
 
-int main() {
+int
+main() {
 
     // auto pth_1    = std::filesystem::path(DATAFOLDER_2019) / "2019_25_1.txt";
     // auto pth_2024 = std::filesystem::path(DATAFOLDER_2024) / "2024_25_1.txt";
-    auto pth_2019 = std::filesystem::path(DATAFOLDER_2019) / "2019_22_1.txt";
+    auto pth_2019 = std::filesystem::path(DATAFOLDER_2023) / "2023_1_1.txt";
 
-    std::cout << AOC2019::day22_2(pth_2019.generic_string()) << '\n';
+    std::cout << AOC2023::day1_2(pth_2019.generic_string()) << '\n';
 
 
     return 1;
