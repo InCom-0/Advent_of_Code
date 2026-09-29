@@ -131,14 +131,14 @@ long long day15_1(std::string dataFile) {
     KT evaluated{0, 0};
     roomMap.get(evaluated) = 'E';
 
-    incstd::buffers::doubleBuffer<std::queue<KT>> doubleQue;
+    incstd::buffers::DoubleBuffer<std::queue<KT>> doubleQue;
     doubleQue.getCurrent().push(KT{0, 0});
     std::vector<KT> dirs{{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 
     long long counter = 0;
     while (true) {
         if (doubleQue.getCurrent().empty()) {
-            doubleQue.swapBuffers();
+            doubleQue.swap_buffers();
             counter++;
             if (doubleQue.getCurrent().empty()) { break; }
         }
@@ -174,14 +174,14 @@ long long day15_2(std::string dataFile) {
     roomMap.get(k2Oxy) = 'T';
     KT evaluated{0, 0};
 
-    incstd::buffers::doubleBuffer<std::queue<KT>> doubleQue;
+    incstd::buffers::DoubleBuffer<std::queue<KT>> doubleQue;
     doubleQue.getCurrent().push(k2Oxy);
     std::vector<KT> dirs{{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 
     long long counter = 0;
     while (true) {
         if (doubleQue.getCurrent().empty()) {
-            doubleQue.swapBuffers();
+            doubleQue.swap_buffers();
             counter++;
             if (doubleQue.getCurrent().empty()) { break; }
         }

@@ -128,7 +128,7 @@ long long day15_2(std::string dataFile) {
 
     for (auto const &oneInstr : instructions) {
         using ankSet = ankerl::unordered_dense::set<std::pair<int, int>, incstd::hashing::XXH3Hasher>;
-        incstd::buffers::doubleBuffer<ankSet>       set_db;
+        incstd::buffers::DoubleBuffer<ankSet>       set_db;
         std::vector<std::pair<int, int>> validsToMove;
 
         auto rec_boxMoveByVer = [&](this auto const &self) -> std::optional<int> {
@@ -159,7 +159,7 @@ long long day15_2(std::string dataFile) {
                     validsToMove.push_back(setItem);
                 }
                 set_db.getCurrent().clear();
-                set_db.swapBuffers();
+                set_db.swap_buffers();
             }
             // Move all the boxes by swapping ... do this from the 'back', so it will be done one 'level at a time'
             // thereby keeping the previous order

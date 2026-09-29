@@ -17,7 +17,7 @@ size_t day18_1(std::string dataFile) {
     VofV.insert(VofV.begin(), std::string(VofV.front().size(), 'B'));
     VofV.push_back(std::string(VofV.front().size(), 'B'));
 
-    incstd::buffers::doubleBuffer buf(VofV);
+    incstd::buffers::DoubleBuffer buf(VofV);
 
     std::vector<std::pair<int, int>> dirs{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
 
@@ -65,7 +65,7 @@ size_t day18_1(std::string dataFile) {
             for (int j = 1; j < (VofV.front().size() - 1); ++j) { lumberChange(cur, i, j, nxt[i][j]); }
         }
 
-        buf.swapBuffers();
+        buf.swap_buffers();
 
         // for (auto &line : buf.getCurrent()) { std::cout << line << '\n'; }
         // std::cout << '\n' << '\n' << '\n';
@@ -98,7 +98,7 @@ size_t day18_2(std::string dataFile) {
     VofV.insert(VofV.begin(), std::string(VofV.front().size(), 'B'));
     VofV.push_back(std::string(VofV.front().size(), 'B'));
 
-    incstd::buffers::doubleBuffer buf(VofV);
+    incstd::buffers::DoubleBuffer buf(VofV);
 
     std::vector<std::pair<int, int>> const dirs{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
     std::unordered_map<size_t, size_t>     theMap;
@@ -139,7 +139,7 @@ size_t day18_2(std::string dataFile) {
         for (int i = 1; i < (VofV.size() - 1); ++i) {
             for (int j = 1; j < (VofV.front().size() - 1); ++j) { allChange(cur, i, j, nxt[i][j]); }
         }
-        buf.swapBuffers();
+        buf.swap_buffers();
         tempHash = hasher(buf.getCurrent());
 
         // for (auto &line : buf.getCurrent()) { std::cout << line << '\n'; }

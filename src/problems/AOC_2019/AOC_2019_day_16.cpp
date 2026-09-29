@@ -18,7 +18,7 @@ long long day16_1(std::string dataFile, size_t num_phases) {
     std::vector<short> data;
     for (auto &chr : input) { data.push_back(chr - 48); }
 
-    incstd::buffers::doubleBuffer<std::vector<short>> buf(data);
+    incstd::buffers::DoubleBuffer<std::vector<short>> buf(data);
     buf.getNext().clear();
 
     int const bpOrigSize   = basePattern.size();
@@ -43,7 +43,7 @@ long long day16_1(std::string dataFile, size_t num_phases) {
             }
             buf.getNext().push_back(std::abs(std::move(accu)) % 10);
         }
-        buf.swapBuffers();
+        buf.swap_buffers();
         buf.getNext().clear();
     };
 

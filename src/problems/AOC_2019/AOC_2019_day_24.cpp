@@ -9,7 +9,8 @@
 
 namespace AOC2019 {
 
-long long day24_1(std::string dataFile) {
+long long
+day24_1(std::string dataFile) {
 
     auto d_ctre = ctre::search<R"(.+)">;
     auto input  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
@@ -26,7 +27,7 @@ long long day24_1(std::string dataFile) {
     std::vector<std::pair<int, int>> dirs{{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
 
     ankerl::unordered_dense::set<decltype(inputBordered), incstd::hashing::XXH3Hasher> setOfPast;
-    incstd::buffers::doubleBuffer<decltype(inputBordered)>                             buf(inputBordered);
+    incstd::buffers::DoubleBuffer<decltype(inputBordered)>                             buf(inputBordered);
 
     auto oneInteration = [&]() {
         for (int r = 1; r < buf.getCurrent().size() - 1; ++r) {
@@ -37,14 +38,14 @@ long long day24_1(std::string dataFile) {
                     count_bugAround += (buf.getCurrent()[r + oneDir.first][c + oneDir.second] == '#');
                 }
 
-                if (buf.getCurrent()[r][c] == '#' && not (count_bugAround == 1)) { buf.getNext()[r][c] = '.'; }
+                if (buf.getCurrent()[r][c] == '#' && not(count_bugAround == 1)) { buf.getNext()[r][c] = '.'; }
                 else if (buf.getCurrent()[r][c] == '.' && (count_bugAround == 1 or count_bugAround == 2)) {
                     buf.getNext()[r][c] = '#';
                 }
                 else { buf.getNext()[r][c] = buf.getCurrent()[r][c]; }
             }
         }
-        buf.swapBuffers();
+        buf.swap_buffers();
     };
 
     while (setOfPast.insert(buf.getCurrent()).second) { oneInteration(); }
@@ -60,7 +61,8 @@ long long day24_1(std::string dataFile) {
     return accu;
 }
 
-long long day24_2(std::string dataFile, size_t const iterations = 200) {
+long long
+day24_2(std::string dataFile, size_t const iterations = 200) {
 
     auto d_ctre = ctre::search<R"(.+)">;
     auto input  = incom::aoc::parseInputUsingCTRE::processFile(dataFile, d_ctre).front();
@@ -71,7 +73,8 @@ long long day24_2(std::string dataFile, size_t const iterations = 200) {
     // TYPE DEFS
     struct OneLevel {
         std::vector<std::string> bugMap;
-        unsigned int             get_reqFromBottomLvl(KT const &key) {
+        unsigned int
+        get_reqFromBottomLvl(KT const &key) {
             if (key.first == 1) {
                 return std::ranges::count_if(bugMap.front(), [](auto &&a) { return a == '#'; });
             }
@@ -87,7 +90,8 @@ long long day24_2(std::string dataFile, size_t const iterations = 200) {
             else { assert(false); }
             std::unreachable();
         }
-        unsigned int get_reqFromTopLvl(KT const &key) {
+        unsigned int
+        get_reqFromTopLvl(KT const &key) {
             return (bugMap[bugMap.size() / 2 + key.first][bugMap.front().size() / 2 + key.second] == '#');
         };
     };
@@ -97,7 +101,8 @@ long long day24_2(std::string dataFile, size_t const iterations = 200) {
         std::vector<OneLevel> levels_down = std::vector(1, OneLevel());
         std::vector<OneLevel> levels_up   = std::vector(1, OneLevel());
 
-        auto get_vecOfBugMaps() {
+        auto
+        get_vecOfBugMaps() {
             std::vector<std::vector<std::string>> res;
             for (auto iter = levels_down.rbegin(); iter != levels_down.rend() - 1; ++iter) {
                 res.push_back(iter->bugMap);
@@ -107,7 +112,8 @@ long long day24_2(std::string dataFile, size_t const iterations = 200) {
             return res;
         }
 
-        auto get_oneLevel(int const lvlID) -> std::optional<std::reference_wrapper<OneLevel>> {
+        auto
+        get_oneLevel(int const lvlID) -> std::optional<std::reference_wrapper<OneLevel>> {
             if (lvlID >= static_cast<int>(levels_up.size())) { return std::nullopt; }
             else if ((-lvlID) >= static_cast<int>(levels_down.size())) { return std::nullopt; }
 
@@ -120,7 +126,7 @@ long long day24_2(std::string dataFile, size_t const iterations = 200) {
     // PREP
     std::vector emptyBugMap(input.size(), std::string(input.front().size(), '.'));
     Maze        startMaze{OneLevel{input}, {OneLevel(), OneLevel{emptyBugMap}}, {OneLevel(), OneLevel{emptyBugMap}}};
-    incstd::buffers::doubleBuffer<Maze> buf(startMaze);
+    incstd::buffers::DoubleBuffer<Maze> buf(startMaze);
 
     int const midRow = input.size() / 2;
     int const midCol = input[midRow].size() / 2;
@@ -192,7 +198,7 @@ long long day24_2(std::string dataFile, size_t const iterations = 200) {
                         else { count_bugAround += (curLvl.bugMap[rowSrc][colSrc] == '#'); }
                     }
 
-                    if (curLvl.bugMap[r][c] == '#' && not (count_bugAround == 1)) { nxtLvl.bugMap[r][c] = '.'; }
+                    if (curLvl.bugMap[r][c] == '#' && not(count_bugAround == 1)) { nxtLvl.bugMap[r][c] = '.'; }
                     else if (curLvl.bugMap[r][c] == '.' && (count_bugAround == 1 or count_bugAround == 2)) {
                         nxtLvl.bugMap[r][c] = '#';
                     }
@@ -201,14 +207,14 @@ long long day24_2(std::string dataFile, size_t const iterations = 200) {
             }
         }
 
-        buf.swapBuffers();
+        buf.swap_buffers();
     };
 
     // MAIN LOOP
     for (int iter_id = 0; iter_id < iterations; ++iter_id) { oneIteration(); }
 
     // CALCULATE RESULT
-    auto bugMaps = buf.getCurrent().get_vecOfBugMaps();
+    auto   bugMaps   = buf.getCurrent().get_vecOfBugMaps();
     size_t bugsCount = std::ranges::fold_left(bugMaps, 0uz, [](auto &&accu, auto &&oneMap) {
         return accu + std::ranges::fold_left(oneMap, 0uz, [](auto &&accu2, auto &&oneLine) {
                    return accu2 + std::ranges::count_if(oneLine, [](auto &&chr) { return chr == '#'; });

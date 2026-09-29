@@ -5,6 +5,7 @@
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <incom_commons.h>
+#include <incstd/core/buffers.hpp>
 #include <limits>
 #include <ranges>
 #include <string>
@@ -16,71 +17,6 @@ struct MapItem {
     long long dest_start   = {};
     long long source_start = {};
     long long length       = {};
-};
-
-
-template <typename T, std::size_t NUM = 2>
-requires(NUM > 1) && std::is_default_constructible_v<T>
-class multiBuffer {
-private:
-    std::array<T, NUM> __data;
-
-    std::array<T *, NUM> __dataPTRs = [&]<typename SZ, SZ... ints>(const std::integer_sequence<SZ, ints...> &) {
-        return std::array<T *, NUM>{&__data[ints]...};
-    }(std::make_index_sequence<NUM>{});
-
-public:
-    // CONSTRUCTION
-    multiBuffer()
-        : __data([]<typename SZ, SZ... ints>(const std::integer_sequence<SZ, ints...> &) {
-              return std::array<T, NUM>{(ints, T{})...};
-          }(std::make_index_sequence<NUM>{})) {};
-
-    // By default 'initial_data' gets only copied into 'Current', rest is default constructed
-    template <bool fillAll = false>
-    multiBuffer(T const &initial_data)
-        : __data([&]<typename SZ, SZ... ints>(const std::integer_sequence<SZ, ints...> &) {
-              if constexpr (fillAll) { return std::array<T, NUM>{(ints, initial_data)...}; }
-              else {
-                  auto res    = std::array<T, NUM>{(ints, T{})...};
-                  res.front() = initial_data;
-                  return res;
-              }
-          }(std::make_index_sequence<NUM>{})) {};
-
-
-    multiBuffer(multiBuffer const &other) = delete;
-    multiBuffer(multiBuffer &&other)      = delete;
-
-
-    // GETTING THE CONTAINED DATA
-    T &
-    getCurrent() const {
-        return *__dataPTRs[0];
-    }
-    T &
-    getNext() const {
-        return *__dataPTRs[1];
-    }
-
-    template <std::size_t ID>
-    requires(ID < NUM)
-    T &
-    getNth() const {
-        return *__dataPTRs[ID];
-    }
-
-    // SWAPPING / ROTATING
-    // 'Next' becomes 'Current', 'Current' goes to last, others similarly
-    void
-    rotate() {
-        std::ranges::rotate(__dataPTRs, __dataPTRs.begin() + 1);
-    }
-
-    void
-    rotate_reverse() {
-        std::ranges::rotate(__dataPTRs, __dataPTRs.end() - 1);
-    }
 };
 
 
@@ -138,11 +74,11 @@ day5_0(std::string const &dataFile) {
     return res;
 }
 
+
 size_t
 day5_1(std::string dataFile) {
     auto const [seeds, maps] = day5_0(dataFile);
     auto curNums             = seeds;
-
 
     long long scratch{};
     for (auto const &oneMapping : maps) {
@@ -157,10 +93,10 @@ day5_1(std::string dataFile) {
         }
     }
 
-
     return std::ranges::fold_left(curNums, std::numeric_limits<long long>::max(),
                                   [](auto const &accu, auto const &item) { return std::min(accu, item); });
 }
+
 
 size_t
 day5_2(std::string dataFile) {
@@ -169,13 +105,11 @@ day5_2(std::string dataFile) {
         std::ranges::sort(oneMapping, [](auto const &a, auto const &b) { return a.source_start < b.source_start; });
     }
 
-    multiBuffer seedRngs(std::views::pairwise(seeds) | std::views::stride(2) |
-                         std::views::transform([](auto const &pr) {
-                             return MapItem{.source_start = std::get<0>(pr), .length = std::get<1>(pr)};
-                         }) |
-                         std::ranges::to<std::vector>());
-
-    // seedRngs.getNext().clear();
+    incstd::buffers::DoubleBuffer seedRngs(
+        std::views::pairwise(seeds) | std::views::stride(2) | std::views::transform([](auto const &pr) {
+            return MapItem{.source_start = std::get<0>(pr), .length = std::get<1>(pr)};
+        }) |
+        std::ranges::to<std::vector>());
 
 
     for (auto const &oneMapping : maps) {

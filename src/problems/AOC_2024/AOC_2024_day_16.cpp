@@ -23,8 +23,8 @@ long long day16_1(std::string dataFile) {
         unsigned int dir : 2 = 0;
     };
 
-    incstd::buffers::doubleBuffer<std::vector<RoutePoint>> frontierBuf;
-    incstd::buffers::doubleBuffer<std::vector<RoutePoint>> frontierBufAfterRot;
+    incstd::buffers::DoubleBuffer<std::vector<RoutePoint>> frontierBuf;
+    incstd::buffers::DoubleBuffer<std::vector<RoutePoint>> frontierBufAfterRot;
     for (size_t i = 0; i < input.size(); ++i) {
         for (size_t j = 0; j < input[i].size(); ++j) {
             if (input[i][j] == 'S') { frontierBuf.getCurrent().push_back({i, j, 0, 1}); }
@@ -71,9 +71,9 @@ long long day16_1(std::string dataFile) {
         }
 
         frontierBuf.getCurrent().clear();
-        frontierBuf.swapBuffers();
+        frontierBuf.swap_buffers();
         frontierBufAfterRot.getCurrent().clear();
-        frontierBufAfterRot.swapBuffers();
+        frontierBufAfterRot.swap_buffers();
     }
 
     return minScoreReached;
@@ -94,8 +94,8 @@ long long day16_2(std::string dataFile) {
         unsigned int dir : 2 = 0;
     };
 
-    incstd::buffers::doubleBuffer<std::vector<std::vector<RoutePoint>>> frontierBuf;
-    incstd::buffers::doubleBuffer<std::vector<std::vector<RoutePoint>>> frontierBufAfterRot;
+    incstd::buffers::DoubleBuffer<std::vector<std::vector<RoutePoint>>> frontierBuf;
+    incstd::buffers::DoubleBuffer<std::vector<std::vector<RoutePoint>>> frontierBufAfterRot;
     std::vector<std::vector<RoutePoint>>                     potentialRes;
 
     for (size_t i = 0; i < input.size(); ++i) {
@@ -159,9 +159,9 @@ long long day16_2(std::string dataFile) {
         }
 
         frontierBuf.getCurrent().clear();
-        frontierBuf.swapBuffers();
+        frontierBuf.swap_buffers();
         frontierBufAfterRot.getCurrent().clear();
-        frontierBufAfterRot.swapBuffers();
+        frontierBufAfterRot.swap_buffers();
     }
 
     ankerl::unordered_dense::set<std::pair<size_t, size_t>, incstd::hashing::XXH3Hasher> resSet;

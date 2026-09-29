@@ -39,7 +39,7 @@ long long day18_1(std::string dataFile) {
     // Find all 'shortest' paths from each key to each other key
     for (int srcID = 0; srcID < keyLocations.size(); ++srcID) {
         auto                                                                            map2Explore = input;
-        incstd::buffers::doubleBuffer<std::queue<std::tuple<int, int, std::bitset<32>>>> buf_queues;
+        incstd::buffers::DoubleBuffer<std::queue<std::tuple<int, int, std::bitset<32>>>> buf_queues;
 
         // Push source location to queue
         buf_queues.getNext().push({std::get<0>(keyLocations[srcID]), std::get<1>(keyLocations[srcID]),
@@ -85,7 +85,7 @@ long long day18_1(std::string dataFile) {
         };
 
         while (not buf_queues.getNext().empty()) {
-            buf_queues.swapBuffers();
+            buf_queues.swap_buffers();
             stepsCount++;
             while (not buf_queues.getCurrent().empty()) {
                 explore();
@@ -94,7 +94,7 @@ long long day18_1(std::string dataFile) {
         }
     }
 
-    incstd::buffers::doubleBuffer<
+    incstd::buffers::DoubleBuffer<
         ankerl::unordered_dense::map<std::pair<size_t, unsigned long>, size_t, incstd::hashing::XXH3Hasher>>
         buf_maps;
 
@@ -104,7 +104,7 @@ long long day18_1(std::string dataFile) {
 
     // MAIN LOGIC
     while (not buf_maps.getNext().empty()) {
-        buf_maps.swapBuffers();
+        buf_maps.swap_buffers();
         buf_maps.getNext().clear();
 
         for (auto &srcLoc : buf_maps.getCurrent()) {
@@ -174,7 +174,7 @@ long long day18_2(std::string dataFile) {
     // Find all 'shortest' paths from each key to each other key
     for (int srcID = 0; srcID < keyLocations.size(); ++srcID) {
         auto                                                                            map2Explore = input;
-        incstd::buffers::doubleBuffer<std::queue<std::tuple<int, int, std::bitset<32>>>> buf_queues;
+        incstd::buffers::DoubleBuffer<std::queue<std::tuple<int, int, std::bitset<32>>>> buf_queues;
 
         // Push source location to queue
         buf_queues.getNext().push({std::get<0>(keyLocations[srcID]), std::get<1>(keyLocations[srcID]),
@@ -223,7 +223,7 @@ long long day18_2(std::string dataFile) {
         };
 
         while (not buf_queues.getNext().empty()) {
-            buf_queues.swapBuffers();
+            buf_queues.swap_buffers();
             stepsCount++;
             while (not buf_queues.getCurrent().empty()) {
                 explore();
@@ -232,7 +232,7 @@ long long day18_2(std::string dataFile) {
         }
     }
 
-    incstd::buffers::doubleBuffer<ankerl::unordered_dense::map<std::pair<std::array<size_t, 4>, unsigned long>, size_t,
+    incstd::buffers::DoubleBuffer<ankerl::unordered_dense::map<std::pair<std::array<size_t, 4>, unsigned long>, size_t,
                                                               incstd::hashing::XXH3Hasher>>
         buf_maps;
 
@@ -245,7 +245,7 @@ long long day18_2(std::string dataFile) {
 
     // MAIN LOGIC
     while (not buf_maps.getNext().empty()) {
-        buf_maps.swapBuffers();
+        buf_maps.swap_buffers();
         buf_maps.getNext().clear();
 
         for (auto &srcLoc : buf_maps.getCurrent()) {

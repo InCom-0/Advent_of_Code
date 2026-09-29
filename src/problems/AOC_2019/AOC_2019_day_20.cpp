@@ -63,7 +63,7 @@ long long day20_1(std::string dataFile) {
     }
 
     auto const                                                    terminalLocation = portalMap.at("ZZ^");
-    incstd::buffers::doubleBuffer<std::queue<std::pair<int, int>>> buf_que;
+    incstd::buffers::DoubleBuffer<std::queue<std::pair<int, int>>> buf_que;
 
     auto explore = [&](std::pair<int, int> const &pr) -> std::optional<std::pair<int, int>> {
         std::pair<int, int> newLoc;
@@ -98,7 +98,7 @@ long long day20_1(std::string dataFile) {
 
         size_t dist = 1;
         while (not buf_que.getNext().empty()) {
-            buf_que.swapBuffers();
+            buf_que.swap_buffers();
             while (not buf_que.getCurrent().empty()) {
                 auto maybePortal = explore(buf_que.getCurrent().front());
                 maybePortal.and_then([&](auto &item) -> std::optional<std::pair<int, int>> {
@@ -199,7 +199,7 @@ long long day20_2(std::string dataFile) {
     ankerl::unordered_dense::map<std::pair<int, int>, std::vector<std::pair<size_t, std::pair<int, int>>>,
                                  incstd::hashing::XXH3Hasher>
                                                                   walkConnections;
-    incstd::buffers::doubleBuffer<std::queue<std::pair<int, int>>> buf_que;
+    incstd::buffers::DoubleBuffer<std::queue<std::pair<int, int>>> buf_que;
 
     // Explore func - evaluates surrounding of point on path and acts accordingly
     auto explore = [&](std::pair<int, int> const &pr) -> std::optional<std::pair<int, int>> {
@@ -234,7 +234,7 @@ long long day20_2(std::string dataFile) {
 
         // Exploration part
         while (not buf_que.getNext().empty()) {
-            buf_que.swapBuffers();
+            buf_que.swap_buffers();
             while (not buf_que.getCurrent().empty()) {
                 auto maybePortal = explore(buf_que.getCurrent().front());
                 maybePortal.and_then([&](auto &item) -> std::optional<std::pair<int, int>> {

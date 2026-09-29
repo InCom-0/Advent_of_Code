@@ -15,6 +15,7 @@ target_link_libraries(incom_commons INTERFACE
     incstd::incstd
     bitlib::bitlib
     hash-library::hash-library
+    autodiff::autodiff
 )
 
 # target_compile_options(incom_commons INTERFACE -freflection)

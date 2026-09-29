@@ -31,7 +31,7 @@ long long day18_1(std::string dataFile) {
     // Let the first 1024 bytes 'fall' on the map
     for (int i = 0; i < 1024; i++) { map[fallingBytes[i].first][fallingBytes[i].second] = '#'; }
 
-    incstd::buffers::doubleBuffer<std::vector<std::pair<int, int>>> nodesToExplore;
+    incstd::buffers::DoubleBuffer<std::vector<std::pair<int, int>>> nodesToExplore;
     nodesToExplore.getCurrent().push_back({1, 1});
 
     constexpr std::array<std::array<int, 2>, 4> dirs{-1, 0, 0, 1, 1, 0, 0, -1};
@@ -50,7 +50,7 @@ long long day18_1(std::string dataFile) {
             }
         }
         nodesToExplore.getCurrent().clear();
-        nodesToExplore.swapBuffers();
+        nodesToExplore.swap_buffers();
     }
     return stepsFromStartMap[71][71];
 }
@@ -82,7 +82,7 @@ std::string day18_2(std::string dataFile) {
     // Let the first 1024 bytes 'fall' on the map
     for (int i = 0; i < 1024; i++) { map[fallingBytes[i].first][fallingBytes[i].second] = '#'; }
 
-    incstd::buffers::doubleBuffer<std::vector<std::pair<int, int>>> nodesToExplore;
+    incstd::buffers::DoubleBuffer<std::vector<std::pair<int, int>>> nodesToExplore;
     constexpr std::array<std::array<int, 2>, 4>          dirs{-1, 0, 0, 1, 1, 0, 0, -1};
     std::vector stepsFromStartMap(map.size(), std::vector(map.front().size(), LLONG_MIN));
 
@@ -114,7 +114,7 @@ std::string day18_2(std::string dataFile) {
                 }
             }
             nodesToExplore.getCurrent().clear();
-            nodesToExplore.swapBuffers();
+            nodesToExplore.swap_buffers();
         }
         return stepsFromStartMap[target.first][target.second];
     };
