@@ -12,6 +12,17 @@
 
 #include <incstd/incstd_all.hpp>
 
+#define DATAFOLDER      "../../../input/"
+#define DATAFOLDER_2015 DATAFOLDER "AOC_2015"
+#define DATAFOLDER_2016 DATAFOLDER "AOC_2016"
+#define DATAFOLDER_2017 DATAFOLDER "AOC_2017"
+#define DATAFOLDER_2018 DATAFOLDER "AOC_2018"
+#define DATAFOLDER_2019 DATAFOLDER "AOC_2019"
+
+#define DATAFOLDER_2023 DATAFOLDER "AOC_2023"
+#define DATAFOLDER_2024 DATAFOLDER "AOC_2024"
+#define DATAFOLDER_2025 DATAFOLDER "AOC_2025"
+
 namespace incom {
 namespace aoc {
 
@@ -540,7 +551,7 @@ requires(std::derived_from<instrT, _instrBase_INT> && ...)
 class ProgramQuasiAssembly_INT {
 private:
     std::unordered_map<long long, std::variant<instrT...>, incstd::hashing::XXH3Hasher> m_instrTypeMap;
-    
+
     static std::unordered_map<long long, std::variant<instrT...>, incstd::hashing::XXH3Hasher>
     instrTypeMapCreator(std::vector<long long> const &instrCodes) {
         assert(sizeof...(instrT) == instrCodes.size());

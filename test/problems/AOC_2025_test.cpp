@@ -5,9 +5,6 @@
 
 #include <incom_aoc_solver.h>
 
-#define DATAFOLDER      "../../../data"
-#define DATAFOLDER_2024 "../../../data/AOC_2025"
-
 
 // TEST(A_2024_d1_1, A1) {
 //     auto pth = std::filesystem::path(DATAFOLDER_2024) / "2024_1_1.txt";

@@ -1,3 +1,7 @@
+# Advent of Code specific
+input/
+.session_cookie
+
 # CMake related
 build*/
 !build2/

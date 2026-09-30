@@ -11,13 +11,6 @@
 #include <AOC_2025.h>
 #include <incom_commons.h>
 
-#define DATAFOLDER      "../../../data"
-#define DATAFOLDER_2019 "../../../data/AOC_2019"
-
-#define DATAFOLDER_2023 "../../../data/AOC_2023"
-#define DATAFOLDER_2024 "../../../data/AOC_2024"
-#define DATAFOLDER_2025 "../../../data/AOC_2025"
-
 
 /*
 Compile and run 'AOC_Tests_ALL' (Google tests) target to execute solutions with the right input data, verify
