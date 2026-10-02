@@ -30,9 +30,8 @@ day6_1(std::string dataFile) {
 
 size_t
 day6_2(std::string dataFile) {
-    auto notSpace_ctre = ctre::search<R"([^\s]+)">;
-    auto any_ctre      = ctre::search<R"(.+)">;
-    auto input         = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
+    auto any_ctre = ctre::search<R"(.+)">;
+    auto input    = incom::aoc::parseInputUsingCTRE::processFile(dataFile, any_ctre).front();
 
     std::vector<std::string> data(input.front().size(), std::string{});
 
@@ -54,8 +53,8 @@ day6_2(std::string dataFile) {
             values.push_back(std::stoll(data.at(lineID++)));
         }
 
-        if (oper == '+') { accu += std::ranges::fold_left_first(values, std::plus{}).value_or(0); }
-        else if (oper == '*') { accu += std::ranges::fold_left_first(values, std::multiplies{}).value_or(0); }
+        if (oper == '+') { accu += std::ranges::fold_left(values, 0ll, std::plus{}); }
+        else if (oper == '*') { accu += std::ranges::fold_left(values, 0ll, std::multiplies{}); }
         else { assert(false); }
     }
 
