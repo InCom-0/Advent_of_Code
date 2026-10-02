@@ -82,7 +82,6 @@ day8_2(std::string dataFile) {
     }
 
     std::vector pastZresults = std::vector<std::vector<std::pair<size_t, size_t>>>(curIDs.size());
-    size_t      dirSZ        = dirs.size();
 
     for (size_t id = 0uz; auto &curID : curIDs) {
 
