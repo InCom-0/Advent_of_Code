@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 #include <AOC_2015.h>
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 
 
 TEST(A_2015_d1_1, A1) {

@@ -2,8 +2,8 @@
 #include <bitlib/bitlib.hpp>
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <incom_commons.h>
-#include <incom_omni.h>
+#include <incom_commons.hpp>
+#include <incom_omni.hpp>
 
 
 namespace AOC2019 {

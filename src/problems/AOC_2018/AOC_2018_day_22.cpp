@@ -1,7 +1,7 @@
-#include "incom_commons.h"
+#include "incom_commons.hpp"
 #include <ankerl/unordered_dense.h>
 #include <climits>
-#include <incom_omni.h>
+#include <incom_omni.hpp>
 #include <queue>
 #include <string>
 

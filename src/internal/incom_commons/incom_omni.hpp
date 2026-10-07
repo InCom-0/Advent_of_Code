@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 
 #include <ankerl/unordered_dense.h>
 #include <mdspan>

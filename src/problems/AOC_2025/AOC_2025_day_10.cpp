@@ -8,7 +8,7 @@
 #include <string>
 #include <string_view>
 
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 #include <incom_aoc_solver.h>
 
 

@@ -3,7 +3,7 @@
 #include <filesystem>
 
 #include <AOC_2017.h>
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 
 
 TEST(A_2017_d1_1, A1) {

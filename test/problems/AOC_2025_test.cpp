@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <AOC_2025.h>
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 
 #include <incom_aoc_solver.h>
 

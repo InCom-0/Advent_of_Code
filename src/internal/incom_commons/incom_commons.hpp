@@ -7,8 +7,8 @@
 #include <source_location>
 #include <vector>
 
-#include <ctre.hpp>
 #include <flux.hpp>
+#include <ctre.hpp>
 
 #include <incstd/incstd_all.hpp>
 
@@ -22,6 +22,7 @@
 #define DATAFOLDER_2023 DATAFOLDER "AOC_2023"
 #define DATAFOLDER_2024 DATAFOLDER "AOC_2024"
 #define DATAFOLDER_2025 DATAFOLDER "AOC_2025"
+
 
 namespace incom {
 namespace aoc {

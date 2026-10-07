@@ -2,7 +2,7 @@
 #include <cassert>
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 #include <incstd/core/hashing.hpp>
 #include <iostream>
 #include <ranges>

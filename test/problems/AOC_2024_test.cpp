@@ -3,7 +3,7 @@
 #include <filesystem>
 
 #include <AOC_2024.h>
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 
 using namespace std::literals;
 

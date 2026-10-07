@@ -1,7 +1,7 @@
 #include <cmath>
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 
 
 namespace AOC2024 {

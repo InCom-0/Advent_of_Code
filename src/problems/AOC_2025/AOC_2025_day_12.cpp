@@ -8,7 +8,7 @@
 #include <incstd/core/solvers.hpp>
 
 #include <incom_aoc_solver.h>
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 
 
 namespace AOC2025 {

@@ -1,4 +1,4 @@
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 #include <unordered_set>
 
 namespace AOC2018 {

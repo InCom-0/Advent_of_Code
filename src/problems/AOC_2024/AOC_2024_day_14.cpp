@@ -2,7 +2,7 @@
 #include <flux.hpp>
 #include <fmt/format.h>
 #include <functional>
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 
 
 namespace AOC2024 {

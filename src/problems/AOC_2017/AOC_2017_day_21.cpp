@@ -3,7 +3,7 @@
 #include <flux.hpp>
 #include <vector>
 
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 
 
 namespace AOC2017 {

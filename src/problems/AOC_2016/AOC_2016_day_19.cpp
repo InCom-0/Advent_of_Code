@@ -2,7 +2,7 @@
 #include <queue>
 #include <ranges>
 
-#include <incom_commons.h>
+#include <incom_commons.hpp>
 #include <flux.hpp>
 
 namespace AOC2016 {
