@@ -102,7 +102,7 @@ day11_2(std::string dataFile) {
     size_t const emptyRCAdd = 1'000'000uz - 1uz;
 
     size_t distRes{};
-    for (auto [pr1r, pr2r] : incstd::views::combinations_k<2>(galaxiesPos)) {
+    for (auto const &[pr1r, pr2r] : incstd::views::combinations_k<2>(galaxiesPos)) {
         auto pr1 = pr1r;
         auto pr2 = pr2r;
         if (pr1.first < pr2.first) { std::swap(pr1.first, pr2.first); }
