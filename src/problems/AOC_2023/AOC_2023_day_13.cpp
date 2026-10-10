@@ -94,26 +94,64 @@ day13_2(std::string dataFile) {
     auto calcMirCount = [&](std::vector<std::string> const &inpMatrix) {
         std::vector<size_t> countTracker(inpMatrix.front().size(), 0uz);
         for (auto const &line : inpMatrix) {
-            auto const mirPosss = findMirroPos(line);
             for (auto const &mirPos : findMirroPos(line)) { countTracker[mirPos]++; }
         }
 
         return countTracker;
     };
 
+    auto computeFirstUnmirroredPos = [](std::string_view const sv, size_t middlePos) {
+        std::optional<size_t> res;
+        size_t                beg  = middlePos > (sv.size() / 2) ? 2 * middlePos - sv.size() : 0;
+        int                   dist = (2 * (middlePos - beg)) - 1;
+
+        while (dist > 0) {
+            if (sv.at(beg) != sv.at(beg + dist)) {
+                if (sv.at(beg) == '#') { res = beg; }
+                else if (sv.at(beg + dist) == '#') { res = beg + dist; }
+            }
+            dist -= 2;
+            beg++;
+        }
+
+        return res;
+    };
+
+
     size_t globalRes{};
-    for (auto const &inpMatrix : input) {
+    for (auto &inpMatrix : input) {
 
         auto mirroredLinesCountAts = calcMirCount(inpMatrix);
 
-        if (auto it = std::ranges::find(mirroredLinesCountAts, inpMatrix.size() - 1);
-            it != mirroredLinesCountAts.end()) {}
+        if (auto minusOneMirroredColumnIT = std::ranges::find(mirroredLinesCountAts, inpMatrix.size() - 1);
+            minusOneMirroredColumnIT != mirroredLinesCountAts.end()) {
+
+            for (auto &inpLine : inpMatrix) {
+                if (auto idOfSmudge =
+                        computeFirstUnmirroredPos(inpLine, minusOneMirroredColumnIT - mirroredLinesCountAts.begin())) {
+                    inpLine.at(idOfSmudge.value())  = '.';
+                    globalRes                      += (minusOneMirroredColumnIT - mirroredLinesCountAts.begin());
+                }
+            }
+            size_t aaa{};
+        }
         else {
             auto rotMatLeft                = incstd::matrix::matrixRotateLeft_copy(inpMatrix).value();
             auto mirroredLinesCountAts_rot = calcMirCount(rotMatLeft);
-            
-            if (auto it = std::ranges::find(mirroredLinesCountAts_rot, rotMatLeft.size() - 1);
-                it != mirroredLinesCountAts_rot.end()) {}
+
+            if (auto minusOneMirroredColumnIT_rot = std::ranges::find(mirroredLinesCountAts_rot, rotMatLeft.size() - 1);
+                minusOneMirroredColumnIT_rot != mirroredLinesCountAts_rot.end()) {
+
+                for (auto &inpLine : rotMatLeft) {
+                    if (auto idOfSmudge = computeFirstUnmirroredPos(inpLine, minusOneMirroredColumnIT_rot -
+                                                                                 mirroredLinesCountAts_rot.begin())) {
+                        inpLine.at(idOfSmudge.value()) = '.';
+                        globalRes += (100 * (minusOneMirroredColumnIT_rot - mirroredLinesCountAts_rot.begin()));
+                        break;
+                    }
+                }
+                inpMatrix = incstd::matrix::matrixRotateRight_copy(std::move(rotMatLeft)).value();
+            }
 
             else { assert(false); }
         }
