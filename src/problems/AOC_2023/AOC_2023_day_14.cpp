@@ -114,7 +114,6 @@ day14_2(std::string dataFile) {
         }
     }
 
-
     for (size_t weight = input.size(); auto &line : input) {
         res += std::ranges::count_if(line, [&](auto const c) { return c == 'O'; }) * weight--;
     }

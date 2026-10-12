@@ -70,8 +70,23 @@ size_t
 day13_2(std::string dataFile);
 
 size_t
-day14_1(std::string dataFile);
+day15_1(std::string dataFile);
 size_t
-day14_2(std::string dataFile);
+day15_2(std::string dataFile);
+
+size_t
+day16_1(std::string dataFile);
+size_t
+day16_2(std::string dataFile);
+
+size_t
+day17_1(std::string dataFile);
+size_t
+day17_2(std::string dataFile);
+
+size_t
+day18_1(std::string dataFile);
+size_t
+day18_2(std::string dataFile);
 
 } // namespace AOC2023
