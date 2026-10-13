@@ -6,11 +6,8 @@
 #include <incstd/core/explorers.hpp>
 #include <incstd/core/hashing.hpp>
 #include <limits>
-#include <optional>
 #include <queue>
-#include <ranges>
 #include <string>
-#include <tuple>
 #include <vector>
 
 
@@ -41,7 +38,9 @@ day17_1(std::string dataFile) {
 
     auto const endPos = std::array<size_t, 2ULL>{input.size() - 1, input.front().size() - 1};
 
-    ankerl::unordered_dense::set<std::pair<std::array<long long, 4uz>, size_t>, incstd::hashing::XXH3Hasher> visited;
+    ankerl::unordered_dense::set<std::tuple<std::array<size_t, 2uz>, std::array<long long, 2uz>, size_t>,
+                                 incstd::hashing::XXH3Hasher>
+        visited;
 
     while (not q.empty()) {
         auto topEle = std::move(q.top());
@@ -60,9 +59,7 @@ day17_1(std::string dataFile) {
                 }
                 else {
                     bool const tf = (yChng == topEle.toHere[0]) && (xChng == topEle.toHere[1]);
-                    if (auto it =
-                            visited.insert({{static_cast<long long>(yNew), static_cast<long long>(xNew), yChng, xChng},
-                                            tf ? topEle.sameToHereCount + 1 : 1});
+                    if (auto it = visited.insert({{yNew, xNew}, {yChng, xChng}, tf ? topEle.sameToHereCount + 1 : 1});
                         it.second) {
                         q.push({{yNew, xNew},
                                 {yChng, xChng},
@@ -90,7 +87,9 @@ day17_2(std::string dataFile) {
 
     auto const endPos = std::array<size_t, 2ULL>{input.size() - 1, input.front().size() - 1};
 
-    ankerl::unordered_dense::set<std::pair<std::array<long long, 4uz>, size_t>, incstd::hashing::XXH3Hasher> visited;
+    ankerl::unordered_dense::set<std::tuple<std::array<size_t, 2uz>, std::array<long long, 2uz>, size_t>,
+                                 incstd::hashing::XXH3Hasher>
+        visited;
 
     while (not q.empty()) {
         auto topEle = std::move(q.top());
@@ -112,9 +111,7 @@ day17_2(std::string dataFile) {
                 }
 
                 bool const tf = (yChng == topEle.toHere[0]) && (xChng == topEle.toHere[1]);
-                if (auto it =
-                        visited.insert({{static_cast<long long>(yNew), static_cast<long long>(xNew), yChng, xChng},
-                                        tf ? topEle.sameToHereCount + 1 : 1});
+                if (auto it = visited.insert({{yNew, xNew}, {yChng, xChng}, tf ? topEle.sameToHereCount + 1 : 1});
                     it.second) {
                     q.push({{yNew, xNew},
                             {yChng, xChng},
