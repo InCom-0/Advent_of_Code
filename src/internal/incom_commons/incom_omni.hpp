@@ -99,14 +99,14 @@ private:
         // Can use the
         template <typename First_ID, typename... Other_IDs>
         auto &
-        operator[](First_ID const &&id, Other_IDs const &&...other_ids) {
+        operator[](First_ID const &id, Other_IDs const &...other_ids) {
             if constexpr (sizeof...(other_ids) == 0) {
                 if (id < 0) { return m_negVect[(-id) - 1]; }
                 else { return m_posVect[id]; }
             }
             else {
-                if (id < 0) { return m_negVect[(-id) - 1, std::forward<decltype(other_ids)>(other_ids)...]; }
-                else { return m_posVect[id, std::forward<decltype(other_ids)>(other_ids)...]; }
+                if (id < 0) { return m_negVect[(-id) - 1][std::forward<decltype(other_ids)>(other_ids)...]; }
+                else { return m_posVect[id][std::forward<decltype(other_ids)>(other_ids)...]; }
             }
             std::unreachable();
         }
@@ -182,10 +182,10 @@ private:
                 }
                 else {
                     if (signedLvlToExpand < 0) {
-                        for (int i = 0; i < c_blockSize; ++i) { this->m_negVect.push_back(typename T::_OV()); }
+                        for (int i = 0; i < c_blockSize; ++i) { this->m_negVect.push_back(T{}); }
                     }
                     else {
-                        for (int i = 0; i < c_blockSize; ++i) { this->m_posVect.push_back(typename T::_OV()); }
+                        for (int i = 0; i < c_blockSize; ++i) { this->m_posVect.push_back(T{}); }
                     }
                 }
             }
@@ -295,7 +295,7 @@ public:
     requires(std::same_as<std::remove_cvref_t<std::remove_pointer_t<std::decay_t<First_ID>>>, long long>) &&
             ((std::same_as<std::remove_cvref_t<std::remove_pointer_t<std::decay_t<Other_IDs>>>, long long>), ...)
     auto &
-    operator[](First_ID const &&id, Other_IDs const &&...other_ids) {
+    operator[](First_ID const &id, Other_IDs const &...other_ids) {
         if constexpr (sizeof...(other_ids) == 0) { return m_data[std::forward<decltype(id)>(id)]; }
         else { return m_data[std::forward<decltype(id)>(id), std::forward<decltype(other_ids)>(other_ids)...]; }
         std::unreachable();

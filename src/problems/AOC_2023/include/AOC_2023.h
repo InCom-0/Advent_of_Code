@@ -89,4 +89,39 @@ day18_1(std::string dataFile);
 size_t
 day18_2(std::string dataFile);
 
+size_t
+day19_1(std::string dataFile);
+size_t
+day19_2(std::string dataFile);
+
+size_t
+day20_1(std::string dataFile);
+size_t
+day20_2(std::string dataFile);
+
+size_t
+day21_1(std::string dataFile);
+size_t
+day21_2(std::string dataFile);
+
+size_t
+day22_1(std::string dataFile);
+size_t
+day22_2(std::string dataFile);
+
+size_t
+day23_1(std::string dataFile);
+size_t
+day23_2(std::string dataFile);
+
+size_t
+day24_1(std::string dataFile);
+size_t
+day24_2(std::string dataFile);
+
+size_t
+day25_1(std::string dataFile);
+size_t
+day25_2(std::string dataFile);
+
 } // namespace AOC2023
