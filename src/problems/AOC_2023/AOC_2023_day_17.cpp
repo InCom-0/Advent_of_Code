@@ -3,7 +3,7 @@
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <incom_commons.hpp>
-#include <incstd/core/explorers.hpp>
+#include <incstd/solvers/explorers.hpp>
 #include <incstd/core/hashing.hpp>
 #include <limits>
 #include <queue>
@@ -31,7 +31,7 @@ day17_1(std::string dataFile) {
 
     auto input = day17_0(dataFile);
 
-    constexpr auto fourDirs = incstd::explorers::directions::get_dirChanges_2D();
+    constexpr auto fourDirs = incstd::solvers::directions::get_dirChanges_2D();
     auto           cmp      = [](auto &a, auto &b) { return a.cost > b.cost; };
     std::priority_queue<day17_PL, std::vector<day17_PL>, decltype(cmp)> q(cmp);
     q.push({{0, 0}, {0, 0}, 0uz, 0uz});
@@ -79,7 +79,7 @@ size_t
 day17_2(std::string dataFile) {
     auto input = day17_0(dataFile);
 
-    constexpr auto fourDirs = incstd::explorers::directions::get_dirChanges_2D();
+    constexpr auto fourDirs = incstd::solvers::directions::get_dirChanges_2D();
     auto           cmp      = [](auto &a, auto &b) { return a.cost > b.cost; };
     std::priority_queue<day17_PL, std::vector<day17_PL>, decltype(cmp)> q(cmp);
     q.push({{0, 0}, {0, 1}, 0uz, 0uz});

@@ -4,6 +4,8 @@
 #include <flux.hpp>
 #include <incom_commons.hpp>
 
+#include <incstd/solvers/explorers.hpp>
+
 
 
 namespace AOC2023 {
@@ -209,7 +211,7 @@ day10_2(std::string dataFile) {
     };
 
 
-    auto ff = incstd::explorers::FloodFill(
+    auto ff = incstd::solvers::explorers::FloodFill(
         std::array{input.size(), input.front().size()},
         [&](std::array<size_t, 2uz> const &pos) { return inputCopy[pos[0]][pos[1]] != '#'; });
     size_t enclosedCounter{};

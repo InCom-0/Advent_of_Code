@@ -6,7 +6,7 @@
 #include <functional>
 #include <incom_commons.hpp>
 #include <incstd/core/buffers.hpp>
-#include <incstd/core/explorers.hpp>
+#include <incstd/solvers/explorers.hpp>
 #include <limits>
 #include <ranges>
 #include <string>
@@ -15,7 +15,7 @@
 
 namespace AOC2023 {
 
-constexpr auto DR = incstd::explorers::directions::get_dirChanges_2D();
+constexpr auto DR = incstd::solvers::directions::get_dirChanges_2D();
 
 enum class Dirs : size_t {
     S = 0,

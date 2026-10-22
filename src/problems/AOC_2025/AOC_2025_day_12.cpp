@@ -5,7 +5,7 @@
 #include <ctre.hpp>
 
 #include <incstd/core/hashing.hpp>
-#include <incstd/core/solvers.hpp>
+#include <incstd/solvers/packers.hpp>
 
 #include <incom_aoc_solver.h>
 #include <incom_commons.hpp>

@@ -30,7 +30,7 @@ day18_1(std::string dataFile) {
 
     auto convToDir = [](auto const &str) {
         static constexpr auto defRes = std::array<long long, 2uz>{0, 0};
-        static constexpr auto dirs   = incstd::explorers::directions::get_dirChanges_2D();
+        static constexpr auto dirs   = incstd::solvers::directions::get_dirChanges_2D();
         switch (str.front()) {
             case 'D': return dirs[0]; break;
             case 'U': return dirs[1]; break;
@@ -80,7 +80,7 @@ day18_1(std::string dataFile) {
     };
     auto f_onFill = [&](auto) { digged++; };
 
-    incstd::explorers::FloodFill ff(std::array<size_t, 2uz>{static_cast<unsigned long long>(yMax - yMin + 1),
+    incstd::solvers::explorers::FloodFill ff(std::array<size_t, 2uz>{static_cast<unsigned long long>(yMax - yMin + 1),
                                                             static_cast<unsigned long long>(xMax - xMin + 1)},
                                     std::move(f_allowed), std::move(f_onFill));
 
@@ -93,7 +93,7 @@ day18_1(std::string dataFile) {
         return;
     };
 
-    if (auto seed = incstd::explorers::find_posInsideBordered(Pos_t{yMin, xMin}, Pos_t{yMax - yMin, xMax - xMin}, f_is_i, f_is_b, f_b_a)) {
+    if (auto seed = incstd::solvers::explorers::find_posInsideBordered(Pos_t{yMin, xMin}, Pos_t{yMax - yMin, xMax - xMin}, f_is_i, f_is_b, f_b_a)) {
         ff.execute_fill({static_cast<unsigned long long>(seed.value()[0] - yMin),
                          static_cast<unsigned long long>(seed.value()[1] - xMin)});
     }
@@ -110,7 +110,7 @@ day18_2(std::string dataFile) {
 
     auto convToDir = [](auto const &c) {
         static constexpr auto defRes = std::array<long long, 2uz>{0, 0};
-        static constexpr auto dirs   = incstd::explorers::directions::get_dirChanges_2D();
+        static constexpr auto dirs   = incstd::solvers::directions::get_dirChanges_2D();
         switch (c) {
             case '0': return dirs[2]; break;
             case '1': return dirs[0]; break;
@@ -141,7 +141,7 @@ day18_2(std::string dataFile) {
         verts.push_back({yPos, xPos});
     }
 
-    return incstd::polygons::compute_areaFromVerts<true>(verts);
+    return incstd::solvers::polygons::compute_areaFromVerts<true>(verts);
 }
 
 } // namespace AOC2023
