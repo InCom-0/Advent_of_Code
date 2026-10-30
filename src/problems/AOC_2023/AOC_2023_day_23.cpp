@@ -31,13 +31,13 @@ day23_0(std::string dataFile) {
         std::vector(input.size(), std::vector(input.front().size(), std::numeric_limits<size_t>::max()));
 
 
-    Pos_t const start{1uz, 0uz};
+    Pos_t const start{-1ll, 1ll};
     Pos_t const end{static_cast<long long>(input.size() - 1),
                     static_cast<long long>(std::ranges::find(input.back(), '.') - input.back().begin())};
 
     size_t            curVertID{};
     std::vector<Vert> verts;
-    input[start[0]][start[1] + 1] = '>';
+    input[start[0] + 1][start[1]] = 'v';
 
     auto moveUntil = [&](this auto const &self, Pos_t p, Pos_t lastDir) -> std::pair<std::optional<Pos_t>, size_t> {
         size_t stepInSection{};
@@ -67,15 +67,18 @@ day23_0(std::string dataFile) {
     auto exploreFromVert = [&](this auto const &self, Pos_t p) -> size_t {
         constexpr auto DirSigns = std::array<char, 4uz>{'v', '^', '>', '<'};
 
-        size_t const thisVertID     = curVertID++;
-        inputVertRecord[p[0]][p[1]] = thisVertID;
+        size_t const thisVertID = curVertID++;
+        if (p[0] >= 0 && p[0] < input.size() && p[1] >= 0 && p[1] < input.at(p[0]).size()) {
+            inputVertRecord[p[0]][p[1]] = thisVertID;
+        }
+
         verts.push_back(Vert{.p = p});
 
         if (p != end) {
             for (size_t i{}; auto const &d : incstd::solvers::directions::get_dirChanges_2D()) {
                 // Explore only if we have an 'arrow' leading from the 'p' of vert
                 if (p[0] + d[0] >= 0 && p[0] + d[0] < input.size() && p[1] + d[1] >= 0 &&
-                    p[1] + d[1] < input.at(p[0]).size() && input[p[0] + d[0]][p[1] + d[1]] == DirSigns[i++]) {
+                    p[1] + d[1] < input.front().size() && input[p[0] + d[0]][p[1] + d[1]] == DirSigns[i++]) {
                     auto [newVertPos, dist] = moveUntil(Pos_t{p[0] + 2 * d[0], p[1] + 2 * d[1]}, d);
 
                     if (newVertPos.has_value()) {
@@ -103,6 +106,7 @@ day23_0(std::string dataFile) {
     };
 
     exploreFromVert(start);
+    verts.front().distances.front()--;
 
 
     return std::make_pair(input, verts);

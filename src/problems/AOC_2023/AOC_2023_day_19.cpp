@@ -15,7 +15,7 @@
 
 
 namespace AOC2023 {
-
+namespace {
 enum class Register : size_t {
     x = 0uz,
     m,
@@ -289,7 +289,7 @@ executeRuleLine_p2(RuleLine const                                               
     }
     return accu;
 }
-
+} // namespace
 
 auto
 day19_0(std::string dataFile) {

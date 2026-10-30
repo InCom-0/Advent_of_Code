@@ -15,7 +15,7 @@
 
 
 namespace AOC2023 {
-
+namespace {
 struct Module {
     std::string              name{};
     std::vector<std::string> targetNames{};
@@ -166,7 +166,7 @@ struct Program {
                                       [](auto const &ini, auto const &oneInp) { return std::lcm(ini, oneInp.at(0)); });
     }
 };
-
+} // namespace
 
 auto
 day20_0(std::string dataFile) {

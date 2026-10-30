@@ -3,22 +3,24 @@
 #include <ctre.hpp>
 #include <flux.hpp>
 #include <incom_commons.hpp>
-#include <incstd/solvers/explorers.hpp>
 #include <incstd/core/hashing.hpp>
+#include <incstd/solvers/explorers.hpp>
 #include <limits>
 #include <queue>
 #include <string>
 #include <vector>
 
 
-namespace AOC2023 {
 
+namespace AOC2023 {
+namespace {
 struct day17_PL {
     std::array<size_t, 2ULL>    pos{};
     std::array<long long, 2ULL> toHere{};
     size_t                      sameToHereCount{};
     size_t                      cost{};
 };
+} // namespace
 
 auto
 day17_0(std::string dataFile) {
