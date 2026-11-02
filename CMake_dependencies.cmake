@@ -6,7 +6,7 @@ CPMAddPackage("gh:google/googletest@1.17.0")
 CPMAddPackage("gh:hanickadot/compile-time-regular-expressions@3.11.0")
 CPMAddPackage(
 	URI
-	"gh:stephenberry/glaze@7.6.0"
+	"gh:stephenberry/glaze"
 	NAME glaze
 )
 CPMAddPackage(
@@ -36,3 +36,12 @@ CPMAddPackage(
 	OPTIONS "hash-library_BUILD_SHARED_LIB OFF"
 )
 CPMAddPackage("gh:InCom-0/incstd#main")
+
+
+CPMAddPackage(
+    URI
+    "gh:davideberly/GeometricTools#GTE-version-8.3"
+    SOURCE_SUBDIR GTE
+)
+
+# add_subdirectory(GTE)

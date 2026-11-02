@@ -19,6 +19,7 @@ target_sources(incom_commons
 	incom_commons/incom_commons.cpp
 )
 
+find_package(GeometricTools)
 target_link_libraries(incom_commons
 	PUBLIC
 		fmt::fmt
@@ -29,6 +30,7 @@ target_link_libraries(incom_commons
 		bitlib::bitlib
 		hash-library::hash-library
 		autodiff::autodiff
+		gtmathematics
 )
 
 # target_compile_options(incom_commons INTERFACE -freflection)
