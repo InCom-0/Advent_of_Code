@@ -37,11 +37,16 @@ CPMAddPackage(
 )
 CPMAddPackage("gh:InCom-0/incstd#main")
 
-
 CPMAddPackage(
-    URI
-    "gh:davideberly/GeometricTools#GTE-version-8.3"
-    SOURCE_SUBDIR GTE
+	URI
+	"gh:InCom-0/GeometricTools#modern_cmake"
+	SOURCE_SUBDIR GTE
+	OPTIONS
+		"GTE_USE_DIRECTX OFF"
+		"GTE_BUILD_SHARED_LIBS OFF"
+		"GTE_BUILD_MATHEMATICS_GPU OFF"
+		"GTE_BUILD_APPLICATIONS OFF"
+		"GTE_BUILD_SAMPLES OFF"
 )
 
 # add_subdirectory(GTE)

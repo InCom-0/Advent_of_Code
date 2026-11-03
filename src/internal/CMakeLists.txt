@@ -30,7 +30,7 @@ target_link_libraries(incom_commons
 		bitlib::bitlib
 		hash-library::hash-library
 		autodiff::autodiff
-		gtmathematics
+		GTE::gtmathematics
 )
 
 # target_compile_options(incom_commons INTERFACE -freflection)
