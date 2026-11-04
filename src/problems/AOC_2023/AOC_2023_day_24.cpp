@@ -5,9 +5,7 @@
 #include <string>
 
 
-#include <Mathematics/DistRayRay.h>
 #include <Mathematics/IntrRay2Ray2.h>
-#include <Mathematics/IntrRay3Plane3.h>
 #include <ankerl/unordered_dense.h>
 
 
