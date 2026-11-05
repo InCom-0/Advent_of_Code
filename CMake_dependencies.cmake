@@ -1,4 +1,4 @@
-include(cmake/CPM_0.42.1.cmake)
+include(cmake/CPM_0.43.2.cmake)
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 CPMAddPackage("gh:google/googletest@1.17.0")
