@@ -25,8 +25,10 @@ set(AOC_InCom_SESSION_COOKIE_FILE
 )
 
 option(AOC_InCom_BUILD_TESTS "Build test executables for incplot-lib" ${PROJECT_IS_TOP_LEVEL})
-
 include(cmake/incom/StdlibQuery.cmake)
+
+include(cmake/incom/sccacheFinder.cmake)
+configure_sccache()
 
 
 #####################################################################

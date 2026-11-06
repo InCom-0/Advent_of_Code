@@ -48,5 +48,3 @@ CPMAddPackage(
 		"GTE_BUILD_APPLICATIONS OFF"
 		"GTE_BUILD_SAMPLES OFF"
 )
-
-# add_subdirectory(GTE)

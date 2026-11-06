@@ -254,5 +254,63 @@
                 }
             }
         }
+    ],
+    "buildPresets": [
+        {
+            "name": "MSYS2_ucrt64_gcc_Debug",
+            "configurePreset": "MSYS2_ucrt64_gcc_Debug"
+        },
+        {
+            "name": "MSYS2_ucrt64_gcc_Release",
+            "configurePreset": "MSYS2_ucrt64_gcc_Release"
+        },
+        {
+            "name": "MSYS2_ucrt64_gcc_None",
+            "configurePreset": "MSYS2_ucrt64_gcc_None"
+        },
+        {
+            "name": "MSYS2_clang64_clang_Debug",
+            "configurePreset": "MSYS2_clang64_clang_Debug"
+        },
+        {
+            "name": "MSYS2_clang64_clang_Release",
+            "configurePreset": "MSYS2_clang64_clang_Release"
+        },
+        {
+            "name": "Win_MSVC_Debug",
+            "configurePreset": "Win_MSVC_Debug"
+        },
+        {
+            "name": "Win_MSVC_Release",
+            "configurePreset": "Win_MSVC_Release"
+        },
+        {
+            "name": "Win_MSVC_Release_TRACY",
+            "configurePreset": "Win_MSVC_Release_TRACY"
+        },
+        {
+            "name": "Win_clang-cl_Debug",
+            "configurePreset": "Win_clang-cl_Debug"
+        },
+        {
+            "name": "Win_clang-cl_Release",
+            "configurePreset": "Win_clang-cl_Release"
+        },
+        {
+            "name": "gcc_Debug",
+            "configurePreset": "gcc_Debug"
+        },
+        {
+            "name": "gcc_Release",
+            "configurePreset": "gcc_Release"
+        },
+        {
+            "name": "clang_Debug",
+            "configurePreset": "clang_Debug"
+        },
+        {
+            "name": "clang_Release",
+            "configurePreset": "clang_Release"
+        }
     ]
 }
