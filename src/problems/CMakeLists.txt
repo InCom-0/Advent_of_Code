@@ -174,6 +174,40 @@ target_include_directories(AOC_2019
 target_compile_features(AOC_2019 PRIVATE cxx_std_26)
 
 
+set(AOC_2022_SRC
+	AOC_2022_day_1.cpp
+	AOC_2022_day_2.cpp
+	AOC_2022_day_3.cpp
+	AOC_2022_day_4.cpp
+	AOC_2022_day_5.cpp
+	AOC_2022_day_6.cpp
+	AOC_2022_day_7.cpp
+	AOC_2022_day_8.cpp
+	AOC_2022_day_9.cpp
+	AOC_2022_day_10.cpp
+	AOC_2022_day_11.cpp
+	AOC_2022_day_12.cpp
+	AOC_2022_day_13.cpp
+	AOC_2022_day_14.cpp
+	AOC_2022_day_15.cpp
+	AOC_2022_day_16.cpp
+	AOC_2022_day_17.cpp
+	AOC_2022_day_18.cpp
+	AOC_2022_day_19.cpp
+	AOC_2022_day_20.cpp
+	AOC_2022_day_21.cpp
+	AOC_2022_day_22.cpp
+	AOC_2022_day_23.cpp
+	AOC_2022_day_24.cpp
+	AOC_2022_day_25.cpp
+)
+list(TRANSFORM AOC_2022_SRC PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2022/)
+add_library(AOC_2022 ${AOC_2022_SRC})
+target_include_directories(AOC_2022
+	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2022/include
+)
+target_compile_features(AOC_2022 PRIVATE cxx_std_26)
+
 set(AOC_2023_SRC
 	AOC_2023_day_1.cpp
 	AOC_2023_day_10.cpp

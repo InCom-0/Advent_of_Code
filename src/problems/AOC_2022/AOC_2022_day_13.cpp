@@ -1,0 +1,7 @@
+#include "AOC_2022.h"
+
+namespace AOC2022 {
+void day13_0(std::string) {}
+std::size_t day13_1(std::string) { return 0uz; }
+std::size_t day13_2(std::string) { return 0uz; }
+} // namespace AOC2022
