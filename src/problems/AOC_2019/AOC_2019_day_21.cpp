@@ -1,7 +1,7 @@
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <fmt/core.h>
 #include <incom_commons.hpp>
+#include <print>
 
 
 namespace AOC2019 {
@@ -69,7 +69,7 @@ long long day21_1(std::string dataFile) {
         [&](end &a) { pqa.m_cursor = LLONG_MIN; },
         [&](inp &a) { a.m_refs[0].get() = realInp[inpCursor++]; },
         [&](out &a) {
-            // fmt::print("{}", static_cast<char>(a.m_refs[0].get()));
+            // std::print("{}", static_cast<char>(a.m_refs[0].get()));
             hullDamage = a.m_refs[0].get();
         },
         [&](jit &a) {
@@ -84,7 +84,7 @@ long long day21_1(std::string dataFile) {
     };
 
     while (pqa.is_cursorValid()) { pqa.exe_pointedToInstr(instructions); }
-    // fmt::print("{}", "\n");
+    // std::print("{}", "\n");
     return hullDamage;
 }
 
@@ -159,8 +159,8 @@ long long day21_2(std::string dataFile) {
         [&](end &a) { pqa.m_cursor = LLONG_MIN; },
         [&](inp &a) { a.m_refs[0].get() = realInp[inpCursor++]; },
         [&](out &a) {
-            // if (a.m_refs[0].get() > 1024) { fmt::print("{}", a.m_refs[0].get()); }
-            // else { fmt::print("{}", static_cast<char>(a.m_refs[0].get())); }
+            // if (a.m_refs[0].get() > 1024) { std::print("{}", a.m_refs[0].get()); }
+            // else { std::print("{}", static_cast<char>(a.m_refs[0].get())); }
             hullDamage = a.m_refs[0].get();
         },
         [&](jit &a) {
@@ -175,7 +175,7 @@ long long day21_2(std::string dataFile) {
     };
 
     while (pqa.is_cursorValid()) { pqa.exe_pointedToInstr(instructions); }
-    // fmt::print("{}", "\n");
+    // std::print("{}", "\n");
     return hullDamage;
 }
 } // namespace AOC2019

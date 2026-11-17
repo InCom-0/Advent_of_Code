@@ -6,6 +6,7 @@
 #include <AOC_2017.h>
 #include <AOC_2018.h>
 #include <AOC_2019.h>
+#include <AOC_2022.h>
 #include <AOC_2023.h>
 #include <AOC_2024.h>
 #include <AOC_2025.h>
@@ -24,9 +25,9 @@ main() {
 
     // auto pth_1    = std::filesystem::path(DATAFOLDER_2019) / "2019_25_1.txt";
     // auto pth_2024 = std::filesystem::path(DATAFOLDER_2024) / "2024_25_1.txt";
-    auto pth_2023 = std::filesystem::path(DATAFOLDER_2023) / "2023_25_1.txt";
+    auto pth_2022 = std::filesystem::path(DATAFOLDER_2022) / "2022_2_1.txt";
 
-    std::cout << AOC2023::day25_1(pth_2023.generic_string()) << '\n';
+    std::cout << AOC2022::day2_1(pth_2022.generic_string()) << '\n';
 
 
     return 1;

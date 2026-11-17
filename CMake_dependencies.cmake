@@ -1,7 +1,14 @@
 include(cmake/CPM_0.43.2.cmake)
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-CPMAddPackage("gh:google/googletest@1.17.0")
+CPMAddPackage(
+	NAME googletest
+	VERSION 1.18.0
+	URL
+		https://github.com/google/googletest/releases/download/v1.18.0/googletest-1.18.0.tar.gz
+		URL_HASH
+		SHA256=6e3191c1455468b3fc35a417fb565c1c5071aee1b7e7f85e30cf48a98d37d8b5
+)
 
 CPMAddPackage("gh:hanickadot/compile-time-regular-expressions@3.11.0")
 CPMAddPackage(
@@ -19,15 +26,6 @@ CPMAddPackage(
 		"AUTODIFF_BUILD_DOCS OFF"
 )
 
-CPMAddPackage(
-	URL
-		https://github.com/fmtlib/fmt/releases/download/12.1.0/fmt-12.1.0.zip
-		URL_HASH
-		SHA256=695fd197fa5aff8fc67b5f2bbc110490a875cdf7a41686ac8512fb480fa8ada7
-	NAME fmt
-	EXCLUDE_FROM_ALL TRUE
-)
-
 CPMAddPackage("gh:bkille/bitlib@0.3.1")
 CPMAddPackage("gh:tcbrindle/flux@0.4.0")
 CPMAddPackage(
@@ -38,8 +36,12 @@ CPMAddPackage(
 CPMAddPackage("gh:InCom-0/incstd#main")
 
 CPMAddPackage(
-	URI
-	"gh:InCom-0/GeometricTools#modern_cmake"
+	NAME GeometricTools
+	VERSION 8.4
+	URL
+		https://github.com/davideberly/GeometricTools/archive/refs/tags/GTE-version-8.4.tar.gz
+		URL_HASH
+		SHA256=3995f59a05981c60024e8a22e2680c789c498ec07c2dbcc9155bda82b9ff6503
 	SOURCE_SUBDIR GTE
 	OPTIONS
 		"GTE_USE_DIRECTX OFF"

@@ -3,7 +3,6 @@
 #include <cstddef>
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <fmt/core.h>
 #include <incom_commons.hpp>
 #include <iostream>
 #include <ranges>

@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <string>
+#include <ctre.hpp>
 
 namespace AOC2022 {
 

@@ -1,7 +1,7 @@
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <fmt/core.h>
 #include <incom_commons.hpp>
+#include <print>
 
 
 namespace AOC2024 {
@@ -151,7 +151,7 @@ std::string day17_1(std::string dataFile) {
         },
         [&](const bxc &a) { pqa.registers[1] ^= pqa.registers[2]; },
         [&](const out &a) {
-            // fmt::print("{0},", a.source.get() % 8);
+            // std::print("{0},", a.source.get() % 8);
             res.push_back(a.source.get() % 8 + 48);
             res.push_back(',');
         },

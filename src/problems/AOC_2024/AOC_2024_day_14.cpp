@@ -1,6 +1,5 @@
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <fmt/format.h>
 #include <functional>
 #include <incom_commons.hpp>
 

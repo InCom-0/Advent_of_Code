@@ -22,7 +22,6 @@ target_sources(incom_commons
 find_package(GeometricTools)
 target_link_libraries(incom_commons
 	PUBLIC
-		fmt::fmt
 		glaze::glaze
 		flux::flux
 		ctre::ctre

@@ -1,4 +1,4 @@
-#include "AOC_2022.h"
+#include <AOC_2022.h>
 
 namespace AOC2022 {
 void day7_0(std::string) {}

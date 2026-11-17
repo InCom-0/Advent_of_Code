@@ -1,7 +1,6 @@
 #include <ankerl/unordered_dense.h>
 #include <ctre.hpp>
 #include <flux.hpp>
-#include <fmt/format.h>
 
 #include <incom_commons.hpp>
 #include <incstd/core/sequences.hpp>
