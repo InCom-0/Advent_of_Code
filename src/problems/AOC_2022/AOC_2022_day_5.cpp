@@ -62,10 +62,9 @@ day5_1(std::string dataFile) {
     auto [stacks, instrs] = day5_0(dataFile);
 
     for (auto const &inst : instrs) {
-        for (size_t i{}; i < inst.front(); ++i) {
-            stacks.at(inst[2] - 1).push_back(stacks.at(inst[1] - 1).back());
-            stacks.at(inst[1] - 1).pop_back();
-        }
+        stacks.at(inst[2] - 1)
+            .append_range(std::views::reverse(stacks.at(inst[1] - 1)) | std::views::take(inst.front()));
+        stacks.at(inst[1] - 1).resize(stacks.at(inst[1] - 1).size() - inst.front());
     }
     std::string res;
     for (auto const &stck : stacks) { res.push_back(stck.back()); }
@@ -79,9 +78,9 @@ day5_2(std::string dataFile) {
 
     for (auto const &inst : instrs) {
         stacks.at(inst[2] - 1)
-            .append_range(std::views::drop(stacks.at(inst[1] - 1), stacks.at(inst[1] - 1).size() - inst.front()));
+            .append_range(std::views::reverse(stacks.at(inst[1] - 1)) | std::views::take(inst.front()) |
+                          std::views::reverse);
         stacks.at(inst[1] - 1).resize(stacks.at(inst[1] - 1).size() - inst.front());
-        // for (size_t i{}; i < inst.front(); ++i) { stacks.at(inst[1] - 1).pop_back(); }
     }
     std::string res;
     for (auto const &stck : stacks) { res.push_back(stck.back()); }
