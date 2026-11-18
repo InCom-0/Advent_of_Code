@@ -1,8 +1,9 @@
 #pragma once
 
 #include <cstddef>
-#include <string>
 #include <ctre.hpp>
+#include <string>
+
 
 namespace AOC2022 {
 
@@ -26,9 +27,9 @@ day4_1(std::string dataFile);
 std::size_t
 day4_2(std::string dataFile);
 
-std::size_t
+std::string
 day5_1(std::string dataFile);
-std::size_t
+std::string
 day5_2(std::string dataFile);
 
 std::size_t
