@@ -173,7 +173,6 @@ target_include_directories(AOC_2019
 )
 target_compile_features(AOC_2019 PRIVATE cxx_std_26)
 
-
 set(AOC_2022_SRC
 	AOC_2022_day_1.cpp
 	AOC_2022_day_2.cpp
@@ -207,6 +206,9 @@ target_include_directories(AOC_2022
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2022/include
 )
 target_compile_features(AOC_2022 PRIVATE cxx_std_26)
+if(USING_LIBSTDCXX)
+	target_link_libraries(AOC_2022 PRIVATE "-lstdc++exp")
+endif()
 
 set(AOC_2023_SRC
 	AOC_2023_day_1.cpp
@@ -245,7 +247,6 @@ if(USING_LIBSTDCXX)
 	target_link_libraries(AOC_2023 PRIVATE "-lstdc++exp")
 endif()
 
-
 set(AOC_2024_SRC
 	AOC_2024_day_1.cpp
 	AOC_2024_day_10.cpp
@@ -279,7 +280,6 @@ target_include_directories(AOC_2024
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/AOC_2024/include
 )
 target_compile_features(AOC_2024 PRIVATE cxx_std_26)
-
 
 set(AOC_2025_SRC
 	AOC_2025_day_1.cpp

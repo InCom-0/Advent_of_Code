@@ -7,7 +7,6 @@ project(AOC_InCom
     LANGUAGES CXX
 )
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
-set(CMAKE_CXX_STANDARD 23)
 
 option(CPM_USE_LOCAL_PACKAGES "Use local (usually system installed) packages for dependencies." ON)
 option(CPM_LOCAL_PACKAGES_ONLY "Forbid the build system from downloading missing dependencies." OFF)
